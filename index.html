@@ -1,0 +1,1104 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>圣诞小店</title>
+    <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap" rel="stylesheet">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        html, body {
+            height: 100%;
+            font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+            overflow: hidden;
+            background: linear-gradient(180deg, #2b2b63 0%, #5a7ad1 50%, #cfe8ff 100%);
+            cursor: none !important;
+            text-align: center;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        /* 隐藏所有元素的默认鼠标 */
+        * {
+            cursor: none !important;
+        }
+        
+        /* 鼠标跟随小兔子 */
+        #bunny-cursor {
+            position: fixed;
+            left: 0;
+            top: 0;
+            pointer-events: none;
+            z-index: 9999;
+            width: 50px;
+            height: auto;
+            transform: translate(-50%, -50%);
+            transition: transform 120ms ease-out;
+            filter: drop-shadow(0 8px 18px rgba(0, 0, 0, 0.25));
+            display: block !important;
+        }
+        
+        #main-container {
+            width: 95%;
+            max-width: 900px;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .header-area {
+            margin-bottom: 30px;
+            width: 100%;
+        }
+        
+        h1 {
+            font-size: 48px;
+            margin-bottom: 15px;
+            letter-spacing: 1px;
+            color: #fff;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+            white-space: nowrap;
+        }
+        
+        .header-area > p:first-of-type {
+            font-size: 18px;
+            color: #fff;
+            margin-bottom: 15px;
+        }
+        
+        #countdown {
+            font-size: 28px;
+            margin-bottom: 15px;
+            color: #ffeb3b;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
+        }
+        
+        input[type="text"] {
+            padding: 10px 14px;
+            border-radius: 8px;
+            border: none;
+            margin-bottom: 15px;
+            width: 220px;
+            text-align: center;
+            font-size: 16px;
+            background: rgba(255, 255, 255, 0.9);
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 12px 20px;
+            border-radius: 999px;
+            background: linear-gradient(90deg, #ffb3d9, #ffd98a);
+            color: #5a2a3a;
+            font-weight: 700;
+            margin-top: 10px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.18);
+            text-decoration: none;
+            pointer-events: none;
+        }
+        
+        .btn.active {
+            pointer-events: auto;
+        }
+        
+        .share-btn {
+            display: inline-block;
+            padding: 10px 20px;
+            border-radius: 999px;
+            background: linear-gradient(90deg, #a8e6cf, #dcedc1);
+            color: #2d5016;
+            font-weight: 700;
+            margin-top: 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            text-decoration: none;
+            border: none;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+        
+        .share-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        #store {
+            display: none;
+            grid-template-columns: repeat(3, 1fr);
+            grid-auto-rows: 1fr;
+            gap: 20px;
+            justify-items: center;
+            width: 100%;
+            max-width: 700px;
+        }
+        
+        .gift {
+            width: 100%;
+            max-width: 150px;
+            aspect-ratio: 1/1;
+            background: #ffcccc;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            font-weight: bold;
+            transition: transform 0.2s;
+            text-align: center;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+        }
+        
+        .gift:hover {
+            transform: scale(1.1);
+        }
+        
+        /* 右下角小兔子 */
+        #bunny {
+            position: fixed;
+            right: 20px;
+            bottom: 20px;
+            width: 80px;
+            height: 80px;
+            z-index: 998;
+            transition: transform 0.3s ease;
+        }
+        
+        #bunny:hover {
+            transform: scale(1.1);
+        }
+        
+        /* 气泡样式 */
+        .bubble {
+            position: fixed;
+            padding: 10px 14px;
+            background: rgba(0, 0, 0, 0.7);
+            color: #fff;
+            border-radius: 10px;
+            opacity: 0;
+            transition: opacity 0.4s;
+            z-index: 999;
+            text-align: center;
+        }
+        
+        /* 兔子消息弹窗 */
+        .bunny-modal {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            z-index: 1002;
+            text-align: center;
+            max-width: 350px;
+            width: 90%;
+            border: 4px solid #ffb6c1;
+            animation: bounceIn 0.6s ease-out;
+        }
+        
+        .bunny-modal::before {
+            content: '🐰';
+            font-size: 40px;
+            display: block;
+            margin-bottom: 15px;
+        }
+        
+        .bunny-modal h3 {
+            color: #e91e63;
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+        }
+        
+        .bunny-modal p {
+            color: #333;
+            margin-bottom: 20px;
+            line-height: 1.5;
+        }
+        
+        .bunny-modal input {
+            padding: 10px 15px;
+            border: 2px solid #ffb6c1;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            width: 100%;
+            font-size: 16px;
+            text-align: center;
+        }
+        
+        .bunny-modal button {
+            padding: 10px 25px;
+            border: none;
+            border-radius: 20px;
+            background: linear-gradient(45deg, #ff6b6b, #ffd93d);
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .bunny-modal button:hover {
+            transform: scale(1.05);
+        }
+        
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1001;
+            animation: fadeIn 0.3s ease-out;
+        }
+        
+        @keyframes bounceIn {
+            0% { transform: translate(-50%, -50%) scale(0.3); opacity: 0; }
+            50% { transform: translate(-50%, -50%) scale(1.05); }
+            70% { transform: translate(-50%, -50%) scale(0.95); }
+            100% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        canvas.snow {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+        
+        .video-wrapper {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: #000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+        
+        .video-wrapper video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .video-overlay {
+            position: absolute;
+            pointer-events: none;
+            font-family: 'Great Vibes', cursive;
+            text-shadow: 3px 3px 10px rgba(0, 0, 0, 0.9);
+            background: linear-gradient(45deg, #ff6b6b, #ffd93d, #6bcf7f);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            cursor: move;
+            user-select: none;
+            padding: 10px;
+            opacity: 1;
+            animation: gentleGlow 4s ease-in-out infinite;
+        }
+        
+        .video-overlay .name {
+            font-size: 3.5rem;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .video-overlay .merry {
+            font-size: 2.8rem;
+            font-weight: bold;
+        }
+        
+        /* 简洁清晰的艺术字体动画 */
+        @keyframes gentleGlow {
+            0%, 100% { 
+                filter: drop-shadow(0 0 8px rgba(255, 215, 0, 0.4));
+                transform: scale(1);
+            }
+            50% { 
+                filter: drop-shadow(0 0 20px rgba(255, 215, 0, 0.7));
+                transform: scale(1.03);
+            }
+        }
+        
+        @keyframes flicker {
+            0%, 19%, 21%, 23%, 25%, 54%, 56%, 100% { opacity: 1; }
+            20%, 22%, 24%, 55% { opacity: 0.5; }
+        }
+        
+        /* 移动端优化 */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 32px;
+            }
+            
+            .header-area > p:first-of-type {
+                font-size: 16px;
+            }
+            
+            #countdown {
+                font-size: 20px;
+            }
+            
+            input[type="text"] {
+                width: 200px;
+                font-size: 14px;
+            }
+            
+            .gift {
+                max-width: 120px;
+                font-size: 24px;
+            }
+            
+            #store {
+                gap: 15px;
+            }
+            
+            .video-overlay .name {
+                font-size: 2.2rem;
+            }
+            
+            .video-overlay .merry {
+                font-size: 1.8rem;
+            }
+            
+            .bunny-modal {
+                padding: 20px;
+                max-width: 300px;
+            }
+            
+            /* 移动端显示默认鼠标 */
+            #bunny-cursor {
+                display: none;
+            }
+            
+            body, * {
+                cursor: auto !important;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            h1 {
+                font-size: 28px;
+            }
+            
+            .gift {
+                max-width: 100px;
+                font-size: 20px;
+            }
+            
+            #store {
+                gap: 10px;
+            }
+            
+            #bunny {
+                width: 60px;
+                height: 60px;
+                right: 10px;
+                bottom: 10px;
+            }
+            
+            .video-overlay .name {
+                font-size: 1.8rem;
+            }
+            
+            .video-overlay .merry {
+                font-size: 1.5rem;
+            }
+        }
+        
+        /* 触摸设备优化 */
+        @media (hover: none) and (pointer: coarse) {
+            .gift:hover {
+                transform: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <canvas id="snow" class="snow"></canvas>
+    
+    <!-- 鼠标跟随小兔子 -->
+    <img id="bunny-cursor" src="assets/bunny-cursor.gif" alt="bunny cursor" />
+    
+    <div id="main-container">
+        <div class="header-area">
+            <h1>🎄 欢迎来到圣诞小店 🎄</h1>
+            <p>请输入你的名字开启圣诞礼物体验：</p>
+            <input type="text" id="username" placeholder="输入你的名字" />
+            <div id="countdown">商店将在 <span id="time">--:--:--</span> 开启</div>
+            <a id="start-btn" class="btn">开启圣诞</a>
+        </div>
+        
+        <div id="store">
+            <div class="gift" data-video="1.mp4">🎁</div>
+            <div class="gift" data-video="2.mp4">🎁</div>
+            <div class="gift" data-video="3.mp4">🎁</div>
+            <div class="gift" data-video="4.mp4">🎁</div>
+            <div class="gift" data-video="5.mp4">🎁</div>
+            <div class="gift" data-video="6.mp4">🎁</div>
+        </div>
+        
+        <!-- 分享按钮 -->
+        <button class="share-btn" id="share-btn" style="display: none;">🎁 分享我的圣诞小店</button>
+    </div>
+    
+    <!-- 右下角小兔子 -->
+    <img id="bunny" src="1.gif" alt="bunny" />
+    
+    <script>
+        // =================== URL参数处理 ===================
+        function getUrlParams() {
+            const params = new URLSearchParams(window.location.search);
+            return {
+                name: params.get('name') || '',
+                shop: params.get('shop') || 'false'
+            };
+        }
+
+        function updateUrlWithName(name) {
+            const url = new URL(window.location);
+            url.searchParams.set('name', name);
+            url.searchParams.set('shop', 'true');
+            window.history.replaceState({}, '', url);
+        }
+
+        function autoOpenShopWithName() {
+            const params = getUrlParams();
+            const name = params.name;
+            const shouldOpenShop = params.shop === 'true';
+            
+            if (name && shouldOpenShop) {
+                // 自动填充名字
+                document.getElementById('username').value = name;
+                
+                // 模拟点击开启商店按钮
+                const now = getBeijingTime();
+                if (now >= targetTime) {
+                    document.querySelector('#main-container h1').textContent = `🎄 ${name}的圣诞小店 🎄`;
+                    store.style.display = 'grid';
+                    startBtn.style.display = 'none';
+                    document.getElementById('username').style.display = 'none';
+                    document.getElementById('countdown').style.display = 'none';
+                    shareBtn.style.display = 'inline-block';
+                    bunny.src = '3.gif';
+                    
+                    console.log(`🎄 自动开启 ${name} 的圣诞小店`);
+                    
+                    // 显示欢迎消息
+                    setTimeout(() => {
+                        showBunnyModal('欢迎参观！', `欢迎来到${name}的圣诞小店！<br>快来挑选喜欢的礼物吧！🎁`, false);
+                    }, 1000);
+                } else {
+                    // 如果还没到时间，至少显示名字
+                    document.getElementById('username').value = name;
+                    showBunnyModal('欢迎回来！', `${name}，商店还没开门哦～<br>请等待倒计时结束吧！🎄`);
+                }
+            }
+        }
+
+        // =================== 背景音乐自动播放 ===================
+        const audio = new Audio();
+        audio.loop = true; // 循环播放
+        audio.volume = 0.5;
+
+        // 设置默认音乐（请替换为您自己的音乐文件）
+        audio.src = "assets/christmas-music.mp3";
+
+        // 检查是否是圣诞节当天
+        function checkIfChristmasDay() {
+            const now = getBeijingTime();
+            const month = now.getMonth() + 1; // 月份从0开始，所以要+1
+            const date = now.getDate();
+            
+            return month === 12 && date === 25;
+        }
+
+        // 自动播放音乐（圣诞节当天）
+        function autoPlayChristmasMusic() {
+            if (checkIfChristmasDay()) {
+                console.log('🎵 今天是圣诞节，自动播放音乐');
+                
+                // 创建播放承诺
+                const playPromise = audio.play();
+                
+                if (playPromise !== undefined) {
+                    playPromise.then(() => {
+                        console.log('🎵 音乐自动播放成功');
+                    }).catch(error => {
+                        console.log('🎵 自动播放被阻止，需要用户交互');
+                        // 在用户交互后重新尝试播放
+                        document.addEventListener('click', function startAudioOnInteraction() {
+                            audio.play().then(() => {
+                                console.log('🎵 用户交互后音乐播放成功');
+                            }).catch(e => {
+                                console.log('🎵 音乐播放失败:', e);
+                            });
+                            document.removeEventListener('click', startAudioOnInteraction);
+                        }, { once: true });
+                    });
+                }
+            } else {
+                console.log('🎵 今天不是圣诞节，不播放音乐');
+                audio.pause();
+            }
+        }
+
+        // =================== 移动端检测 ===================
+        function isMobileDevice() {
+            return (typeof window.orientation !== "undefined") || (navigator.userAgent.indexOf('IEMobile') !== -1);
+        }
+
+        // =================== 鼠标跟随小兔子 ===================
+        const bunnyCursor = document.getElementById('bunny-cursor');
+        let isMouseMoving = false;
+        
+        if (!isMobileDevice()) {
+            let mouseX = window.innerWidth / 2, mouseY = window.innerHeight / 2;
+            let bunnyX = mouseX, bunnyY = mouseY;
+            
+            // 监听整个文档的鼠标移动
+            document.addEventListener('mousemove', e => {
+                isMouseMoving = true;
+                mouseX = e.clientX;
+                mouseY = e.clientY;
+                // 确保小兔子始终在最上层
+                bunnyCursor.style.zIndex = '10000';
+                bunnyCursor.style.display = 'block';
+            });
+            
+            // 鼠标离开窗口时隐藏小兔子
+            document.addEventListener('mouseleave', () => {
+                bunnyCursor.style.display = 'none';
+            });
+            
+            // 鼠标进入窗口时显示小兔子
+            document.addEventListener('mouseenter', () => {
+                if (isMouseMoving) {
+                    bunnyCursor.style.display = 'block';
+                }
+            });
+            
+            function animateBunny() {
+                bunnyX += (mouseX - bunnyX) * 0.18;
+                bunnyY += (mouseY - bunnyY) * 0.18;
+                bunnyCursor.style.left = bunnyX + 'px';
+                bunnyCursor.style.top = bunnyY + 'px';
+                requestAnimationFrame(animateBunny);
+            }
+            animateBunny();
+        } else {
+            bunnyCursor.style.display = 'none';
+            // 移动端恢复默认鼠标
+            document.body.style.cursor = 'auto';
+        }
+        
+        // =================== 雪花粒子 ===================
+        const canvas = document.getElementById('snow');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        });
+        
+        const flakes = [];
+        const FLAKE_COUNT = Math.floor(Math.min(180, window.innerWidth / 6));
+        
+        for (let i = 0; i < FLAKE_COUNT; i++) {
+            flakes.push({
+                x: Math.random() * canvas.width,
+                y: Math.random() * canvas.height,
+                r: Math.random() * 3 + 1,
+                d: Math.random() * FLAKE_COUNT
+            });
+        }
+        
+        function drawSnow() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
+            ctx.beginPath();
+            for (const f of flakes) {
+                ctx.moveTo(f.x, f.y);
+                ctx.arc(f.x, f.y, f.r, 0, Math.PI * 2, true);
+            }
+            ctx.fill();
+            updateSnow();
+        }
+        
+        let angle = 0;
+        function updateSnow() {
+            angle += 0.002;
+            for (const f of flakes) {
+                f.y += Math.cos(angle + f.d) * 0.6 + 0.5 + f.r / 2;
+                f.x += Math.sin(angle) * 1.2;
+                if (f.y > canvas.height + 10) {
+                    f.y = -10;
+                    f.x = Math.random() * canvas.width;
+                }
+            }
+        }
+        
+        (function loop() {
+            drawSnow();
+            requestAnimationFrame(loop);
+        })();
+        
+        // =================== 北京时间倒计时 ===================
+        function getBeijingTime() {
+            const now = new Date();
+            const utc = now.getTime() + now.getTimezoneOffset() * 60000;
+            return new Date(utc + 8 * 3600000);
+        }
+        
+        let targetTime = (() => {
+            const now = getBeijingTime();
+            let year = now.getFullYear();
+            let target = new Date(`${year}-12-25T00:00:00+08:00`);
+            if (now >= target) {
+                target = new Date(`${year + 1}-12-25T00:00:00+08:00`);
+            }
+            return target;
+        })();
+        
+        const timeEl = document.getElementById('time');
+        const startBtn = document.getElementById('start-btn');
+        const store = document.getElementById('store');
+        const shareBtn = document.getElementById('share-btn');
+        
+        function updateCountdown() {
+            const now = getBeijingTime();
+            let diff = targetTime - now;
+            if (diff > 0) {
+                const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / 3600000);
+                const minutes = Math.floor((diff % 3600000) / 60000);
+                const seconds = Math.floor((diff % 60000) / 1000);
+                timeEl.textContent = `${days}天 ${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+                startBtn.classList.remove('active');
+            } else {
+                timeEl.textContent = '0天 00:00:00';
+                startBtn.classList.add('active');
+                
+                // 倒计时结束后检查是否是圣诞节并自动播放音乐
+                autoPlayChristmasMusic();
+            }
+        }
+        
+        setInterval(updateCountdown, 1000);
+        updateCountdown();
+        
+        // =================== 礼盒点击播放视频 ===================
+        function setOverlayPosition(overlay, pos) {
+            overlay.style.top = overlay.style.bottom = overlay.style.left = overlay.style.right = 'auto';
+            overlay.style.transform = 'none';
+            switch (pos) {
+                case 'top-left':
+                    overlay.style.top = '10px';
+                    overlay.style.left = '10px';
+                    break;
+                case 'top-right':
+                    overlay.style.top = '10px';
+                    overlay.style.right = '10px';
+                    break;
+                case 'center':
+                    overlay.style.top = '50%';
+                    overlay.style.left = '50%';
+                    overlay.style.transform = 'translate(-50%, -50%)';
+                    break;
+                case 'bottom-left':
+                    overlay.style.bottom = '10px';
+                    overlay.style.left = '10px';
+                    break;
+                case 'bottom-right':
+                    overlay.style.bottom = '10px';
+                    overlay.style.right = '10px';
+                    break;
+            }
+        }
+        
+        // 可拖动文字功能
+        function makeElementDraggable(element) {
+            if (isMobileDevice()) return; // 移动端不启用拖动
+            
+            let pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
+            
+            element.onmousedown = dragMouseDown;
+            
+            function dragMouseDown(e) {
+                e = e || window.event;
+                e.preventDefault();
+                pos3 = e.clientX;
+                pos4 = e.clientY;
+                document.onmouseup = closeDragElement;
+                document.onmousemove = elementDrag;
+            }
+            
+            function elementDrag(e) {
+                e = e || window.event;
+                e.preventDefault();
+                pos1 = pos3 - e.clientX;
+                pos2 = pos4 - e.clientY;
+                pos3 = e.clientX;
+                pos4 = e.clientY;
+                element.style.top = (element.offsetTop - pos2) + "px";
+                element.style.left = (element.offsetLeft - pos1) + "px";
+                element.style.transform = 'none';
+            }
+            
+            function closeDragElement() {
+                document.onmouseup = null;
+                document.onmousemove = null;
+            }
+        }
+        
+        document.querySelectorAll('.gift').forEach(gift => {
+            gift.addEventListener('click', () => {
+                const videoSrc = gift.dataset.video;
+                const pos = gift.dataset.overlayPos || 'top-left';
+                const name = document.querySelector('#main-container h1').textContent.replace('🎄', '').replace('的圣诞小店', '').trim();
+                
+                const wrapper = document.createElement('div');
+                wrapper.className = 'video-wrapper';
+                
+                const video = document.createElement('video');
+                video.src = videoSrc;
+                video.autoplay = true;
+                video.controls = false;
+                video.loop = true;
+                
+                const overlay = document.createElement('div');
+                overlay.className = 'video-overlay';
+                overlay.innerHTML = `<div class="name">${name}</div><div class="merry">Merry Christmas!</div>`;
+                
+                setOverlayPosition(overlay, pos);
+                makeElementDraggable(overlay);
+                
+                wrapper.appendChild(video);
+                wrapper.appendChild(overlay);
+                document.body.appendChild(wrapper);
+                
+                // 播放背景音乐
+                if (!isMusicPlaying && checkIfChristmasDay()) {
+                    audio.play().catch(e => {
+                        console.log("自动播放被阻止，请手动点击播放");
+                    });
+                    isMusicPlaying = true;
+                }
+                
+                // 双击关闭视频
+                wrapper.addEventListener('dblclick', () => {
+                    wrapper.remove();
+                });
+                
+                // 点击关闭视频
+                wrapper.addEventListener('click', (e) => {
+                    if (e.target === wrapper) {
+                        wrapper.remove();
+                    }
+                });
+                
+                // 移动端触摸关闭
+                wrapper.addEventListener('touchend', (e) => {
+                    if (e.target === wrapper) {
+                        wrapper.remove();
+                    }
+                });
+            });
+        });
+        
+        // =================== 兔子消息弹窗功能 ===================
+        let currentModal = null;
+        
+        function showBunnyModal(title, message, showInput = false) {
+            // 如果已经有弹窗，先关闭
+            if (currentModal) {
+                closeCurrentModal();
+            }
+            
+            // 创建遮罩层
+            const overlay = document.createElement('div');
+            overlay.className = 'modal-overlay';
+            
+            // 创建弹窗
+            const modal = document.createElement('div');
+            modal.className = 'bunny-modal';
+            modal.innerHTML = `
+                <h3>${title}</h3>
+                <p>${message}</p>
+                ${showInput ? '<input type="text" id="password-input" placeholder="请输入密码" maxlength="4">' : ''}
+                <button id="modal-btn">${showInput ? '确定' : '好的'}</button>
+            `;
+            
+            document.body.appendChild(overlay);
+            document.body.appendChild(modal);
+            currentModal = { overlay, modal };
+            
+            // 绑定按钮事件
+            const modalBtn = document.getElementById('modal-btn');
+            modalBtn.addEventListener('click', handleModalButtonClick);
+            
+            // 绑定输入框回车事件
+            if (showInput) {
+                const passwordInput = document.getElementById('password-input');
+                passwordInput.focus();
+                passwordInput.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') {
+                        handleModalButtonClick();
+                    }
+                });
+            }
+            
+            // 点击遮罩层关闭
+            overlay.addEventListener('click', closeCurrentModal);
+            
+            function handleModalButtonClick() {
+                if (showInput) {
+                    const passwordInput = document.getElementById('password-input');
+                    if (passwordInput.value === '0214') {
+                        // 密码正确，显示谢谢参与
+                        closeCurrentModal();
+                        setTimeout(() => {
+                            showThanksMessage();
+                        }, 300);
+                    } else {
+                        closeCurrentModal();
+                        setTimeout(() => {
+                            showBunnyModal('密码错误', '小兔子说密码不对哦～再想想吧！', true);
+                        }, 300);
+                    }
+                } else {
+                    closeCurrentModal();
+                }
+            }
+        }
+        
+        function closeCurrentModal() {
+            if (currentModal) {
+                if (document.body.contains(currentModal.overlay)) {
+                    document.body.removeChild(currentModal.overlay);
+                }
+                if (document.body.contains(currentModal.modal)) {
+                    document.body.removeChild(currentModal.modal);
+                }
+                currentModal = null;
+            }
+        }
+        
+        function showThanksMessage() {
+            // 显示谢谢参与消息
+            showBunnyModal('谢谢参与', '恭喜你获得：谢谢参与！', false);
+            
+            // 2秒后显示骗你的消息，并切换为4.gif
+            setTimeout(() => {
+                closeCurrentModal();
+                setTimeout(() => {
+                    showBunnyModal('骗你的啦！', '嘻嘻～其实所有礼物都是谢谢参与！<br>快去找开发者兑换真实礼物吧！🎁', false);
+                    // 抽奖完成后切换为4.gif
+                    bunny.src = '4.gif';
+                    prizeDrawn = true;
+                }, 300);
+            }, 2000);
+        }
+        
+        // =================== 右下角小兔子逻辑 ===================
+        const bunny = document.getElementById('bunny');
+        let prizeDrawn = false;
+        let bunnyClickCount = 0;
+        let lastBunnyClickTime = 0;
+        
+        bunny.addEventListener('click', () => {
+            const now = getBeijingTime();
+            const currentTime = Date.now();
+            
+            // 检查是否是快速连续点击（防止误触）
+            if (currentTime - lastBunnyClickTime < 500) {
+                return;
+            }
+            lastBunnyClickTime = currentTime;
+            
+            if (now < targetTime) {
+                // 圣诞时间未到，每次点击切换gif
+                bunnyClickCount++;
+                
+                if (bunnyClickCount === 1) {
+                    // 第一次点击：切换到2.gif
+                    bunny.src = '2.gif';
+                    showBunnyModal('还没到时间哦', '圣诞老爷爷还在准备礼物呢～<br>请耐心等待倒计时结束吧！🎄');
+                } else if (bunnyClickCount === 2) {
+                    // 第二次点击：切换回1.gif
+                    bunny.src = '1.gif';
+                    showBunnyModal('别着急嘛', '小兔子说礼物还在路上呢～<br>再等等吧！🐰');
+                } else {
+                    // 第三次及以后：在1.gif和2.gif之间切换
+                    if (bunny.src.includes('1.gif')) {
+                        bunny.src = '2.gif';
+                        showBunnyModal('快了快了', '圣诞老人已经在路上了～<br>再耐心等待一下！🎅');
+                    } else {
+                        bunny.src = '1.gif';
+                        showBunnyModal('稍安勿躁', '美好的事物值得等待～<br>倒计时结束就有惊喜哦！✨');
+                    }
+                }
+            } else {
+                if (prizeDrawn) {
+                    showBunnyModal('已经抽过奖啦', '每个小兔子只能抽一次奖哦～<br>去找其他小兔子玩吧！🐰');
+                    return;
+                }
+                // 显示密码输入弹窗
+                showBunnyModal('抽奖密码', '小兔子说需要密码才能抽奖哦～<br>请输入4位数字密码：', true);
+            }
+        });
+        
+        // =================== 分享功能 ===================
+        shareBtn.addEventListener('click', function() {
+            const userName = document.getElementById('username').value.trim() || '圣诞小伙伴';
+            const shareText = `🎄 欢迎参观${userName}的圣诞小店！ 🎄\n快来挑选你的圣诞礼物吧！`;
+            
+            // 生成带参数的分享链接
+            const currentUrl = new URL(window.location);
+            currentUrl.searchParams.set('name', userName);
+            currentUrl.searchParams.set('shop', 'true');
+            const shareUrl = currentUrl.toString();
+            
+            console.log('分享信息:', { userName, shareText, shareUrl });
+            
+            if (navigator.share) {
+                // 使用 Web Share API
+                navigator.share({
+                    title: `${userName}的圣诞小店`,
+                    text: shareText,
+                    url: shareUrl
+                }).then(() => {
+                    console.log('分享成功');
+                    showBunnyModal('分享成功', '感谢你的分享！<br>让更多朋友来参观你的圣诞小店吧！🎅');
+                }).catch((error) => {
+                    console.log('分享失败:', error);
+                    copyShareLink(userName, shareUrl);
+                });
+            } else {
+                // 备用方案：复制链接
+                copyShareLink(userName, shareUrl);
+            }
+        });
+        
+        function copyShareLink(userName, url) {
+            const shareText = `🎄 欢迎参观${userName}的圣诞小店！ 🎄\n${url}\n快来挑选你的圣诞礼物吧！`;
+            
+            // 尝试使用现代 Clipboard API
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(shareText).then(() => {
+                    showBunnyModal('分享成功', '链接已复制到剪贴板！<br>快去分享给你的朋友吧！🎅');
+                }).catch(() => {
+                    fallbackCopyText(shareText);
+                });
+            } else {
+                // 降级方案
+                fallbackCopyText(shareText);
+            }
+        }
+        
+        function fallbackCopyText(text) {
+            const textArea = document.createElement('textarea');
+            textArea.value = text;
+            textArea.style.position = 'fixed';
+            textArea.style.left = '-999999px';
+            textArea.style.top = '-999999px';
+            document.body.appendChild(textArea);
+            textArea.focus();
+            textArea.select();
+            
+            try {
+                const successful = document.execCommand('copy');
+                document.body.removeChild(textArea);
+                if (successful) {
+                    showBunnyModal('分享成功', '链接已复制到剪贴板！<br>快去分享给你的朋友吧！🎅');
+                } else {
+                    showBunnyModal('分享链接', `请复制以下链接分享给朋友：<br><br><span style="background: #f0f0f0; padding: 5px; border-radius: 5px; font-size: 14px;">${text}</span>`);
+                }
+            } catch (err) {
+                document.body.removeChild(textArea);
+                showBunnyModal('分享链接', `请复制以下链接分享给朋友：<br><br><span style="background: #f0f0f0; padding: 5px; border-radius: 5px; font-size: 14px;">${text}</span>`);
+            }
+        }
+        
+        // =================== 开启商店按钮 ===================
+        startBtn.addEventListener('click', () => {
+            const now = getBeijingTime();
+            if (now < targetTime) {
+                showBunnyModal('商店还没开门', '圣诞老爷爷还在准备中～<br>请等待倒计时结束哦！⏰');
+                return;
+            }
+            
+            const nameInput = document.getElementById('username').value.trim();
+            if (!nameInput) {
+                showBunnyModal('请输入名字', '小兔子想知道你的名字～<br>这样才好为你准备礼物呀！🎁');
+                return;
+            }
+            
+            document.querySelector('#main-container h1').textContent = `🎄 ${nameInput}的圣诞小店 🎄`;
+            store.style.display = 'grid';
+            startBtn.style.display = 'none';
+            document.getElementById('username').style.display = 'none';
+            document.getElementById('countdown').style.display = 'none';
+            shareBtn.style.display = 'inline-block';
+            bunny.src = '3.gif';
+            
+            // 更新URL参数
+            updateUrlWithName(nameInput);
+            
+            // 重置点击计数
+            bunnyClickCount = 0;
+        });
+
+        // =================== 测试模式 ===================
+        window.enableTestMode = function() {
+            // 覆盖 getBeijingTime，让页面认为现在已经到圣诞节
+            getBeijingTime = function() {
+                return new Date('2025-12-25T00:00:00+08:00');
+            };
+
+            // 立即刷新倒计时显示
+            updateCountdown();
+
+            // 自动解锁按钮
+            startBtn.style.pointerEvents = 'auto';
+            startBtn.classList.add('active');
+
+            console.log('✅ 测试模式：倒计时结束，商店已解锁，音乐将自动播放');
+        };
+
+        // 在控制台输入 enableTestMode() 即可启用测试模式
+        console.log('💡 测试提示：在控制台输入 enableTestMode() 启用测试模式');
+        
+        // 页面加载时检查URL参数
+        document.addEventListener('DOMContentLoaded', function() {
+            autoPlayChristmasMusic();
+            // 延迟执行，确保DOM完全加载
+            setTimeout(autoOpenShopWithName, 100);
+        });
+        
+        // 音乐播放状态变量
+        let isMusicPlaying = false;
+    </script>
+</body>
+</html>
