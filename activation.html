@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>激活码生成器</title>
+  <style>
+    body{font-family:Arial,Helvetica,sans-serif;background:#f7f7fb;color:#222;padding:20px}
+    .card{max-width:680px;margin:28px auto;padding:18px;border-radius:12px;background:#fff;box-shadow:0 8px 30px rgba(0,0,0,0.06)}
+    button{padding:10px 14px;border-radius:8px;border:none;cursor:pointer;background:#1976d2;color:#fff;font-weight:700}
+    input{padding:8px 10px;border-radius:8px;border:1px solid #ddd;width:100%;box-sizing:border-box}
+    .row{display:flex;gap:10px}
+    .small{width:120px}
+    pre{background:#f4f6fb;padding:10px;border-radius:8px;overflow:auto}
+    table{width:100%;border-collapse:collapse}
+    td,th{padding:8px;border-bottom:1px solid #eee}
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h2>激活码生成器（本地）</h2>
+    <p>这是一个本地的激活码生成页面。由于没有服务器，激活码的“全局一次性使用”无法跨设备保证；本页用于生成并复制一个用于在 `index.html` 中输入测试激活流程。</p>
+
+    <div style="margin:12px 0">
+      <div class="row">
+        <input id="targetHost" placeholder="绑定域名（例如: example.com），留空则为任意域" />
+        <button id="gen">生成激活码</button>
+        <button id="copy" style="background:#43a047">复制到剪贴板</button>
+        <button id="markUsed" style="background:#e53935">标记为已使用（本地）</button>
+        <button id="export" style="background:#6a1b9a">导出所有码</button>
+      </div>
+    </div>
+
+    <div style="margin-top:10px">
+      <label>当前激活码（点击复制）：</label>
+      <pre id="current" style="cursor:pointer;user-select:text">—</pre>
+    </div>
+
+    <h3>本地已生成激活码（仅本机可见）</h3>
+    <table>
+      <thead><tr><th>激活码</th><th>时间</th><th>状态</th></tr></thead>
+      <tbody id="list"></tbody>
+    </table>
+
+    <p style="margin-top:12px;font-size:13px;color:#666">使用说明：在 `index.html` 的激活输入框粘贴此激活码并点击激活。激活成功后，`index.html` 会在本机记录已激活状态（localStorage）。</p>
+  </div>
+
+<script>
+  // 简单随机码生成器（6-8位字母数字混合）
+  function makeCode() {
+    const chars = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';
+    const len = 6 + Math.floor(Math.random()*3);
+    let s = '';
+    for (let i=0;i<len;i++) s += chars.charAt(Math.floor(Math.random()*chars.length));
+    return s;
+  }
+
+  function loadCodes() {
+    return JSON.parse(localStorage.getItem('local_activation_codes') || '[]');
+  }
+  function saveCodes(arr) { localStorage.setItem('local_activation_codes', JSON.stringify(arr)); }
+
+  const currentEl = document.getElementById('current');
+  const listEl = document.getElementById('list');
+
+  function renderList() {
+    const arr = loadCodes();
+    listEl.innerHTML = '';
+    arr.reverse().forEach(item => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `<td style="font-family:monospace">${item.code}</td><td>${new Date(item.t).toLocaleString()}</td><td>${item.used?'<span style="color:#e53935">已使用</span>':'可用'}</td>`;
+      listEl.appendChild(tr);
+    });
+  }
+
+  document.getElementById('gen').addEventListener('click', ()=>{
+    const code = makeCode();
+    const host = (document.getElementById('targetHost').value || '').trim();
+    // 生成 token，内含 code 与绑定 host，base64 编码后用于激活
+    const tokenObj = { code, host, t: Date.now() };
+    const token = btoa(JSON.stringify(tokenObj));
+    currentEl.textContent = token;
+    const arr = loadCodes();
+    arr.push({code:code, token: token, host: host, t:Date.now(), used:false});
+    saveCodes(arr);
+    renderList();
+  });
+
+  document.getElementById('copy').addEventListener('click', ()=>{
+    const txt = currentEl.textContent.trim();
+    if (!txt || txt==='—') return alert('请先生成激活码');
+    navigator.clipboard.writeText(txt).then(()=>alert('已复制到剪贴板'));
+  });
+
+  document.getElementById('markUsed').addEventListener('click', ()=>{
+    const txt = currentEl.textContent.trim();
+    if (!txt || txt==='—') return alert('请先生成激活码');
+    const arr = loadCodes();
+    const idx = arr.findIndex(x=>x.code===txt);
+    if (idx>=0) { arr[idx].used = true; saveCodes(arr); renderList(); alert('已在本机标记为已使用'); }
+    else alert('未找到该码（可能已被清除）');
+  });
+
+  document.getElementById('export').addEventListener('click', ()=>{
+    const arr = loadCodes();
+    const txt = arr.map(x=>`${x.code}\t${new Date(x.t).toLocaleString()}\t${x.used? 'USED':'OK'}`).join('\n');
+    const blob = new Blob([txt], {type:'text/plain;charset=utf-8'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = 'activation_codes.txt'; document.body.appendChild(a); a.click(); a.remove();
+    URL.revokeObjectURL(url);
+  });
+
+  currentEl.addEventListener('click', ()=>{
+    const txt = currentEl.textContent.trim(); if (!txt || txt==='—') return; navigator.clipboard.writeText(txt).then(()=>alert('已复制到剪贴板'));
+  });
+
+  // 初始化
+  if (!localStorage.getItem('local_activation_codes')) saveCodes([]);
+  renderList();
+</script>
+</body>
+</html>
