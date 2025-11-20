@@ -1,0 +1,6 @@
+{
+    "deepseek.ollamaEndpoint": "http://127.0.0.1:11434",
+    "deepseek.banmaModel": "deepseek-coder:latest",
+    "deepseek.ollamaModel": "deepseek-coder:latest",
+    "deepseek.provider": "ollama"
+}
