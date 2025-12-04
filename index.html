@@ -1787,85 +1787,118 @@
                    /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
         }
 
-        // =================== 鼠标跟随小兔子 ===================
-        const bunnyCursor = document.getElementById('bunny-cursor');
-        let isMouseMoving = false;
-        
-        // 修改：移动端点击时显示小兔子
-        if (!isMobileDevice()) {
-            // PC端鼠标跟随逻辑
-            let mouseX = window.innerWidth / 2, mouseY = window.innerHeight / 2;
-            let bunnyX = mouseX, bunnyY = mouseY;
-            
-            document.addEventListener('mousemove', e => {
-                isMouseMoving = true;
-                mouseX = e.clientX;
-                mouseY = e.clientY;
-                bunnyCursor.style.zIndex = '10000';
-                bunnyCursor.style.display = 'block';
-            });
-            
-            document.addEventListener('mouseleave', () => {
-                bunnyCursor.style.display = 'none';
-            });
-            
-            document.addEventListener('mouseenter', () => {
-                if (isMouseMoving) {
-                    bunnyCursor.style.display = 'block';
-                }
-            });
-            
-            function animateBunny() {
-                bunnyX += (mouseX - bunnyX) * 0.18;
-                bunnyY += (mouseY - bunnyY) * 0.18;
-                bunnyCursor.style.left = bunnyX + 'px';
-                bunnyCursor.style.top = bunnyY + 'px';
-                requestAnimationFrame(animateBunny);
-            }
-            animateBunny();
-        } else {
-            // 移动端逻辑：点击时在点击位置显示小兔子
-            bunnyCursor.style.display = 'none';
-            
-            // 为整个文档添加点击事件
-            document.addEventListener('click', function(e) {
-                // 只有在商店显示时才显示小兔子
-                if (document.getElementById('store').style.display === 'block') {
-                    const bunny = document.getElementById('bunny-cursor');
-                    
-                    // 设置小兔子的位置为点击位置
-                    bunny.style.left = e.clientX + 'px';
-                    bunny.style.top = e.clientY + 'px';
-                    bunny.style.transform = 'translate(-50%, -50%)';
-                    bunny.style.display = 'block';
-                    
-                    // 1秒后隐藏小兔子
-                    setTimeout(() => {
-                        bunny.style.display = 'none';
-                    }, 5000);
-                }
-            });
-            
-            // 移动端触摸事件
-            document.addEventListener('touchstart', function(e) {
-                // 只有在商店显示时才显示小兔子
-                if (document.getElementById('store').style.display === 'block') {
-                    const bunny = document.getElementById('bunny-cursor');
-                    const touch = e.touches[0];
-                    
-                    // 设置小兔子的位置为触摸位置
-                    bunny.style.left = touch.clientX + 'px';
-                    bunny.style.top = touch.clientY + 'px';
-                    bunny.style.transform = 'translate(-50%, -50%)';
-                    bunny.style.display = 'block';
-                    
-                    // 1秒后隐藏小兔子
-                    setTimeout(() => {
-                        bunny.style.display = 'none';
-                    }, 5000);
-                }
-            });
+// =================== 移动端检测 ===================
+function isMobileDevice() {
+    return (typeof window.orientation !== "undefined") || 
+           (navigator.userAgent.indexOf('IEMobile') !== -1) ||
+           /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+}
+
+// =================== 鼠标跟随小兔子 ===================
+const bunnyCursor = document.getElementById('bunny-cursor');
+let isMouseMoving = false;
+
+// 添加控制变量，防止多个小兔子同时出现
+let isBunnyVisible = false;
+let bunnyTimeout = null;
+
+// 修改：移动端点击时显示小兔子（全页面都可以触发）
+if (!isMobileDevice()) {
+    // PC端鼠标跟随逻辑
+    let mouseX = window.innerWidth / 2, mouseY = window.innerHeight / 2;
+    let bunnyX = mouseX, bunnyY = mouseY;
+    
+    document.addEventListener('mousemove', e => {
+        isMouseMoving = true;
+        mouseX = e.clientX;
+        mouseY = e.clientY;
+        bunnyCursor.style.zIndex = '10000';
+        bunnyCursor.style.display = 'block';
+    });
+    
+    document.addEventListener('mouseleave', () => {
+        bunnyCursor.style.display = 'none';
+    });
+    
+    document.addEventListener('mouseenter', () => {
+        if (isMouseMoving) {
+            bunnyCursor.style.display = 'block';
         }
+    });
+    
+    function animateBunny() {
+        bunnyX += (mouseX - bunnyX) * 0.18;
+        bunnyY += (mouseY - bunnyY) * 0.18;
+        bunnyCursor.style.left = bunnyX + 'px';
+        bunnyCursor.style.top = bunnyY + 'px';
+        requestAnimationFrame(animateBunny);
+    }
+    animateBunny();
+} else {
+    // 移动端逻辑：点击时在点击位置显示小兔子（全页面都可以触发）
+    bunnyCursor.style.display = 'none';
+    
+    // 显示小兔子的函数，添加防重复逻辑
+    function showBunnyAtPosition(x, y) {
+        // 如果小兔子已经在显示，先清除之前的定时器
+        if (isBunnyVisible) {
+            clearTimeout(bunnyTimeout);
+            // 立即隐藏当前的小兔子
+            bunnyCursor.style.display = 'none';
+        }
+        
+        // 设置小兔子的位置
+        bunnyCursor.style.left = x + 'px';
+        bunnyCursor.style.top = y + 'px';
+        bunnyCursor.style.transform = 'translate(-50%, -50%)';
+        bunnyCursor.style.display = 'block';
+        bunnyCursor.style.zIndex = '10000';
+        
+        // 标记为可见状态
+        isBunnyVisible = true;
+        
+        // 设置5秒后隐藏小兔子
+        bunnyTimeout = setTimeout(() => {
+            bunnyCursor.style.display = 'none';
+            isBunnyVisible = false;
+        }, 5000); // 5000毫秒 = 5秒
+    }
+    
+    // 为整个文档添加点击事件（全页面都可以触发）
+    document.addEventListener('click', function(e) {
+        // 防止在弹窗等元素上点击也触发
+        if (e.target.closest('.modal-overlay') || 
+            e.target.closest('.bunny-modal') || 
+            e.target.closest('.dog-modal') ||
+            e.target.closest('.probability-modal') ||
+            e.target.closest('.custom-items-modal') ||
+            e.target.closest('.backpack-modal') ||
+            e.target.closest('.video-wrapper')) {
+            return; // 在这些元素上点击不显示小兔子
+        }
+        
+        showBunnyAtPosition(e.clientX, e.clientY);
+    });
+    
+    // 移动端触摸事件（全页面都可以触发）
+    document.addEventListener('touchstart', function(e) {
+        // 防止在弹窗等元素上触摸也触发
+        const touch = e.touches[0];
+        const targetElement = document.elementFromPoint(touch.clientX, touch.clientY);
+        
+        if (targetElement.closest('.modal-overlay') || 
+            targetElement.closest('.bunny-modal') || 
+            targetElement.closest('.dog-modal') ||
+            targetElement.closest('.probability-modal') ||
+            targetElement.closest('.custom-items-modal') ||
+            targetElement.closest('.backpack-modal') ||
+            targetElement.closest('.video-wrapper')) {
+            return; // 在这些元素上触摸不显示小兔子
+        }
+        
+        showBunnyAtPosition(touch.clientX, touch.clientY);
+    });
+}
         
         // =================== 雪花粒子 ===================
         const canvas = document.getElementById('snow');
