@@ -1586,6 +1586,17 @@
             // 暂停背景音乐
             pauseBackgroundMusic();
             
+            // 检查是否是1-15.mp4视频，如果是则将背景音乐音量设为0
+            const isChristmasVideo = videoSrc.startsWith('1') && videoSrc.endsWith('.mp4') && 
+                                   !videoSrc.includes('cd') && !videoSrc.includes('xs');
+            
+            // 修复：直接使用更简单的方式判断是否为1-15.mp4
+            const videoNumber = parseInt(videoSrc.split('.')[0]);
+            if (!isNaN(videoNumber) && videoNumber >= 1 && videoNumber <= 15) {
+                console.log(`🎵 检测到1-15.mp4视频: ${videoSrc}，将背景音乐音量设为0`);
+                bgMusic.volume = 0;
+            }
+            
             // 检查是否需要播放特定音乐
             if (musicMap[videoSrc]) {
                 // 播放特定背景音乐
@@ -1610,6 +1621,9 @@
             videoMusic.pause();
             videoMusic.currentTime = 0;
             console.log('🎵 视频音乐已停止');
+            
+            // 恢复背景音乐音量到正常值
+            bgMusic.volume = 0.5;
             
             // 恢复背景音乐
             if (wasBgMusicPlaying) {
@@ -2107,7 +2121,7 @@
             video.src = videoSrc;
             video.autoplay = true;
             video.controls = false;
-            video.loop = false;
+            video.loop = true;
             
             const overlay = document.createElement('div');
             overlay.className = 'video-overlay';
@@ -2182,7 +2196,7 @@
             video.src = videoSrc;
             video.autoplay = true;
             video.controls = false;
-            video.loop = false; // 不循环播放
+            video.loop = true; // 不循环播放
             
             const overlay = document.createElement('div');
             overlay.className = 'video-overlay';
@@ -2194,18 +2208,11 @@
             wrapper.appendChild(overlay);
             document.body.appendChild(wrapper);
             
-            // 播放视频音乐 - 修复：在圣诞当天播放1.mp4时，将背景音乐音量设为0
-            if (checkIfChristmasDay() && videoSrc === '1.mp4') {
-                bgMusic.volume = 0;
-            }
+            // 播放视频音乐 - 修改：现在会在 playVideoMusic 函数中处理音量
             playVideoMusic(videoSrc);
             
             video.addEventListener('ended', () => {
                 closeVideoWrapper(wrapper);
-                // 修复：视频结束后恢复背景音乐音量
-                if (checkIfChristmasDay() && videoSrc === '1.mp4') {
-                    bgMusic.volume = 0.5;
-                }
             });
             
             video.addEventListener('error', (e) => {
@@ -2495,19 +2502,12 @@
             wrapper.appendChild(video);
             document.body.appendChild(wrapper);
             
-            // 修复：在播放cd.mp4时，将背景音乐音量设为0
-            if (checkIfChristmasDay()) {
-                bgMusic.volume = 0;
-            }
+            // 播放视频音乐 - 修改：现在会在 playVideoMusic 函数中处理音量
             playVideoMusic('cd.mp4');
             
             video.addEventListener('ended', () => {
                 wrapper.remove();
                 stopVideoMusic();
-                // 修复：视频结束后恢复背景音乐音量
-                if (checkIfChristmasDay()) {
-                    bgMusic.volume = 0.5;
-                }
             });
             
             video.addEventListener('error', (e) => {
@@ -2748,19 +2748,12 @@
             wrapper.appendChild(video);
             document.body.appendChild(wrapper);
             
-            // 修复：在播放xs.mp4时，将背景音乐音量设为0
-            if (checkIfChristmasDay()) {
-                bgMusic.volume = 0;
-            }
+            // 播放视频音乐 - 修改：现在会在 playVideoMusic 函数中处理音量
             playVideoMusic('xs.mp4');
             
             video.addEventListener('ended', () => {
                 wrapper.remove();
                 stopVideoMusic();
-                // 修复：视频结束后恢复背景音乐音量
-                if (checkIfChristmasDay()) {
-                    bgMusic.volume = 0.5;
-                }
                 document.getElementById('top-right-bunny').style.display = 'block';
                 
                 // 重新绑定事件
