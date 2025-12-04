@@ -1597,6 +1597,12 @@
                 bgMusic.volume = 0;
             }
             
+            // 检查是否是xs.mp4视频，如果是则将背景音乐音量设为0
+            if (videoSrc === 'xs.mp4') {
+                console.log(`🎵 检测到xs.mp4视频，将背景音乐音量设为0`);
+                bgMusic.volume = 0;
+            }
+            
             // 检查是否需要播放特定音乐
             if (musicMap[videoSrc]) {
                 // 播放特定背景音乐
@@ -1776,14 +1782,18 @@
 
         // =================== 移动端检测 ===================
         function isMobileDevice() {
-            return (typeof window.orientation !== "undefined") || (navigator.userAgent.indexOf('IEMobile') !== -1);
+            return (typeof window.orientation !== "undefined") || 
+                   (navigator.userAgent.indexOf('IEMobile') !== -1) ||
+                   /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
         }
 
         // =================== 鼠标跟随小兔子 ===================
         const bunnyCursor = document.getElementById('bunny-cursor');
         let isMouseMoving = false;
         
+        // 修改：移动端点击时显示小兔子
         if (!isMobileDevice()) {
+            // PC端鼠标跟随逻辑
             let mouseX = window.innerWidth / 2, mouseY = window.innerHeight / 2;
             let bunnyX = mouseX, bunnyY = mouseY;
             
@@ -1814,19 +1824,45 @@
             }
             animateBunny();
         } else {
+            // 移动端逻辑：点击时在点击位置显示小兔子
             bunnyCursor.style.display = 'none';
-            document.body.style.cursor = 'auto';
             
+            // 为整个文档添加点击事件
             document.addEventListener('click', function(e) {
-                if (isMobileDevice() && document.getElementById('store').style.display === 'block') {
+                // 只有在商店显示时才显示小兔子
+                if (document.getElementById('store').style.display === 'block') {
                     const bunny = document.getElementById('bunny-cursor');
+                    
+                    // 设置小兔子的位置为点击位置
                     bunny.style.left = e.clientX + 'px';
                     bunny.style.top = e.clientY + 'px';
+                    bunny.style.transform = 'translate(-50%, -50%)';
                     bunny.style.display = 'block';
                     
+                    // 1秒后隐藏小兔子
                     setTimeout(() => {
                         bunny.style.display = 'none';
-                    }, 1000);
+                    }, 5000);
+                }
+            });
+            
+            // 移动端触摸事件
+            document.addEventListener('touchstart', function(e) {
+                // 只有在商店显示时才显示小兔子
+                if (document.getElementById('store').style.display === 'block') {
+                    const bunny = document.getElementById('bunny-cursor');
+                    const touch = e.touches[0];
+                    
+                    // 设置小兔子的位置为触摸位置
+                    bunny.style.left = touch.clientX + 'px';
+                    bunny.style.top = touch.clientY + 'px';
+                    bunny.style.transform = 'translate(-50%, -50%)';
+                    bunny.style.display = 'block';
+                    
+                    // 1秒后隐藏小兔子
+                    setTimeout(() => {
+                        bunny.style.display = 'none';
+                    }, 5000);
                 }
             });
         }
@@ -2735,7 +2771,7 @@
             }
         }
         
-        // 播放xs.mp4视频
+        // 播放xs.mp4视频 - 修改版本：添加特殊的音乐控制逻辑
         function playXsVideo() {
             const wrapper = document.createElement('div');
             wrapper.className = 'video-wrapper';
@@ -2748,12 +2784,42 @@
             wrapper.appendChild(video);
             document.body.appendChild(wrapper);
             
-            // 播放视频音乐 - 修改：现在会在 playVideoMusic 函数中处理音量
-            playVideoMusic('xs.mp4');
+            // 专门处理xs.mp4的音乐控制
+            console.log('🎵 开始播放xs.mp4，将背景音乐音量设为0');
+            
+            // 保存当前的音乐状态
+            const wasBgMusicPlayingBeforeXs = isBgMusicPlaying;
+            const originalVolume = bgMusic.volume;
+            
+            // 将背景音乐音量设为0
+            bgMusic.volume = 0;
+            
+            // 暂停背景音乐
+            if (isBgMusicPlaying) {
+                bgMusic.pause();
+                isBgMusicPlaying = false;
+            }
+            
+            // 播放视频原声
+            video.play();
             
             video.addEventListener('ended', () => {
+                console.log('🎵 xs.mp4播放结束，恢复背景音乐音量');
+                
+                // 恢复背景音乐音量
+                bgMusic.volume = originalVolume;
+                
+                // 如果之前背景音乐在播放，则恢复播放
+                if (wasBgMusicPlayingBeforeXs) {
+                    bgMusic.play().then(() => {
+                        isBgMusicPlaying = true;
+                        console.log('🎵 背景音乐已恢复播放');
+                    }).catch(e => {
+                        console.log('🎵 背景音乐恢复播放失败:', e);
+                    });
+                }
+                
                 wrapper.remove();
-                stopVideoMusic();
                 document.getElementById('top-right-bunny').style.display = 'block';
                 
                 // 重新绑定事件
@@ -2762,20 +2828,37 @@
             
             video.addEventListener('error', (e) => {
                 console.error('xs.mp4播放错误:', e);
+                
+                // 即使出错也要恢复音乐
+                bgMusic.volume = originalVolume;
+                if (wasBgMusicPlayingBeforeXs) {
+                    bgMusic.play();
+                    isBgMusicPlaying = true;
+                }
+                
                 wrapper.remove();
-                stopVideoMusic();
                 showBunnyModal('播放错误', '视频播放失败，请稍后重试', false);
             });
             
             wrapper.addEventListener('dblclick', () => {
+                console.log('🎵 xs.mp4被双击关闭，恢复背景音乐音量');
+                bgMusic.volume = originalVolume;
+                if (wasBgMusicPlayingBeforeXs) {
+                    bgMusic.play();
+                    isBgMusicPlaying = true;
+                }
                 wrapper.remove();
-                stopVideoMusic();
             });
             
             wrapper.addEventListener('click', (e) => {
                 if (e.target === wrapper) {
+                    console.log('🎵 xs.mp4被点击关闭，恢复背景音乐音量');
+                    bgMusic.volume = originalVolume;
+                    if (wasBgMusicPlayingBeforeXs) {
+                        bgMusic.play();
+                        isBgMusicPlaying = true;
+                    }
                     wrapper.remove();
-                    stopVideoMusic();
                 }
             });
         }
@@ -2809,7 +2892,7 @@
             
             modal.innerHTML = `
                 <div style="color: #8a2be2; font-size: 24px; margin-bottom: 10px;">💜</div>
-                <h3 style="color: #8a2be2;">是否再次观看小兔子视频？</h3>
+                <h3 style="color: #8a2be2;">是否再次观看小兔子礼盒？</h3>
                 <div style="display: flex; gap: 10px; justify-content: center;">
                     <button id="yes-btn" style="background: linear-gradient(45deg, #8a2be2, #a855f7);">是</button>
                     <button id="no-btn" style="background: linear-gradient(45deg, #a0a0a0, #c0c0c0);">否</button>
@@ -3085,7 +3168,7 @@
         }
         
         topLeftGift.addEventListener('click', () => {
-            showBunnyModal('圣诞惊喜', '请输入密码解锁特别视频：', true);
+            showBunnyModal('圣诞惊喜', '请输入密码解锁特别礼物：', true);
         });
         
         // =================== 编辑店铺名称功能 ===================
