@@ -1961,24 +1961,39 @@ if (!isMobileDevice()) {
         const store = document.getElementById('store');
         const shareBtn = document.getElementById('share-btn');
         
-        function updateCountdown() {
-            const now = getBeijingTime();
-            let diff = targetTime - now;
-            if (diff > 0) {
-                const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-                const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / 3600000);
-                const minutes = Math.floor((diff % 3600000) / 60000);
-                const seconds = Math.floor((diff % 60000) / 1000);
-                timeEl.textContent = `${days}天 ${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
-                startBtn.classList.remove('active');
-            } else {
-                timeEl.textContent = '0天 00:00:00';
-                startBtn.classList.add('active');
-                if (checkIfChristmasDay()) {
-                    playBackgroundMusic();
-                }
-            }
+function updateCountdown() {
+    const now = getBeijingTime();
+    
+    // 检查是否是圣诞当天
+    if (checkIfChristmasDay()) {
+        timeEl.textContent = '0天 00:00:00';
+        startBtn.classList.add('active');
+        
+        // 圣诞当天强制显示0:00:00，不重新计算倒计时
+        return;
+    }
+    
+    let diff = targetTime - now;
+    if (diff > 0) {
+        const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / 3600000);
+        const minutes = Math.floor((diff % 3600000) / 60000);
+        const seconds = Math.floor((diff % 60000) / 1000);
+        timeEl.textContent = `${days}天 ${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+        startBtn.classList.remove('active');
+    } else {
+        // 如果过了圣诞但还不是圣诞当天，重新计算下一年的目标时间
+        targetTime = getTargetTime();
+        updateCountdown(); // 递归调用重新计算
+        
+        // 检查是否现在是圣诞当天
+        if (checkIfChristmasDay()) {
+            timeEl.textContent = '0天 00:00:00';
+            startBtn.classList.add('active');
+            playBackgroundMusic();
         }
+    }
+}
         
         setInterval(updateCountdown, 1000);
         updateCountdown();
