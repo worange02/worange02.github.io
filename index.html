@@ -1650,18 +1650,14 @@
         }
 
         // =================== 每年12月25日目标时间计算 ===================
-        function getTargetTime() {
-            const now = getBeijingTime();
-            const currentYear = now.getFullYear();
-            
-            let target = new Date(currentYear, 11, 25, 0, 0, 0, 0);
-            
-            if (now >= target) {
-                target = new Date(currentYear + 1, 11, 25, 0, 0, 0, 0);
-            }
-            
-            return target;
-        }
+// =================== 每年12月25日目标时间计算 ===================
+function getTargetTime() {
+    const now = getBeijingTime();
+    const currentYear = now.getFullYear();
+    
+    // 返回当前年份的圣诞节
+    return new Date(currentYear, 11, 25, 0, 0, 0, 0);
+}
 
         // =================== 初始化时间同步 ===================
         async function initializeTime() {
@@ -1727,58 +1723,60 @@
             window.history.replaceState({}, '', url);
         }
 
-        function autoOpenShopWithName() {
-            const params = getUrlParams();
-            const name = params.name;
-            const shouldOpenShop = params.shop === 'true';
-            const shareData = params.share;
+function autoOpenShopWithName() {
+    const params = getUrlParams();
+    const name = params.name;
+    const shouldOpenShop = params.shop === 'true';
+    const shareData = params.share;
+    
+    if (name && shouldOpenShop) {
+        const usernameInput = document.getElementById('username');
+        const mainTitle = document.querySelector('#main-container h1');
+        const store = document.getElementById('store');
+        const startBtn = document.getElementById('start-btn');
+        const countdown = document.getElementById('countdown');
+        const shareBtn = document.getElementById('share-btn');
+        const bunny = document.getElementById('bunny');
+        
+        if (usernameInput && mainTitle && store && startBtn && countdown && shareBtn && bunny) {
+            usernameInput.value = name;
             
-            if (name && shouldOpenShop) {
-                const usernameInput = document.getElementById('username');
-                const mainTitle = document.querySelector('#main-container h1');
-                const store = document.getElementById('store');
-                const startBtn = document.getElementById('start-btn');
-                const countdown = document.getElementById('countdown');
-                const shareBtn = document.getElementById('share-btn');
-                const bunny = document.getElementById('bunny');
+            const now = getBeijingTime();
+            const isChristmas = checkIfChristmasDay();
+            
+            // 如果是圣诞节当天或已经过了目标时间，可以自动打开
+            if (isChristmas || now >= targetTime) {
+                mainTitle.textContent = `🎄 ${name}的圣诞小店 🎄`;
+                store.style.display = 'block';
+                startBtn.style.display = 'none';
+                usernameInput.style.display = 'none';
+                countdown.style.display = 'none';
+                shareBtn.style.display = 'inline-block';
+                bunny.src = 'assets/3.gif';
                 
-                if (usernameInput && mainTitle && store && startBtn && countdown && shareBtn && bunny) {
-                    usernameInput.value = name;
-                    
-                    const now = getBeijingTime();
-                    if (now >= targetTime) {
-                        mainTitle.textContent = `🎄 ${name}的圣诞小店 🎄`;
-                        store.style.display = 'block';
-                        startBtn.style.display = 'none';
-                        usernameInput.style.display = 'none';
-                        countdown.style.display = 'none';
-                        shareBtn.style.display = 'inline-block';
-                        bunny.src = 'assets/3.gif';
-                        
-                        document.getElementById('edit-shop-name').style.display = 'inline-block';
-                        
-                        initGiftEvents();
-                        
-                        // 如果有分享数据，加载分享设置
-                        if (shareData) {
-                            try {
-                                // 修复：使用 decodeURIComponent 解码
-                                const decodedData = decodeURIComponent(shareData);
-                                const shareSettings = JSON.parse(decodedData);
-                                loadShareSettings(shareSettings);
-                            } catch (e) {
-                                console.log('分享数据解析失败:', e);
-                            }
-                        }
-                        
-                        console.log(`🎄 自动开启 ${name} 的圣诞小店`);
-                    } else {
-                        usernameInput.value = name;
-                        bunny.src = 'assets/1.gif';
+                document.getElementById('edit-shop-name').style.display = 'inline-block';
+                
+                initGiftEvents();
+                
+                // 如果有分享数据，加载分享设置
+                if (shareData) {
+                    try {
+                        const decodedData = decodeURIComponent(shareData);
+                        const shareSettings = JSON.parse(decodedData);
+                        loadShareSettings(shareSettings);
+                    } catch (e) {
+                        console.log('分享数据解析失败:', e);
                     }
                 }
+                
+                console.log(`🎄 自动开启 ${name} 的圣诞小店`);
+            } else {
+                usernameInput.value = name;
+                bunny.src = 'assets/1.gif';
             }
         }
+    }
+}
 
         // =================== 移动端检测 ===================
         function isMobileDevice() {
@@ -1963,35 +1961,26 @@ if (!isMobileDevice()) {
         
 function updateCountdown() {
     const now = getBeijingTime();
-    
-    // 检查是否是圣诞当天
-    if (checkIfChristmasDay()) {
-        timeEl.textContent = '0天 00:00:00';
-        startBtn.classList.add('active');
-        
-        // 圣诞当天强制显示0:00:00，不重新计算倒计时
-        return;
-    }
-    
     let diff = targetTime - now;
+    const isChristmas = checkIfChristmasDay();
+    
     if (diff > 0) {
+        // 还没有到圣诞节
         const days = Math.floor(diff / (1000 * 60 * 60 * 24));
         const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / 3600000);
         const minutes = Math.floor((diff % 3600000) / 60000);
         const seconds = Math.floor((diff % 60000) / 1000);
         timeEl.textContent = `${days}天 ${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
         startBtn.classList.remove('active');
+    } else if (isChristmas) {
+        // 今天是圣诞节，无论什么时间都应该可以进入
+        timeEl.textContent = '0天 00:00:00';
+        startBtn.classList.add('active');
+        playBackgroundMusic();
     } else {
-        // 如果过了圣诞但还不是圣诞当天，重新计算下一年的目标时间
-        targetTime = getTargetTime();
-        updateCountdown(); // 递归调用重新计算
-        
-        // 检查是否现在是圣诞当天
-        if (checkIfChristmasDay()) {
-            timeEl.textContent = '0天 00:00:00';
-            startBtn.classList.add('active');
-            playBackgroundMusic();
-        }
+        // 已经过了圣诞节，但不是12月25日
+        timeEl.textContent = '圣诞节已过';
+        startBtn.classList.remove('active');
     }
 }
         
@@ -3650,18 +3639,21 @@ function updateCountdown() {
         }
         
         // =================== 开启商店按钮 ===================
-        startBtn.addEventListener('click', () => {
-            const now = getBeijingTime();
-            if (now < targetTime) {
-                showBunnyModal('商店还没开门', '圣诞老爷爷还在准备中～<br>请等待倒计时结束哦！⏰');
-                return;
-            }
-            
-            const nameInput = document.getElementById('username').value.trim();
-            if (!nameInput) {
-                showBunnyModal('请输入名字', '小兔子想知道你的名字～<br>这样才好为你准备礼物呀！🎁');
-                return;
-            }
+startBtn.addEventListener('click', () => {
+    const now = getBeijingTime();
+    const isChristmas = checkIfChristmasDay();
+    
+    // 如果还没到圣诞节且不是圣诞节当天，则不允许进入
+    if (now < targetTime && !isChristmas) {
+        showBunnyModal('商店还没开门', '圣诞老爷爷还在准备中～<br>请等待倒计时结束哦！⏰');
+        return;
+    }
+    
+    const nameInput = document.getElementById('username').value.trim();
+    if (!nameInput) {
+        showBunnyModal('请输入名字', '小兔子想知道你的名字～<br>这样才好为你准备礼物呀！🎁');
+        return;
+    }
             
             document.querySelector('#main-container h1').textContent = `🎄 ${nameInput}的圣诞小店 🎄`;
             store.style.display = 'block';
