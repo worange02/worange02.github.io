@@ -1,0 +1,21 @@
+{
+  "name": "christmas-shop-backend",
+  "version": "1.0.0",
+  "description": "圣诞小店后端API",
+  "main": "api/index.js",
+  "scripts": {
+    "dev": "vercel dev",
+    "deploy": "vercel --prod",
+    "start": "node api/index.js"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.39.0",
+    "cors": "^2.8.5"
+  },
+  "devDependencies": {
+    "@vercel/node": "^2.9.17"
+  },
+  "engines": {
+    "node": ">=18.x"
+  }
+}
