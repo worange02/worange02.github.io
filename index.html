@@ -1336,13 +1336,13 @@
     <canvas id="snow" class="snow"></canvas>
     
     <!-- 鼠标跟随小兔子 -->
-    <img id="bunny-cursor" src="assets/bunny-cursor.gif" alt="bunny cursor" />
+    <img id="bunny-cursor" src="http://t7tegunnh.hd-bkt.clouddn.com/1.gif" alt="bunny cursor" />
     
     <!-- 左上角圣诞元素 - 新增 -->
-    <img id="top-left-gift" src="assets/10.gif" alt="Christmas Gift" />
+    <img id="top-left-gift" src="http://t7tegunnh.hd-bkt.clouddn.com/10.gif" alt="Christmas Gift" />
     
     <!-- 右上角小兔子 - 新增 -->
-    <img id="top-right-bunny" src="assets/9.gif" alt="Top Right Bunny" />
+    <img id="top-right-bunny" src="http://t7tegunnh.hd-bkt.clouddn.com/9.gif" alt="Top Right Bunny" />
     
     <div id="main-container">
         <div class="header-area">
@@ -1509,10 +1509,10 @@
     </div>
     
     <!-- 右下角小兔子 -->
-    <img id="bunny" src="assets/1.gif" alt="bunny" />
+    <img id="bunny" src="http://t7tegunnh.hd-bkt.clouddn.com/1.gif" alt="bunny" />
     
     <!-- 左下角圣诞老人 -->
-    <img id="santa" src="assets/5.gif" alt="santa" />
+    <img id="santa" src="http://t7tegunnh.hd-bkt.clouddn.com/5.gif" alt="santa" />
 
     <script>
         // =================== VIP状态管理 ===================
@@ -1568,7 +1568,7 @@
         }
         
         // =================== 音乐管理系统 - iOS优化版本 ===================
-        const bgMusic = new Audio("assets/1.mp3");
+        const bgMusic = new Audio("http://t7tegunnh.hd-bkt.clouddn.com/1.mp3");
         bgMusic.loop = true;
         bgMusic.volume = 0.5;
 
@@ -1582,21 +1582,21 @@
 
         // 音乐文件映射 - 明确指定哪些视频需要切换音乐
         const musicMap = {
-            '1.mp4': 'assets/christmas-music.mp3',
-            '2.mp4': 'assets/christmas-music.mp3',
-            '3.mp4': 'assets/christmas-music.mp3',
-            '4.mp4': 'assets/christmas-music.mp3',
-            '5.mp4': 'assets/christmas-music.mp3',
-            '6.mp4': 'assets/christmas-music.mp3',
-            '7.mp4': 'assets/christmas-music.mp3',
-            '8.mp4': 'assets/christmas-music.mp3',
-            '9.mp4': 'assets/christmas-music.mp3',
-            '10.mp4': 'assets/christmas-music.mp3',
-            '11.mp4': 'assets/christmas-music.mp3',
-            '12.mp4': 'assets/christmas-music.mp3',
-            '13.mp4': 'assets/christmas-music.mp3',
-            '14.mp4': 'assets/christmas-music.mp3',
-            '15.mp4': 'assets/christmas-music.mp3'
+            '1.mp4': 'http://t7tegunnh.hd-bkt.clouddn.com/christmas-music.mp3',
+            '2.mp4': 'http://t7tegunnh.hd-bkt.clouddn.com/christmas-music.mp3',
+            '3.mp4': 'http://t7tegunnh.hd-bkt.clouddn.com/christmas-music.mp3',
+            '4.mp4': 'http://t7tegunnh.hd-bkt.clouddn.com/christmas-music.mp3',
+            '5.mp4': 'http://t7tegunnh.hd-bkt.clouddn.com/christmas-music.mp3',
+            '6.mp4': 'http://t7tegunnh.hd-bkt.clouddn.com/christmas-music.mp3',
+            '7.mp4': 'http://t7tegunnh.hd-bkt.clouddn.com/christmas-music.mp3',
+            '8.mp4': 'http://t7tegunnh.hd-bkt.clouddn.com/christmas-music.mp3',
+            '9.mp4': 'http://t7tegunnh.hd-bkt.clouddn.com/christmas-music.mp3',
+            '10.mp4': 'http://t7tegunnh.hd-bkt.clouddn.com/christmas-music.mp3',
+            '11.mp4': 'http://t7tegunnh.hd-bkt.clouddn.com/christmas-music.mp3',
+            '12.mp4': 'http://t7tegunnh.hd-bkt.clouddn.com/christmas-music.mp3',
+            '13.mp4': 'http://t7tegunnh.hd-bkt.clouddn.com/christmas-music.mp3',
+            '14.mp4': 'http://t7tegunnh.hd-bkt.clouddn.com/christmas-music.mp3',
+            '15.mp4': 'http://t7tegunnh.hd-bkt.clouddn.com/christmas-music.mp3'
         };
 
         // 需要停止背景音乐的视频列表
@@ -1809,7 +1809,7 @@
             if (!isBgMusicPlaying) {
                 // 圣诞当天播放1.mp3，其他时间播放默认背景音乐
                 if (checkIfChristmasDay()) {
-                    bgMusic.src = "assets/1.mp3";
+                    bgMusic.src = "http://t7tegunnh.hd-bkt.clouddn.com/1.mp3";
                 }
                 
                 // iOS特殊处理
@@ -1936,15 +1936,15 @@
             
             if (bunnyBlindBoxDrawn === 'true') {
                 // 如果已经抽取过，始终显示4.gif
-                bunny.src = 'assets/4.gif';
+                bunny.src = 'http://t7tegunnh.hd-bkt.clouddn.com/4.gif';
                 // 同时显示右上角的9.gif
                 document.getElementById('top-right-bunny').style.display = 'block';
                 // 重新绑定事件
                 document.getElementById('top-right-bunny').addEventListener('click', showTopRightBunnyDialog);
             } else if (now < targetTime) {
-                bunny.src = 'assets/1.gif';
+                bunny.src = 'http://t7tegunnh.hd-bkt.clouddn.com/1.gif';
             } else {
-                bunny.src = 'assets/3.gif';
+                bunny.src = 'http://t7tegunnh.hd-bkt.clouddn.com/3.gif';
                 if (checkIfChristmasDay()) {
                     setTimeout(() => {
                         playBackgroundMusic();
@@ -1999,7 +1999,7 @@
                         usernameInput.style.display = 'none';
                         countdown.style.display = 'none';
                         shareBtn.style.display = 'inline-block';
-                        bunny.src = 'assets/3.gif';
+                        bunny.src = 'http://t7tegunnh.hd-bkt.clouddn.com/3.gif';
                         
                         document.getElementById('edit-shop-name').style.display = 'inline-block';
                         
@@ -2020,7 +2020,7 @@
                         console.log(`🎄 自动开启 ${name} 的圣诞小店`);
                     } else {
                         usernameInput.value = name;
-                        bunny.src = 'assets/1.gif';
+                        bunny.src = 'http://t7tegunnh.hd-bkt.clouddn.com/1.gif';
                     }
                 }
             }
@@ -3138,7 +3138,7 @@
             wrapper.className = 'video-wrapper';
             
             const video = document.createElement('video');
-            video.src = 'cd.mp4';
+            video.src = 'http://t7tegunnh.hd-bkt.clouddn.com/cd.mp4';
             video.autoplay = true;
             video.controls = false;
             video.loop = false; // 不循环播放
@@ -3153,7 +3153,7 @@
             document.body.appendChild(wrapper);
             
             // 播放视频音乐
-            playVideoMusic('cd.mp4');
+            playVideoMusic('http://t7tegunnh.hd-bkt.clouddn.com/cd.mp4');
             
             video.addEventListener('ended', () => {
                 wrapper.remove();
@@ -3246,17 +3246,17 @@
                 
                 let message = "";
                 if (bunnyClickCount === 1) {
-                    bunny.src = 'assets/2.gif';
+                    bunny.src = 'http://t7tegunnh.hd-bkt.clouddn.com/2.gif';
                     message = "还没到时间哦～圣诞老爷爷还在准备礼物呢！🎄";
                 } else if (bunnyClickCount === 2) {
-                    bunny.src = 'assets/1.gif';
+                    bunny.src = 'http://t7tegunnh.hd-bkt.clouddn.com/1.gif';
                     message = "别着急嘛～小兔子说礼物还在路上呢！🐰";
                 } else {
                     if (bunny.src.includes('1.gif')) {
-                        bunny.src = 'assets/2.gif';
+                        bunny.src = 'http://t7tegunnh.hd-bkt.clouddn.com/2.gif';
                         message = "快了快了～圣诞老人已经在路上了！🎅";
                     } else {
-                        bunny.src = 'assets/1.gif';
+                        bunny.src = 'http://t7tegunnh.hd-bkt.clouddn.com/1.gif';
                         message = "稍安勿躁～美好的事物值得等待！✨";
                     }
                 }
@@ -3343,7 +3343,7 @@
                 // 显示谢谢惠顾弹窗，需要确认
                 showConfirmModal('谢谢惠顾', '很遗憾，小兔子盲盒是谢谢惠顾！', () => {
                     // 用户确认后，将小兔子图片改为4.gif
-                    bunny.src = 'assets/4.gif';
+                    bunny.src = 'http://t7tegunnh.hd-bkt.clouddn.com/4.gif';
                     
                     // 标记小兔子盲盒已抽取
                     localStorage.setItem('bunny_blindbox_drawn', 'true');
@@ -3416,7 +3416,7 @@
             wrapper.className = 'video-wrapper';
             
             const video = document.createElement('video');
-            video.src = 'xs.mp4';
+            video.src = 'http://t7tegunnh.hd-bkt.clouddn.com/xs.mp4';
             video.autoplay = true;
             video.controls = false;
             video.loop = false; // iOS不循环播放
@@ -3618,9 +3618,9 @@
             
             // 更新圣诞老人动画
             if (santa.src.includes('5.gif')) {
-                santa.src = 'assets/6.gif';
+                santa.src = 'http://t7tegunnh.hd-bkt.clouddn.com/6.gif';
             } else {
-                santa.src = 'assets/5.gif';
+                santa.src = 'http://t7tegunnh.hd-bkt.clouddn.com/5.gif';
             }
         }
         
@@ -4062,7 +4062,7 @@
             );
             
             if (blindBoxChances === 0) {
-                santa.src = 'assets/8.gif';
+                santa.src = 'http://t7tegunnh.hd-bkt.clouddn.com/8.gif';
             }
         }
         
@@ -4389,7 +4389,7 @@
             document.getElementById('username').style.display = 'none';
             document.getElementById('countdown').style.display = 'none';
             shareBtn.style.display = 'inline-block';
-            bunny.src = 'assets/3.gif';
+            bunny.src = 'http://t7tegunnh.hd-bkt.clouddn.com/3.gif';
             
             document.getElementById('edit-shop-name').style.display = 'inline-block';
             
@@ -4444,7 +4444,7 @@
                     // 检查小兔子盲盒是否已经抽取过
                     const bunnyBlindBoxDrawn = localStorage.getItem('bunny_blindbox_drawn');
                     if (bunnyBlindBoxDrawn === 'true') {
-                        bunny.src = 'assets/4.gif';
+                        bunny.src = 'http://t7tegunnh.hd-bkt.clouddn.com/4.gif';
                         document.getElementById('top-right-bunny').style.display = 'block';
                         // 使用一次性事件绑定，避免重复绑定
                         const topRightBunny = document.getElementById('top-right-bunny');
@@ -4551,7 +4551,7 @@
             // 强制更新小兔子状态
             const bunnyBlindBoxDrawn = localStorage.getItem('bunny_blindbox_drawn');
             if (bunnyBlindBoxDrawn === 'true') {
-                document.getElementById('bunny').src = 'assets/4.gif';
+                document.getElementById('bunny').src = 'http://t7tegunnh.hd-bkt.clouddn.com/4.gif';
                 document.getElementById('top-right-bunny').style.display = 'block';
                 const topRightBunny = document.getElementById('top-right-bunny');
                 if (topRightBunny) {
@@ -4652,7 +4652,7 @@
                 nameInput.style.display = 'none';
                 countdown.style.display = 'none';
                 shareBtn.style.display = 'inline-block';
-                bunny.src = 'assets/3.gif';
+                bunny.src = 'http://t7tegunnh.hd-bkt.clouddn.com/3.gif';
                 
                 document.getElementById('edit-shop-name').style.display = 'inline-block';
                 initBackpack();
