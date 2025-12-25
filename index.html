@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>圣诞小店</title>
     <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap" rel="stylesheet">
+    <!-- 添加 QRCode.js 用于生成二维码 -->
+    <script src="https://cdn.bootcdn.net/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <style>
         /* 样式保持不变，与之前相同 */
         * {
@@ -1491,13 +1493,13 @@
     <canvas id="snow" class="snow"></canvas>
     
     <!-- 鼠标跟随小兔子 -->
-    <img id="bunny-cursor" src="https://qiniu.example.com/1.gif" alt="bunny cursor" onerror="handleResourceError(this)" />
+    <img id="bunny-cursor" src="https://cdn.example.com/1.gif" alt="bunny cursor" onerror="handleResourceError(this)" />
     
     <!-- 左上角圣诞元素 - 新增 -->
-    <img id="top-left-gift" src="https://qiniu.example.com/10.gif" alt="Christmas Gift" onerror="handleResourceError(this)" />
+    <img id="top-left-gift" src="https://cdn.example.com/10.gif" alt="Christmas Gift" onerror="handleResourceError(this)" />
     
     <!-- 右上角小兔子 - 新增 -->
-    <img id="top-right-bunny" src="https://qiniu.example.com/9.gif" alt="Top Right Bunny" onerror="handleResourceError(this)" />
+    <img id="top-right-bunny" src="https://cdn.example.com/9.gif" alt="Top Right Bunny" onerror="handleResourceError(this)" />
     
     <div id="main-container">
         <div class="header-area">
@@ -1713,481 +1715,119 @@
     </div>
     
     <!-- 右下角小兔子 -->
-    <img id="bunny" src="https://qiniu.example.com/1.gif" alt="bunny" onerror="handleResourceError(this)" />
+    <img id="bunny" src="https://cdn.example.com/1.gif" alt="bunny" onerror="handleResourceError(this)" />
     
     <!-- 左下角圣诞老人 -->
-    <img id="santa" src="https://qiniu.example.com/5.gif" alt="santa" onerror="handleResourceError(this)" />
+    <img id="santa" src="https://cdn.example.com/5.gif" alt="santa" onerror="handleResourceError(this)" />
 
     <script>
         // =================== 配置信息 ===================
+        // 重要：请将以下域名替换为你的七牛云自定义域名
         const CONFIG = {
-            API_BASE_URL: 'https://your-vercel-app.vercel.app/api', // 你的Vercel后端地址
-            QINIU_BASE_URL: 'https://qiniu.example.com', // 七牛云地址
-            SUPABASE_URL: 'your-supabase-url', // 从环境变量获取
-            SUPABASE_KEY: 'your-supabase-key', // 从环境变量获取
-            MAX_DRAW_COUNT: 3, // 最大抽取次数
-            DEFAULT_BLINDBOX_ITEMS: 6, // 默认盲盒数量
-            SHARE_CODE_LENGTH: 8 // 分享码长度
+            // API后端地址（如果你有后端）
+            API_BASE_URL: 'https://your-vercel-app.vercel.app/api',
+            
+            // 七牛云域名 - 请替换为你的自定义域名
+            QINIU_DOMAIN: 'https://cdn.example.com', // 替换为你的七牛云自定义域名
+            
+            // 视频文件基础路径
+            VIDEO_BASE_URL: 'https://cdn.example.com/videos/', // 替换为你的视频存放路径
+            
+            // 应用配置
+            MAX_DRAW_COUNT: 3,
+            DEFAULT_BLINDBOX_ITEMS: 6,
+            SHARE_CODE_LENGTH: 8
         };
 
-        // 修复七牛云资源路径
-        function fixQiniuUrl(url) {
-            if (!url) return '';
-            // 如果已经是完整URL，直接返回
-            if (url.startsWith('http')) return url;
-            // 否则拼接七牛云基础URL
-            return `${CONFIG.QINIU_BASE_URL}/${url}`;
+        // 资源映射表 - 将所有资源集中管理
+        const RESOURCES = {
+            // GIF资源
+            BUNNY_CURSOR: '1.gif',
+            BUNNY_ICON: '1.gif',
+            SANTA: '5.gif',
+            TOP_RIGHT_BUNNY: '9.gif',
+            TOP_LEFT_GIFT: '10.gif',
+            FINAL_GIFT: 'final-gift.gif', // 如果有的话
+            
+            // 视频资源列表（1-15.mp4）
+            VIDEOS: Array.from({length: 15}, (_, i) => `${i + 1}.mp4`)
+        };
+
+        // =================== 资源加载工具 ===================
+        // 获取完整的资源URL
+        function getResourceUrl(filename) {
+            if (!filename) return '';
+            
+            // 如果是完整URL，直接返回
+            if (filename.startsWith('http')) return filename;
+            
+            // 如果是视频文件，使用视频路径
+            if (filename.endsWith('.mp4')) {
+                return `${CONFIG.VIDEO_BASE_URL}${filename}`;
+            }
+            
+            // 其他资源使用主域名
+            return `${CONFIG.QINIU_DOMAIN}/${filename}`;
+        }
+
+        // 预加载重要资源
+        function preloadImportantResources() {
+            const importantResources = [
+                RESOURCES.BUNNY_CURSOR,
+                RESOURCES.BUNNY_ICON,
+                RESOURCES.SANTA
+            ];
+            
+            importantResources.forEach(resource => {
+                const img = new Image();
+                img.src = getResourceUrl(resource);
+                img.onerror = () => {
+                    console.warn(`资源加载失败: ${resource}`);
+                };
+            });
         }
 
         // 资源加载错误处理
         function handleResourceError(element) {
-            console.error('资源加载失败:', element.src);
+            console.warn('资源加载失败:', element.src);
             element.classList.add('resource-error');
             
-            // 如果是gif，尝试显示备用内容
-            if (element.src.includes('.gif')) {
-                element.alt = '图片加载失败';
-                element.style.border = '2px solid #ff4444';
-            }
-        }
-
-        // =================== API 调用函数 ===================
-        async function callAPI(action, data = {}) {
-            try {
-                const response = await fetch(CONFIG.API_BASE_URL, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        action,
-                        data
-                    })
-                });
-
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-
-                const result = await response.json();
+            // 设置备用显示
+            if (element.tagName === 'IMG') {
+                element.alt = element.alt || '图片加载失败';
                 
-                if (result.error) {
-                    throw new Error(result.error);
-                }
-
-                return result;
-            } catch (error) {
-                console.error(`API调用失败 (${action}):`, error);
-                throw error;
-            }
-        }
-
-        // =================== 用户系统 ===================
-        let currentUser = null;
-        let userDeviceId = null;
-
-        // 获取或创建设备ID
-        function getDeviceId() {
-            if (!userDeviceId) {
-                userDeviceId = localStorage.getItem('device_id');
-                if (!userDeviceId) {
-                    userDeviceId = 'device_' + Math.random().toString(36).substr(2, 9) + '_' + Date.now().toString(36);
-                    localStorage.setItem('device_id', userDeviceId);
-                }
-            }
-            return userDeviceId;
-        }
-
-        // 获取或创建用户
-        async function getOrCreateUser(username) {
-            try {
-                const result = await callAPI('get_or_create_user', {
-                    username: username,
-                    device_id: getDeviceId()
-                });
-
-                if (result.user) {
-                    currentUser = result.user;
-                    updateUserDisplay();
-                    return currentUser;
-                }
-            } catch (error) {
-                console.error('用户创建失败:', error);
-                // 使用本地存储作为后备
-                currentUser = {
-                    user_id: getDeviceId(),
-                    username: username,
-                    shop_name: `${username}的圣诞小店`,
-                    isNew: true
-                };
-                updateUserDisplay();
-                return currentUser;
-            }
-            return null;
-        }
-
-        // 更新用户显示
-        function updateUserDisplay() {
-            if (currentUser) {
-                document.getElementById('shop-name-display').textContent = currentUser.shop_name;
-                document.getElementById('shop-owner').textContent = currentUser.username;
-            }
-        }
-
-        // =================== 盲盒系统 ===================
-        let blindboxItems = [];
-        let blindboxDrawCount = 0;
-
-        // 获取盲盒物品
-        async function getBlindboxItems(sharerId = null) {
-            try {
-                const result = await callAPI('get_blindbox_items', {
-                    user_id: currentUser.user_id,
-                    sharer_id: sharerId
-                });
-
-                if (result.items) {
-                    blindboxItems = result.items;
-                    
-                    // 如果是分享链接访问，隐藏概率信息
-                    if (sharerId) {
-                        blindboxItems = blindboxItems.map(item => ({
-                            id: item.id,
-                            item_name: item.item_name,
-                            video_name: item.video_name,
-                            is_custom: item.is_custom
-                            // 不包含probability字段
-                        }));
-                    }
-                    
-                    return blindboxItems;
-                }
-            } catch (error) {
-                console.error('获取盲盒物品失败:', error);
-                // 使用默认盲盒
-                await generateDefaultBlindbox();
-                return blindboxItems;
-            }
-            return [];
-        }
-
-        // 生成默认盲盒（5个随机礼盒 + 谢谢惠顾）
-        async function generateDefaultBlindbox() {
-            const selectedVideos = [];
-            
-            // 随机选择5个不重复的1-15
-            while (selectedVideos.length < 5) {
-                const randomNum = Math.floor(Math.random() * 15) + 1;
-                if (!selectedVideos.includes(randomNum)) {
-                    selectedVideos.push(randomNum);
-                }
-            }
-            
-            // 生成5个礼盒（每个16%概率）
-            blindboxItems = [];
-            for (let i = 0; i < 5; i++) {
-                blindboxItems.push({
-                    id: `default_${i}`,
-                    item_name: `圣诞惊喜礼盒${selectedVideos[i]}`,
-                    video_name: `${selectedVideos[i]}.mp4`,
-                    probability: 16,
-                    is_custom: false,
-                    order_index: i
-                });
-            }
-            
-            // 添加谢谢惠顾（20%概率）
-            blindboxItems.push({
-                id: 'default_thanks',
-                item_name: '谢谢惠顾',
-                video_name: null,
-                probability: 20,
-                is_custom: false,
-                order_index: 5
-            });
-            
-            return blindboxItems;
-        }
-
-        // 抽取盲盒
-        async function drawBlindbox(sharerId = null) {
-            try {
-                // 检查抽取限制
-                const canDraw = await checkDrawLimit(sharerId);
-                if (!canDraw.allowed) {
-                    throw new Error(canDraw.reason || '抽取次数已达上限');
-                }
-
-                const result = await callAPI('draw_blindbox', {
-                    user_id: currentUser.user_id,
-                    sharer_id: sharerId
-                });
-
-                if (result.success) {
-                    blindboxDrawCount++;
-                    
-                    // 如果不是谢谢惠顾，添加到背包
-                    if (!result.isThanks) {
-                        addToBackpack(result.item);
-                    }
-                    
-                    return result;
-                }
-            } catch (error) {
-                console.error('抽取盲盒失败:', error);
-                throw error;
-            }
-            return null;
-        }
-
-        // 检查抽取限制
-        async function checkDrawLimit(sharerId = null) {
-            try {
-                const result = await callAPI('check_draw_limit', {
-                    user_id: currentUser.user_id,
-                    sharer_id: sharerId
-                });
-                return result;
-            } catch (error) {
-                console.error('检查抽取限制失败:', error);
-                // 默认返回允许抽取
-                return {
-                    allowed: blindboxDrawCount < CONFIG.MAX_DRAW_COUNT,
-                    remaining: CONFIG.MAX_DRAW_COUNT - blindboxDrawCount,
-                    drawCount: blindboxDrawCount
-                };
-            }
-        }
-
-        // 更新盲盒物品设置
-        async function updateBlindboxItems(items) {
-            try {
-                // 验证概率总和为100
-                const totalProbability = items.reduce((sum, item) => sum + (item.probability || 0), 0);
-                if (totalProbability !== 100) {
-                    throw new Error(`概率总和必须为100%，当前为${totalProbability}%`);
-                }
-
-                const result = await callAPI('update_blindbox_items', {
-                    user_id: currentUser.user_id,
-                    items: items
-                });
-
-                if (result.success) {
-                    blindboxItems = result.items;
-                    return true;
-                }
-            } catch (error) {
-                console.error('更新盲盒物品失败:', error);
-                throw error;
-            }
-            return false;
-        }
-
-        // =================== 背包系统 ===================
-        let backpackItems = [];
-
-        // 获取背包物品
-        async function getBackpackItems() {
-            try {
-                const result = await callAPI('get_inventory', {
-                    user_id: currentUser.user_id
-                });
-
-                if (result.inventory) {
-                    backpackItems = result.inventory;
-                    return backpackItems;
-                }
-            } catch (error) {
-                console.error('获取背包失败:', error);
-                // 使用本地存储作为后备
-                const savedBackpack = localStorage.getItem(`backpack_${currentUser.user_id}`);
-                backpackItems = savedBackpack ? JSON.parse(savedBackpack) : [];
-                return backpackItems;
-            }
-            return [];
-        }
-
-        // 添加到背包
-        async function addToBackpack(item) {
-            try {
-                const result = await callAPI('add_to_inventory', {
-                    user_id: currentUser.user_id,
-                    item_id: item.id
-                });
-
-                if (result.success) {
-                    // 更新本地背包
-                    backpackItems.push(item);
-                    localStorage.setItem(`backpack_${currentUser.user_id}`, JSON.stringify(backpackItems));
-                    return true;
-                }
-            } catch (error) {
-                console.error('添加到背包失败:', error);
-                // 使用本地存储作为后备
-                backpackItems.push(item);
-                localStorage.setItem(`backpack_${currentUser.user_id}`, JSON.stringify(backpackItems));
-                return true;
-            }
-            return false;
-        }
-
-        // =================== 分享系统 ===================
-        // 创建店铺分享
-        async function createShopShare() {
-            try {
-                const result = await callAPI('create_share', {
-                    user_id: currentUser.user_id,
-                    share_type: 'shop'
-                });
-
-                if (result.success) {
-                    return {
-                        shareUrl: result.shareUrl,
-                        shareCode: result.shareCode,
-                        shortUrl: result.shortUrl
-                    };
-                }
-            } catch (error) {
-                console.error('创建分享失败:', error);
-                // 生成本地分享码
-                const shareCode = generateShareCode();
-                const shareUrl = `${window.location.origin}/shop.html?code=${shareCode}`;
-                
-                return {
-                    shareUrl: shareUrl,
-                    shareCode: shareCode,
-                    shortUrl: shareUrl
-                };
-            }
-            return null;
-        }
-
-        // 生成分享码
-        function generateShareCode() {
-            const chars = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';
-            let code = '';
-            for (let i = 0; i < CONFIG.SHARE_CODE_LENGTH; i++) {
-                code += chars.charAt(Math.floor(Math.random() * chars.length));
-            }
-            return code;
-        }
-
-        // 处理分享链接
-        async function processShare(shareCode) {
-            try {
-                const result = await callAPI('process_share', {
-                    share_code: shareCode,
-                    user_id: currentUser.user_id
-                });
-
-                if (result.success) {
-                    return result;
-                }
-            } catch (error) {
-                console.error('处理分享失败:', error);
-                throw error;
-            }
-            return null;
-        }
-
-        // 获取分享信息
-        async function getShareInfo(shareCode) {
-            try {
-                const result = await callAPI('get_share_info', {
-                    share_code: shareCode
-                });
-
-                if (result.share) {
-                    return result.share;
-                }
-            } catch (error) {
-                console.error('获取分享信息失败:', error);
-                throw error;
-            }
-            return null;
-        }
-
-        // =================== 初始化 ===================
-        async function initialize() {
-            console.log('正在初始化系统...');
-            
-            // 检查URL中的分享码
-            const urlParams = new URLSearchParams(window.location.search);
-            const shareCode = urlParams.get('code');
-            const sharerId = urlParams.get('sharer');
-            
-            if (shareCode) {
-                // 处理分享链接
-                await handleShareLink(shareCode);
-            } else if (sharerId) {
-                // 访问好友店铺
-                await visitFriendShop(sharerId);
-            } else {
-                // 正常初始化
-                await initNormalFlow();
-            }
-        }
-
-        // 处理分享链接
-        async function handleShareLink(shareCode) {
-            try {
-                const shareInfo = await getShareInfo(shareCode);
-                if (shareInfo) {
-                    // 根据分享类型处理
-                    if (shareInfo.share_type === 'shop') {
-                        // 跳转到好友店铺
-                        window.location.href = `/shop.html?sharer=${shareInfo.from_user_id}`;
-                    } else if (shareInfo.share_type === 'give') {
-                        // 显示领取界面
-                        showShareReceiveModal(shareInfo);
+                // 如果是GIF，尝试显示备用内容
+                if (element.src.includes('.gif')) {
+                    const filename = element.src.split('/').pop();
+                    switch(filename) {
+                        case '1.gif':
+                            element.alt = '🐰';
+                            element.style.fontSize = '20px';
+                            element.style.textAlign = 'center';
+                            element.style.lineHeight = '30px';
+                            break;
+                        case '5.gif':
+                            element.alt = '🎅';
+                            element.style.fontSize = '20px';
+                            element.style.textAlign = 'center';
+                            element.style.lineHeight = '30px';
+                            break;
                     }
                 }
-            } catch (error) {
-                console.error('处理分享链接失败:', error);
-                showErrorModal('分享链接无效或已过期');
             }
+            
+            // 移除错误监听，避免重复处理
+            element.onerror = null;
         }
 
-        // 访问好友店铺
-        async function visitFriendShop(sharerId) {
+        // 检查资源是否存在
+        async function checkResourceExists(url) {
             try {
-                // 获取好友的盲盒设置
-                const friendBlindboxItems = await getBlindboxItems(sharerId);
-                
-                // 更新界面显示好友店铺
-                document.getElementById('main-container h1').textContent = `🎄 好友的小店 🎄`;
-                document.getElementById('store').style.display = 'block';
-                document.getElementById('start-btn').style.display = 'none';
-                
-                // 显示好友的盲盒
-                displayFriendBlindbox(friendBlindboxItems);
-                
+                const response = await fetch(url, { method: 'HEAD' });
+                return response.ok;
             } catch (error) {
-                console.error('访问好友店铺失败:', error);
-                showErrorModal('无法访问好友店铺');
+                return false;
             }
-        }
-
-        // 正常初始化流程
-        async function initNormalFlow() {
-            // 初始化雪花效果
-            initSnow();
-            
-            // 初始化时间系统
-            initializeTime();
-            
-            // 检查设备ID
-            getDeviceId();
-            
-            // 加载保存的用户名
-            const savedUsername = localStorage.getItem('username');
-            if (savedUsername) {
-                document.getElementById('username').value = savedUsername;
-            }
-            
-            // 绑定事件
-            bindEvents();
         }
 
         // =================== 时间系统 ===================
@@ -2286,52 +1926,531 @@
             loop();
         }
 
+        // =================== 用户系统 ===================
+        let currentUser = null;
+        let userDeviceId = null;
+
+        // 获取或创建设备ID
+        function getDeviceId() {
+            if (!userDeviceId) {
+                userDeviceId = localStorage.getItem('device_id');
+                if (!userDeviceId) {
+                    userDeviceId = 'device_' + Math.random().toString(36).substr(2, 9) + '_' + Date.now().toString(36);
+                    localStorage.setItem('device_id', userDeviceId);
+                }
+            }
+            return userDeviceId;
+        }
+
+        // 获取或创建用户
+        async function getOrCreateUser(username) {
+            try {
+                // 尝试使用API
+                if (CONFIG.API_BASE_URL.includes('your-vercel-app')) {
+                    throw new Error('API未配置');
+                }
+                
+                const response = await fetch(`${CONFIG.API_BASE_URL}/users`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        username: username,
+                        device_id: getDeviceId()
+                    })
+                });
+                
+                if (response.ok) {
+                    const result = await response.json();
+                    if (result.user) {
+                        currentUser = result.user;
+                        updateUserDisplay();
+                        return currentUser;
+                    }
+                }
+            } catch (error) {
+                console.log('使用本地用户系统:', error.message);
+            }
+            
+            // 使用本地存储作为后备
+            currentUser = {
+                user_id: getDeviceId(),
+                username: username,
+                shop_name: `${username}的圣诞小店`,
+                isNew: true,
+                created_at: new Date().toISOString()
+            };
+            
+            // 保存到localStorage
+            localStorage.setItem('user_' + currentUser.user_id, JSON.stringify(currentUser));
+            localStorage.setItem('last_username', username);
+            
+            updateUserDisplay();
+            return currentUser;
+        }
+
+        // 更新用户显示
+        function updateUserDisplay() {
+            if (currentUser) {
+                const shopNameDisplay = document.getElementById('shop-name-display');
+                const shopOwner = document.getElementById('shop-owner');
+                
+                if (shopNameDisplay) {
+                    shopNameDisplay.textContent = currentUser.shop_name;
+                }
+                if (shopOwner) {
+                    shopOwner.textContent = currentUser.username;
+                }
+            }
+        }
+
+        // 更新店铺名称
+        function updateShopName(newName) {
+            if (!currentUser) return;
+            
+            currentUser.shop_name = newName.endsWith('的圣诞小店') ? newName : `${newName}的圣诞小店`;
+            
+            // 更新显示
+            updateUserDisplay();
+            
+            // 更新标题
+            const mainTitle = document.querySelector('#main-container h1');
+            if (mainTitle) {
+                mainTitle.textContent = `🎄 ${currentUser.shop_name} 🎄`;
+            }
+            
+            // 保存到localStorage
+            localStorage.setItem('user_' + currentUser.user_id, JSON.stringify(currentUser));
+            
+            return currentUser.shop_name;
+        }
+
+        // =================== 盲盒系统 ===================
+        let blindboxItems = [];
+        let blindboxDrawCount = 0;
+
+        // 生成默认盲盒
+        async function generateDefaultBlindbox() {
+            const selectedVideos = [];
+            
+            // 随机选择5个不重复的1-15
+            while (selectedVideos.length < 5) {
+                const randomNum = Math.floor(Math.random() * 15) + 1;
+                if (!selectedVideos.includes(randomNum)) {
+                    selectedVideos.push(randomNum);
+                }
+            }
+            
+            // 生成5个礼盒（每个16%概率）
+            blindboxItems = [];
+            for (let i = 0; i < 5; i++) {
+                blindboxItems.push({
+                    id: `default_${i}`,
+                    item_name: `圣诞惊喜礼盒${selectedVideos[i]}`,
+                    video_name: `${selectedVideos[i]}.mp4`,
+                    probability: 16,
+                    is_custom: false,
+                    order_index: i
+                });
+            }
+            
+            // 添加谢谢惠顾（20%概率）
+            blindboxItems.push({
+                id: 'default_thanks',
+                item_name: '谢谢惠顾',
+                video_name: null,
+                probability: 20,
+                is_custom: false,
+                order_index: 5
+            });
+            
+            // 保存到localStorage
+            if (currentUser) {
+                localStorage.setItem(`blindbox_${currentUser.user_id}`, JSON.stringify(blindboxItems));
+            }
+            
+            return blindboxItems;
+        }
+
+        // 获取盲盒物品
+        async function getBlindboxItems(sharerId = null) {
+            try {
+                // 如果有sharerId，获取好友的盲盒设置
+                if (sharerId) {
+                    const friendBlindbox = localStorage.getItem(`blindbox_${sharerId}`);
+                    if (friendBlindbox) {
+                        blindboxItems = JSON.parse(friendBlindbox);
+                        // 移除概率信息（对访客隐藏）
+                        blindboxItems = blindboxItems.map(item => ({
+                            id: item.id,
+                            item_name: item.item_name,
+                            video_name: item.video_name,
+                            is_custom: item.is_custom
+                        }));
+                        return blindboxItems;
+                    }
+                }
+                
+                // 获取自己的盲盒设置
+                if (currentUser) {
+                    const savedBlindbox = localStorage.getItem(`blindbox_${currentUser.user_id}`);
+                    if (savedBlindbox) {
+                        blindboxItems = JSON.parse(savedBlindbox);
+                    } else {
+                        await generateDefaultBlindbox();
+                    }
+                } else {
+                    await generateDefaultBlindbox();
+                }
+                
+                return blindboxItems;
+            } catch (error) {
+                console.error('获取盲盒物品失败:', error);
+                await generateDefaultBlindbox();
+                return blindboxItems;
+            }
+        }
+
+        // 抽取盲盒
+        async function drawBlindbox(sharerId = null) {
+            try {
+                // 检查抽取限制
+                const canDraw = await checkDrawLimit(sharerId);
+                if (!canDraw.allowed) {
+                    throw new Error(canDraw.reason || '抽取次数已达上限');
+                }
+                
+                // 获取盲盒物品
+                const items = await getBlindboxItems(sharerId);
+                if (!items || items.length === 0) {
+                    await generateDefaultBlindbox();
+                }
+                
+                // 如果是好友的盲盒，使用默认概率
+                let itemsWithProbability = [...blindboxItems];
+                if (sharerId) {
+                    // 对于好友盲盒，使用简化概率（前5个各16%，谢谢惠顾20%）
+                    itemsWithProbability = items.map((item, index) => ({
+                        ...item,
+                        probability: index < 5 ? 16 : 20
+                    }));
+                }
+                
+                // 计算随机结果
+                const random = Math.random() * 100;
+                let cumulative = 0;
+                let selectedItem = null;
+                
+                for (const item of itemsWithProbability) {
+                    cumulative += item.probability || 0;
+                    if (random <= cumulative) {
+                        selectedItem = item;
+                        break;
+                    }
+                }
+                
+                if (!selectedItem) {
+                    selectedItem = itemsWithProbability[itemsWithProbability.length - 1];
+                }
+                
+                // 更新抽取次数
+                blindboxDrawCount++;
+                
+                // 记录抽取历史
+                const drawRecord = {
+                    timestamp: new Date().toISOString(),
+                    item: selectedItem,
+                    isThanks: selectedItem.item_name === '谢谢惠顾',
+                    sharer_id: sharerId
+                };
+                
+                let drawHistory = JSON.parse(localStorage.getItem(`draw_history_${currentUser.user_id}`) || '[]');
+                drawHistory.push(drawRecord);
+                localStorage.setItem(`draw_history_${currentUser.user_id}`, JSON.stringify(drawHistory));
+                
+                // 如果不是谢谢惠顾，添加到背包
+                if (selectedItem.item_name !== '谢谢惠顾') {
+                    await addToBackpack(selectedItem);
+                }
+                
+                return {
+                    success: true,
+                    item: selectedItem,
+                    isThanks: selectedItem.item_name === '谢谢惠顾',
+                    remaining: CONFIG.MAX_DRAW_COUNT - blindboxDrawCount,
+                    drawCount: blindboxDrawCount
+                };
+                
+            } catch (error) {
+                console.error('抽取盲盒失败:', error);
+                throw error;
+            }
+        }
+
+        // 检查抽取限制
+        async function checkDrawLimit(sharerId = null) {
+            try {
+                const key = sharerId ? `draw_count_${currentUser.user_id}_${sharerId}` : `draw_count_${currentUser.user_id}`;
+                const drawCount = parseInt(localStorage.getItem(key) || '0');
+                
+                if (drawCount >= CONFIG.MAX_DRAW_COUNT) {
+                    return {
+                        allowed: false,
+                        reason: '今天的抽取次数已用完',
+                        remaining: 0,
+                        drawCount: drawCount
+                    };
+                }
+                
+                return {
+                    allowed: true,
+                    remaining: CONFIG.MAX_DRAW_COUNT - drawCount,
+                    drawCount: drawCount
+                };
+            } catch (error) {
+                console.error('检查抽取限制失败:', error);
+                return {
+                    allowed: blindboxDrawCount < CONFIG.MAX_DRAW_COUNT,
+                    remaining: CONFIG.MAX_DRAW_COUNT - blindboxDrawCount,
+                    drawCount: blindboxDrawCount
+                };
+            }
+        }
+
+        // 更新盲盒设置
+        async function updateBlindboxItems(items) {
+            try {
+                // 验证概率总和为100
+                const totalProbability = items.reduce((sum, item) => sum + (item.probability || 0), 0);
+                if (totalProbability !== 100) {
+                    throw new Error(`概率总和必须为100%，当前为${totalProbability}%`);
+                }
+                
+                // 保存到localStorage
+                if (currentUser) {
+                    localStorage.setItem(`blindbox_${currentUser.user_id}`, JSON.stringify(items));
+                    blindboxItems = items;
+                }
+                
+                return true;
+            } catch (error) {
+                console.error('更新盲盒物品失败:', error);
+                throw error;
+            }
+        }
+
+        // =================== 背包系统 ===================
+        let backpackItems = [];
+
+        // 获取背包物品
+        async function getBackpackItems() {
+            try {
+                if (currentUser) {
+                    const savedBackpack = localStorage.getItem(`backpack_${currentUser.user_id}`);
+                    backpackItems = savedBackpack ? JSON.parse(savedBackpack) : [];
+                } else {
+                    backpackItems = [];
+                }
+                return backpackItems;
+            } catch (error) {
+                console.error('获取背包失败:', error);
+                return [];
+            }
+        }
+
+        // 添加到背包
+        async function addToBackpack(item) {
+            try {
+                if (!currentUser) return false;
+                
+                // 获取当前背包
+                let backpack = JSON.parse(localStorage.getItem(`backpack_${currentUser.user_id}`) || '[]');
+                
+                // 添加新物品
+                const backpackItem = {
+                    id: item.id || 'item_' + Date.now(),
+                    item_name: item.item_name,
+                    video_name: item.video_name,
+                    obtained_at: new Date().toISOString(),
+                    source: 'blindbox'
+                };
+                
+                backpack.push(backpackItem);
+                
+                // 保存到localStorage
+                localStorage.setItem(`backpack_${currentUser.user_id}`, JSON.stringify(backpack));
+                
+                // 更新本地数组
+                backpackItems = backpack;
+                
+                return true;
+            } catch (error) {
+                console.error('添加到背包失败:', error);
+                return false;
+            }
+        }
+
+        // =================== 分享系统 ===================
+        // 创建店铺分享
+        async function createShopShare() {
+            try {
+                if (!currentUser) {
+                    throw new Error('请先登录');
+                }
+                
+                // 生成分享码
+                const shareCode = generateShareCode();
+                
+                // 创建分享链接
+                const shareUrl = `${window.location.origin}${window.location.pathname}?code=${shareCode}&user=${currentUser.user_id}`;
+                
+                // 保存分享记录
+                const shareRecord = {
+                    share_code: shareCode,
+                    user_id: currentUser.user_id,
+                    username: currentUser.username,
+                    shop_name: currentUser.shop_name,
+                    created_at: new Date().toISOString(),
+                    share_type: 'shop'
+                };
+                
+                localStorage.setItem(`share_${shareCode}`, JSON.stringify(shareRecord));
+                
+                // 保存用户的分享记录
+                let userShares = JSON.parse(localStorage.getItem(`user_shares_${currentUser.user_id}`) || '[]');
+                userShares.push(shareRecord);
+                localStorage.setItem(`user_shares_${currentUser.user_id}`, JSON.stringify(userShares));
+                
+                return {
+                    success: true,
+                    shareUrl: shareUrl,
+                    shareCode: shareCode,
+                    shortUrl: shareUrl
+                };
+                
+            } catch (error) {
+                console.error('创建分享失败:', error);
+                throw error;
+            }
+        }
+
+        // 生成分享码
+        function generateShareCode() {
+            const chars = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';
+            let code = '';
+            for (let i = 0; i < CONFIG.SHARE_CODE_LENGTH; i++) {
+                code += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+            return code;
+        }
+
+        // 获取分享信息
+        async function getShareInfo(shareCode) {
+            try {
+                const shareRecord = localStorage.getItem(`share_${shareCode}`);
+                if (!shareRecord) {
+                    return null;
+                }
+                
+                return JSON.parse(shareRecord);
+            } catch (error) {
+                console.error('获取分享信息失败:', error);
+                return null;
+            }
+        }
+
         // =================== 事件绑定 ===================
         function bindEvents() {
             // 开始按钮
-            document.getElementById('start-btn').addEventListener('click', handleStartShop);
+            const startBtn = document.getElementById('start-btn');
+            if (startBtn) {
+                startBtn.addEventListener('click', handleStartShop);
+            }
             
             // 编辑店铺名称
-            document.getElementById('edit-shop-name').addEventListener('click', handleEditShopName);
+            const editShopNameBtn = document.getElementById('edit-shop-name');
+            if (editShopNameBtn) {
+                editShopNameBtn.addEventListener('click', handleEditShopName);
+            }
             
             // VIP按钮
-            document.getElementById('vip-btn').addEventListener('click', handleVIP);
+            const vipBtn = document.getElementById('vip-btn');
+            if (vipBtn) {
+                vipBtn.addEventListener('click', handleVIP);
+            }
             
             // 管理盲盒按钮
-            document.getElementById('manage-blindbox-btn').addEventListener('click', handleManageBlindbox);
+            const manageBlindboxBtn = document.getElementById('manage-blindbox-btn');
+            if (manageBlindboxBtn) {
+                manageBlindboxBtn.addEventListener('click', handleManageBlindbox);
+            }
             
             // 分享店铺按钮
-            document.getElementById('share-shop-btn').addEventListener('click', handleShareShop);
+            const shareShopBtn = document.getElementById('share-shop-btn');
+            if (shareShopBtn) {
+                shareShopBtn.addEventListener('click', handleShareShop);
+            }
             
             // 访问好友按钮
-            document.getElementById('visit-friends-btn').addEventListener('click', handleVisitFriends);
+            const visitFriendsBtn = document.getElementById('visit-friends-btn');
+            if (visitFriendsBtn) {
+                visitFriendsBtn.addEventListener('click', handleVisitFriends);
+            }
             
             // 保存概率设置
-            document.getElementById('save-probability-btn').addEventListener('click', handleSaveProbability);
+            const saveProbabilityBtn = document.getElementById('save-probability-btn');
+            if (saveProbabilityBtn) {
+                saveProbabilityBtn.addEventListener('click', handleSaveProbability);
+            }
             
             // 重置概率设置
-            document.getElementById('reset-probability-btn').addEventListener('click', handleResetProbability);
+            const resetProbabilityBtn = document.getElementById('reset-probability-btn');
+            if (resetProbabilityBtn) {
+                resetProbabilityBtn.addEventListener('click', handleResetProbability);
+            }
             
             // 复制分享链接
-            document.getElementById('copy-share-btn').addEventListener('click', handleCopyShareLink);
+            const copyShareBtn = document.getElementById('copy-share-btn');
+            if (copyShareBtn) {
+                copyShareBtn.addEventListener('click', handleCopyShareLink);
+            }
             
             // 生成二维码
-            document.getElementById('generate-qrcode-btn').addEventListener('click', handleGenerateQRCode);
+            const generateQRCodeBtn = document.getElementById('generate-qrcode-btn');
+            if (generateQRCodeBtn) {
+                generateQRCodeBtn.addEventListener('click', handleGenerateQRCode);
+            }
             
             // 访问好友
-            document.getElementById('visit-friend-btn').addEventListener('click', handleVisitFriend);
+            const visitFriendBtn = document.getElementById('visit-friend-btn');
+            if (visitFriendBtn) {
+                visitFriendBtn.addEventListener('click', handleVisitFriend);
+            }
             
             // 背包按钮
-            document.getElementById('backpack-btn').addEventListener('click', handleBackpack);
+            const backpackBtn = document.getElementById('backpack-btn');
+            if (backpackBtn) {
+                backpackBtn.addEventListener('click', handleBackpack);
+            }
             
             // 盲盒抽取按钮
-            document.getElementById('share-btn').addEventListener('click', handleBlindboxDraw);
+            const shareBtn = document.getElementById('share-btn');
+            if (shareBtn) {
+                shareBtn.addEventListener('click', handleBlindboxDraw);
+            }
             
             // 返回小店按钮
-            document.getElementById('back-to-store').addEventListener('click', handleBackToStore);
+            const backToStoreBtn = document.getElementById('back-to-store');
+            if (backToStoreBtn) {
+                backToStoreBtn.addEventListener('click', handleBackToStore);
+            }
             
             // 分享小店链接按钮
-            document.getElementById('share-shop-link').addEventListener('click', handleShareShopLink);
+            const shareShopLinkBtn = document.getElementById('share-shop-link');
+            if (shareShopLinkBtn) {
+                shareShopLinkBtn.addEventListener('click', handleShareShopLink);
+            }
             
             // 绑定礼盒点击事件
             document.querySelectorAll('.gift-item').forEach((gift, index) => {
@@ -2342,13 +2461,26 @@
             document.querySelectorAll('.blind-box').forEach((box, index) => {
                 box.addEventListener('click', () => handleBlindboxClick(index));
             });
+            
+            // 用户名输入框回车事件
+            const usernameInput = document.getElementById('username');
+            if (usernameInput) {
+                usernameInput.addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') {
+                        handleStartShop();
+                    }
+                });
+            }
         }
 
         // =================== 事件处理函数 ===================
         async function handleStartShop() {
-            const username = document.getElementById('username').value.trim();
+            const usernameInput = document.getElementById('username');
+            if (!usernameInput) return;
+            
+            const username = usernameInput.value.trim();
             if (!username) {
-                showBunnyModal('请输入名字', '请先输入你的名字哦！');
+                showBunnyModal('提示', '请输入你的名字哦！');
                 return;
             }
 
@@ -2359,17 +2491,32 @@
             await getOrCreateUser(username);
             
             // 显示店铺
-            document.getElementById('store').style.display = 'block';
-            document.getElementById('start-btn').style.display = 'none';
-            document.getElementById('username').style.display = 'none';
-            document.getElementById('countdown').style.display = 'none';
-            document.getElementById('edit-shop-name').style.display = 'inline-block';
+            const storeElement = document.getElementById('store');
+            const startBtn = document.getElementById('start-btn');
+            const usernameElement = document.getElementById('username');
+            const countdownElement = document.getElementById('countdown');
+            const editShopNameBtn = document.getElementById('edit-shop-name');
+            
+            if (storeElement) storeElement.style.display = 'block';
+            if (startBtn) startBtn.style.display = 'none';
+            if (usernameElement) usernameElement.style.display = 'none';
+            if (countdownElement) countdownElement.style.display = 'none';
+            if (editShopNameBtn) editShopNameBtn.style.display = 'inline-block';
             
             // 更新标题
-            document.querySelector('#main-container h1').textContent = `🎄 ${currentUser.shop_name} 🎄`;
+            const mainTitle = document.querySelector('#main-container h1');
+            if (mainTitle) {
+                mainTitle.textContent = `🎄 ${currentUser.shop_name} 🎄`;
+            }
             
             // 加载盲盒设置
             await getBlindboxItems();
+            
+            // 显示右上角小兔子
+            const topRightBunny = document.getElementById('top-right-bunny');
+            if (topRightBunny) {
+                topRightBunny.style.display = 'block';
+            }
         }
 
         function handleEditShopName() {
@@ -2383,24 +2530,21 @@
             setTimeout(() => {
                 const input = document.getElementById('password-input');
                 if (input) {
-                    input.value = currentName;
+                    input.value = currentName.replace('的圣诞小店', '');
                     input.select();
                 }
             }, 100);
         }
 
         function handleVIP() {
-            if (isVIP) {
-                showBunnyModal('VIP通道', '您已经是VIP用户，可以查看所有礼盒！');
-                return;
-            }
-            
-            showBunnyModal('VIP通道', '请输入VIP密码解锁所有礼盒：', true, 'vip');
+            showBunnyModal('VIP通道', 'VIP功能开发中，敬请期待！');
         }
 
         async function handleManageBlindbox() {
-            // 切换显示盲盒设置区域
             const settings = document.getElementById('blindbox-settings');
+            if (!settings) return;
+            
+            // 切换显示盲盒设置区域
             settings.style.display = settings.style.display === 'none' ? 'block' : 'none';
             
             if (settings.style.display === 'block') {
@@ -2414,26 +2558,32 @@
                 // 创建分享
                 const shareResult = await createShopShare();
                 
-                if (shareResult) {
+                if (shareResult && shareResult.success) {
                     // 显示分享区域
                     const shareSection = document.getElementById('shop-share-section');
-                    shareSection.style.display = 'block';
+                    if (shareSection) {
+                        shareSection.style.display = 'block';
+                    }
                     
                     // 显示分享链接
-                    document.getElementById('share-link-display').textContent = shareResult.shareUrl;
+                    const shareLinkDisplay = document.getElementById('share-link-display');
+                    if (shareLinkDisplay) {
+                        shareLinkDisplay.textContent = shareResult.shareUrl;
+                    }
                     
-                    // 存储分享信息
-                    currentShareInfo = shareResult;
+                    showBunnyModal('分享创建成功', '分享链接已生成！');
                 }
             } catch (error) {
                 console.error('分享店铺失败:', error);
-                showErrorModal('分享失败，请重试');
+                showErrorModal(error.message || '分享失败，请重试');
             }
         }
 
         function handleVisitFriends() {
             const friendsSection = document.getElementById('friends-shop-section');
-            friendsSection.style.display = friendsSection.style.display === 'none' ? 'block' : 'none';
+            if (friendsSection) {
+                friendsSection.style.display = friendsSection.style.display === 'none' ? 'block' : 'none';
+            }
         }
 
         async function handleSaveProbability() {
@@ -2448,8 +2598,11 @@
                     
                     if (nameInput && probInput) {
                         items.push({
-                            name: nameInput.value.trim(),
-                            probability: parseInt(probInput.value),
+                            id: `custom_${index}`,
+                            item_name: nameInput.value.trim() || `物品${index + 1}`,
+                            video_name: index < 5 ? `${index + 1}.mp4` : null,
+                            probability: parseInt(probInput.value) || 0,
+                            is_custom: true,
                             order_index: index
                         });
                     }
@@ -2460,7 +2613,7 @@
                     throw new Error('请至少设置一个物品');
                 }
                 
-                // 更新到服务器
+                // 更新到localStorage
                 const success = await updateBlindboxItems(items);
                 
                 if (success) {
@@ -2488,21 +2641,40 @@
         }
 
         function handleCopyShareLink() {
-            const shareLink = document.getElementById('share-link-display').textContent;
+            const shareLinkDisplay = document.getElementById('share-link-display');
+            if (!shareLinkDisplay) return;
+            
+            const shareLink = shareLinkDisplay.textContent;
             if (shareLink && shareLink !== '生成中...') {
                 navigator.clipboard.writeText(shareLink).then(() => {
                     showBunnyModal('复制成功', '链接已复制到剪贴板！');
                 }).catch(err => {
                     console.error('复制失败:', err);
-                    showErrorModal('复制失败，请手动复制');
+                    // 使用备用方法
+                    const textArea = document.createElement('textarea');
+                    textArea.value = shareLink;
+                    document.body.appendChild(textArea);
+                    textArea.select();
+                    try {
+                        document.execCommand('copy');
+                        showBunnyModal('复制成功', '链接已复制到剪贴板！');
+                    } catch (copyErr) {
+                        showErrorModal('复制失败，请手动复制');
+                    }
+                    document.body.removeChild(textArea);
                 });
             }
         }
 
         function handleGenerateQRCode() {
-            const shareLink = document.getElementById('share-link-display').textContent;
+            const shareLinkDisplay = document.getElementById('share-link-display');
+            if (!shareLinkDisplay) return;
+            
+            const shareLink = shareLinkDisplay.textContent;
             if (shareLink && shareLink !== '生成中...') {
                 const qrcodeContainer = document.getElementById('qrcode-container');
+                if (!qrcodeContainer) return;
+                
                 qrcodeContainer.innerHTML = '';
                 qrcodeContainer.style.display = 'block';
                 
@@ -2518,13 +2690,16 @@
                     });
                 } else {
                     // 如果QRCode.js未加载，显示提示
-                    qrcodeContainer.innerHTML = '<p>请刷新页面后重试</p>';
+                    qrcodeContainer.innerHTML = '<p>二维码生成失败，请刷新页面后重试</p>';
                 }
             }
         }
 
         async function handleVisitFriend() {
-            const shareCode = document.getElementById('friend-share-code').value.trim();
+            const friendShareCodeInput = document.getElementById('friend-share-code');
+            if (!friendShareCodeInput) return;
+            
+            const shareCode = friendShareCodeInput.value.trim();
             if (!shareCode) {
                 showErrorModal('请输入好友的分享码');
                 return;
@@ -2533,8 +2708,10 @@
             try {
                 const shareInfo = await getShareInfo(shareCode);
                 if (shareInfo) {
-                    // 跳转到好友店铺
-                    window.open(`/shop.html?sharer=${shareInfo.from_user_id}`, '_blank');
+                    // 访问好友店铺
+                    window.open(`?sharer=${shareInfo.user_id}`, '_blank');
+                } else {
+                    showErrorModal('分享码无效或已过期');
                 }
             } catch (error) {
                 console.error('访问好友失败:', error);
@@ -2558,15 +2735,28 @@
         async function handleBlindboxDraw() {
             try {
                 // 切换到盲盒页面
-                document.getElementById('store').style.display = 'none';
-                document.getElementById('blind-box-container').style.display = 'flex';
+                const storeElement = document.getElementById('store');
+                const blindBoxContainer = document.getElementById('blind-box-container');
+                
+                if (storeElement) storeElement.style.display = 'none';
+                if (blindBoxContainer) blindBoxContainer.style.display = 'flex';
+                
+                // 重置盲盒显示
+                document.querySelectorAll('.blind-box').forEach(box => {
+                    box.classList.remove('opened');
+                    box.textContent = '?';
+                    box.style.background = '#ffcccc';
+                });
                 
                 // 加载盲盒物品
                 await getBlindboxItems();
                 
                 // 检查抽取次数
                 const canDraw = await checkDrawLimit();
-                document.getElementById('chances-left').textContent = canDraw.remaining;
+                const chancesLeft = document.getElementById('chances-left');
+                if (chancesLeft) {
+                    chancesLeft.textContent = canDraw.remaining;
+                }
             } catch (error) {
                 console.error('切换盲盒页面失败:', error);
                 showErrorModal('无法加载盲盒');
@@ -2574,33 +2764,52 @@
         }
 
         function handleBackToStore() {
-            document.getElementById('blind-box-container').style.display = 'none';
-            document.getElementById('store').style.display = 'block';
+            const storeElement = document.getElementById('store');
+            const blindBoxContainer = document.getElementById('blind-box-container');
+            
+            if (storeElement) storeElement.style.display = 'block';
+            if (blindBoxContainer) blindBoxContainer.style.display = 'none';
         }
 
         async function handleShareShopLink() {
             try {
                 const shareResult = await createShopShare();
                 
-                if (shareResult) {
+                if (shareResult && shareResult.success) {
                     const shareText = `🎄 欢迎参观${currentUser.shop_name}！ 🎄\n${shareResult.shareUrl}\n快来我的小店抽盲盒吧！`;
                     
                     // 尝试使用Web Share API
                     if (navigator.share) {
-                        navigator.share({
-                            title: `${currentUser.shop_name}的圣诞小店`,
-                            text: shareText,
-                            url: shareResult.shareUrl
-                        });
-                    } else {
-                        // 复制到剪贴板
-                        navigator.clipboard.writeText(shareText).then(() => {
-                            showBunnyModal('分享成功', '分享内容已复制到剪贴板！');
-                        }).catch(err => {
-                            console.error('复制失败:', err);
-                            showErrorModal('复制失败，请手动复制');
-                        });
+                        try {
+                            await navigator.share({
+                                title: `${currentUser.shop_name}的圣诞小店`,
+                                text: shareText,
+                                url: shareResult.shareUrl
+                            });
+                            return;
+                        } catch (shareError) {
+                            console.log('Web Share API失败:', shareError);
+                        }
                     }
+                    
+                    // 复制到剪贴板
+                    navigator.clipboard.writeText(shareText).then(() => {
+                        showBunnyModal('分享成功', '分享内容已复制到剪贴板！');
+                    }).catch(err => {
+                        console.error('复制失败:', err);
+                        // 使用备用方法
+                        const textArea = document.createElement('textarea');
+                        textArea.value = shareText;
+                        document.body.appendChild(textArea);
+                        textArea.select();
+                        try {
+                            document.execCommand('copy');
+                            showBunnyModal('分享成功', '分享内容已复制到剪贴板！');
+                        } catch (copyErr) {
+                            showErrorModal('复制失败，请手动复制');
+                        }
+                        document.body.removeChild(textArea);
+                    });
                 }
             } catch (error) {
                 console.error('分享失败:', error);
@@ -2610,18 +2819,28 @@
 
         async function handleGiftClick(index) {
             try {
-                const gift = document.querySelectorAll('.gift-item')[index];
+                const gifts = document.querySelectorAll('.gift-item');
+                if (index >= gifts.length) return;
+                
+                const gift = gifts[index];
                 const videoSrc = gift.dataset.video;
+                
+                if (!videoSrc) {
+                    showErrorModal('未找到视频文件');
+                    return;
+                }
                 
                 // 播放视频
                 await playGiftVideo(videoSrc);
                 
                 // 添加到背包
-                addToBackpack({
-                    id: `gift_${index}`,
-                    item_name: gift.querySelector('.gift-title').textContent,
+                await addToBackpack({
+                    id: `gift_${index}_${Date.now()}`,
+                    item_name: gift.querySelector('.gift-title')?.textContent || `礼盒${index + 1}`,
                     video_name: videoSrc
                 });
+                
+                showBunnyModal('恭喜！', '礼盒已添加到你的背包！');
                 
             } catch (error) {
                 console.error('打开礼盒失败:', error);
@@ -2631,7 +2850,10 @@
 
         async function handleBlindboxClick(index) {
             try {
-                const box = document.querySelectorAll('.blind-box')[index];
+                const boxes = document.querySelectorAll('.blind-box');
+                if (index >= boxes.length) return;
+                
+                const box = boxes[index];
                 
                 if (box.classList.contains('opened')) {
                     showBunnyModal('提示', '这个盲盒已经开启过了！');
@@ -2648,14 +2870,21 @@
                 // 抽取盲盒
                 const result = await drawBlindbox();
                 
-                if (result) {
+                if (result && result.success) {
                     // 更新盲盒显示
                     box.classList.add('opened');
                     box.textContent = result.isThanks ? '谢谢惠顾' : '🎁';
                     box.style.background = result.isThanks ? '#cccccc' : '#a8e6cf';
                     
-                    // 更新抽取次数
-                    document.getElementById('chances-left').textContent = canDraw.remaining - 1;
+                    // 更新抽取次数显示
+                    const chancesLeft = document.getElementById('chances-left');
+                    if (chancesLeft) {
+                        chancesLeft.textContent = result.remaining;
+                    }
+                    
+                    // 记录抽取次数
+                    const key = `draw_count_${currentUser.user_id}`;
+                    localStorage.setItem(key, result.drawCount.toString());
                     
                     // 显示结果
                     showBlindboxResult(result);
@@ -2669,6 +2898,7 @@
         // =================== 辅助函数 ===================
         function displayProbabilitySettings() {
             const container = document.getElementById('probability-items-container');
+            if (!container) return;
             
             // 创建概率设置界面
             let html = '<div class="probability-list">';
@@ -2676,7 +2906,7 @@
             blindboxItems.forEach((item, index) => {
                 html += `
                     <div class="probability-item">
-                        <span class="item-name">${item.item_name}</span>
+                        <input type="text" class="item-name-input" value="${item.item_name}" placeholder="物品名称">
                         <div style="flex: 1; display: flex; align-items: center; gap: 10px;">
                             <input type="range" min="0" max="100" value="${item.probability}" 
                                    class="probability-slider" data-index="${index}">
@@ -2694,39 +2924,11 @@
                 slider.addEventListener('input', function() {
                     const value = this.value;
                     const valueDisplay = this.parentElement.querySelector('.item-probability');
-                    valueDisplay.textContent = value + '%';
+                    if (valueDisplay) {
+                        valueDisplay.textContent = value + '%';
+                    }
                 });
             });
-        }
-
-        function displayFriendBlindbox(items) {
-            // 显示好友的盲盒（不显示概率）
-            const container = document.getElementById('blind-boxes');
-            container.innerHTML = '';
-            
-            items.forEach((item, index) => {
-                const box = document.createElement('div');
-                box.className = 'blind-box';
-                box.dataset.index = index;
-                box.textContent = '?';
-                box.addEventListener('click', () => handleFriendBlindboxClick(index, items));
-                container.appendChild(box);
-            });
-        }
-
-        async function handleFriendBlindboxClick(index, items) {
-            try {
-                // 在好友店铺抽取盲盒
-                const result = await drawBlindbox(currentFriendId);
-                
-                if (result) {
-                    // 显示结果
-                    showBlindboxResult(result);
-                }
-            } catch (error) {
-                console.error('在好友店铺抽取失败:', error);
-                showErrorModal(error.message || '抽取失败');
-            }
         }
 
         function showBlindboxResult(result) {
@@ -2744,19 +2946,41 @@
                 wrapper.className = 'video-wrapper';
                 
                 const video = document.createElement('video');
-                video.src = fixQiniuUrl(videoSrc);
+                video.src = getResourceUrl(videoSrc);
                 video.autoplay = true;
                 video.controls = false;
                 video.loop = false;
+                video.muted = false; // 取消静音
                 
                 video.addEventListener('ended', () => {
                     wrapper.remove();
                     resolve();
                 });
                 
-                video.addEventListener('error', () => {
+                video.addEventListener('error', (e) => {
+                    console.error('视频播放错误:', e);
                     wrapper.remove();
-                    reject(new Error('视频播放失败'));
+                    
+                    // 尝试使用备用视频源
+                    const fallbackVideo = document.createElement('video');
+                    fallbackVideo.src = 'https://cdn.example.com/fallback.mp4'; // 备用视频
+                    fallbackVideo.autoplay = true;
+                    fallbackVideo.controls = false;
+                    fallbackVideo.loop = false;
+                    
+                    fallbackVideo.addEventListener('ended', () => {
+                        wrapper.remove();
+                        resolve();
+                    });
+                    
+                    fallbackVideo.addEventListener('error', () => {
+                        wrapper.remove();
+                        showBunnyModal('视频播放失败', '但礼物已添加到背包！');
+                        resolve();
+                    });
+                    
+                    wrapper.innerHTML = '';
+                    wrapper.appendChild(fallbackVideo);
                 });
                 
                 wrapper.appendChild(video);
@@ -2764,9 +2988,21 @@
                 
                 // 点击关闭
                 wrapper.addEventListener('click', () => {
+                    video.pause();
                     wrapper.remove();
                     resolve();
                 });
+                
+                // ESC键关闭
+                const handleKeyDown = (e) => {
+                    if (e.key === 'Escape') {
+                        video.pause();
+                        wrapper.remove();
+                        document.removeEventListener('keydown', handleKeyDown);
+                        resolve();
+                    }
+                };
+                document.addEventListener('keydown', handleKeyDown);
             });
         }
 
@@ -2778,12 +3014,15 @@
             modal.className = 'backpack-modal';
             
             let itemsHTML = '';
-            if (items.length > 0) {
+            if (items && items.length > 0) {
                 items.forEach(item => {
                     itemsHTML += `
                         <div class="backpack-item available">
                             <div class="item-icon">🎁</div>
                             <div class="item-name">${item.item_name}</div>
+                            <small style="font-size: 10px; color: #666;">
+                                ${new Date(item.obtained_at).toLocaleDateString()}
+                            </small>
                         </div>
                     `;
                 });
@@ -2793,10 +3032,11 @@
             
             modal.innerHTML = `
                 <h3>🎒 我的背包 🎒</h3>
+                <p>共 ${items.length} 个物品</p>
                 <div class="backpack-items">
                     ${itemsHTML}
                 </div>
-                <button id="close-backpack" style="margin-top: 15px;">关闭</button>
+                <button id="close-backpack" style="margin-top: 15px; padding: 10px 20px;">关闭</button>
             `;
             
             document.body.appendChild(overlay);
@@ -2815,6 +3055,16 @@
                     document.body.removeChild(modal);
                 }
             });
+            
+            // ESC键关闭
+            const handleKeyDown = (e) => {
+                if (e.key === 'Escape') {
+                    document.body.removeChild(overlay);
+                    document.body.removeChild(modal);
+                    document.removeEventListener('keydown', handleKeyDown);
+                }
+            };
+            document.addEventListener('keydown', handleKeyDown);
         }
 
         function showBunnyModal(title, message, showInput = false, modalType = 'normal') {
@@ -2827,8 +3077,9 @@
             modal.innerHTML = `
                 <h3>${title}</h3>
                 <p>${message}</p>
-                ${showInput ? '<input type="text" id="password-input" placeholder="请输入">' : ''}
+                ${showInput ? '<input type="text" id="password-input" placeholder="请输入" style="margin: 10px 0;">' : ''}
                 <button id="modal-btn">${showInput ? '确定' : '好的'}</button>
+                ${showInput ? '<button id="modal-cancel" style="background: #ccc; margin-left: 10px;">取消</button>' : ''}
             `;
             
             document.body.appendChild(overlay);
@@ -2839,94 +3090,274 @@
                 if (showInput && modalType === 'edit-shop-name') {
                     const newName = modal.querySelector('#password-input').value.trim();
                     if (newName) {
-                        currentUser.shop_name = `${newName}的圣诞小店`;
-                        updateUserDisplay();
-                        document.querySelector('#main-container h1').textContent = `🎄 ${currentUser.shop_name} 🎄`;
+                        updateShopName(newName);
                     }
                 }
                 document.body.removeChild(overlay);
                 document.body.removeChild(modal);
             });
             
+            const modalCancel = modal.querySelector('#modal-cancel');
+            if (modalCancel) {
+                modalCancel.addEventListener('click', () => {
+                    document.body.removeChild(overlay);
+                    document.body.removeChild(modal);
+                });
+            }
+            
             overlay.addEventListener('click', (e) => {
                 if (e.target === overlay) {
                     document.body.removeChild(overlay);
                     document.body.removeChild(modal);
                 }
             });
+            
+            // 回车键确认
+            const handleKeyDown = (e) => {
+                if (e.key === 'Enter' && showInput) {
+                    modalBtn.click();
+                } else if (e.key === 'Escape') {
+                    document.body.removeChild(overlay);
+                    document.body.removeChild(modal);
+                    document.removeEventListener('keydown', handleKeyDown);
+                }
+            };
+            
+            if (showInput) {
+                const input = modal.querySelector('#password-input');
+                if (input) {
+                    setTimeout(() => input.focus(), 100);
+                }
+                document.addEventListener('keydown', handleKeyDown);
+            }
         }
 
         function showErrorModal(message) {
             showBunnyModal('错误', message);
         }
 
-        function showShareReceiveModal(shareInfo) {
-            const overlay = document.createElement('div');
-            overlay.className = 'modal-overlay';
+        // =================== 初始化函数 ===================
+        async function initialize() {
+            console.log('正在初始化圣诞小店...');
             
-            const modal = document.createElement('div');
-            modal.className = 'bunny-modal';
+            // 预加载重要资源
+            preloadImportantResources();
             
-            modal.innerHTML = `
-                <h3>🎁 收到礼物</h3>
-                <p>来自 ${shareInfo.username} 的礼物：</p>
-                <p><strong>${shareInfo.item_name}</strong> × ${shareInfo.quantity}</p>
-                <button id="accept-gift">领取</button>
-                <button id="decline-gift" style="background: #ccc; margin-left: 10px;">取消</button>
-            `;
+            // 初始化雪花效果
+            initSnow();
             
-            document.body.appendChild(overlay);
-            document.body.appendChild(modal);
+            // 初始化时间系统
+            initializeTime();
             
-            modal.querySelector('#accept-gift').addEventListener('click', async () => {
-                try {
-                    await processShare(shareInfo.share_code);
-                    showBunnyModal('领取成功', '礼物已放入你的背包！');
-                    document.body.removeChild(overlay);
-                    document.body.removeChild(modal);
-                } catch (error) {
-                    console.error('领取失败:', error);
-                    showErrorModal('领取失败');
+            // 检查URL参数
+            const urlParams = new URLSearchParams(window.location.search);
+            const shareCode = urlParams.get('code');
+            const sharerId = urlParams.get('sharer');
+            
+            if (shareCode) {
+                // 处理分享链接
+                await handleShareLink(shareCode);
+            } else if (sharerId) {
+                // 访问好友店铺
+                await visitFriendShop(sharerId);
+            } else {
+                // 正常初始化
+                await initNormalFlow();
+            }
+            
+            // 绑定事件
+            bindEvents();
+        }
+
+        async function handleShareLink(shareCode) {
+            try {
+                const shareInfo = await getShareInfo(shareCode);
+                if (shareInfo) {
+                    if (shareInfo.share_type === 'shop') {
+                        // 显示好友店铺信息
+                        showBunnyModal('欢迎访问', `你正在访问${shareInfo.username}的店铺：${shareInfo.shop_name}`);
+                        
+                        // 可以在这里加载好友的盲盒设置
+                        await getBlindboxItems(shareInfo.user_id);
+                    }
+                }
+            } catch (error) {
+                console.error('处理分享链接失败:', error);
+                showErrorModal('分享链接无效或已过期');
+            }
+        }
+
+        async function visitFriendShop(sharerId) {
+            try {
+                // 获取好友的盲盒设置
+                const friendBlindboxItems = await getBlindboxItems(sharerId);
+                
+                // 更新界面显示好友店铺
+                const mainTitle = document.querySelector('#main-container h1');
+                const storeElement = document.getElementById('store');
+                const startBtn = document.getElementById('start-btn');
+                
+                if (mainTitle) {
+                    const shareInfo = await getShareInfoFromUserId(sharerId);
+                    mainTitle.textContent = `🎄 ${shareInfo?.shop_name || '好友'}的小店 🎄`;
+                }
+                
+                if (storeElement) storeElement.style.display = 'block';
+                if (startBtn) startBtn.style.display = 'none';
+                
+                // 隐藏编辑功能
+                const editShopNameBtn = document.getElementById('edit-shop-name');
+                if (editShopNameBtn) editShopNameBtn.style.display = 'none';
+                
+                // 显示盲盒页面
+                await handleBlindboxDraw();
+                
+                // 更新提示信息
+                const blindboxCount = document.getElementById('blind-box-count');
+                if (blindboxCount) {
+                    blindboxCount.innerHTML = '在好友店铺抽奖<span style="color: #ffeb3b; margin: 0 5px;">（限3次）</span>';
+                }
+                
+            } catch (error) {
+                console.error('访问好友店铺失败:', error);
+                showErrorModal('无法访问好友店铺');
+            }
+        }
+
+        async function getShareInfoFromUserId(userId) {
+            // 从localStorage查找用户的分享信息
+            const keys = Object.keys(localStorage);
+            for (const key of keys) {
+                if (key.startsWith('share_')) {
+                    try {
+                        const shareInfo = JSON.parse(localStorage.getItem(key));
+                        if (shareInfo.user_id === userId) {
+                            return shareInfo;
+                        }
+                    } catch (e) {
+                        continue;
+                    }
+                }
+            }
+            return null;
+        }
+
+        async function initNormalFlow() {
+            // 检查设备ID
+            getDeviceId();
+            
+            // 加载保存的用户名
+            const savedUsername = localStorage.getItem('username');
+            if (savedUsername) {
+                const usernameInput = document.getElementById('username');
+                if (usernameInput) {
+                    usernameInput.value = savedUsername;
+                }
+            }
+            
+            // 检查是否已经是VIP用户（示例）
+            const isVIP = localStorage.getItem('is_vip') === 'true';
+            if (isVIP) {
+                const vipBtn = document.getElementById('vip-btn');
+                if (vipBtn) {
+                    vipBtn.textContent = 'VIP用户';
+                    vipBtn.style.background = 'linear-gradient(90deg, #ff6b6b, #ff8e8e)';
+                }
+            }
+        }
+
+        // =================== 鼠标跟随效果 ===================
+        function initMouseFollow() {
+            const bunnyCursor = document.getElementById('bunny-cursor');
+            if (!bunnyCursor) return;
+            
+            let mouseX = 0;
+            let mouseY = 0;
+            let bunnyX = 0;
+            let bunnyY = 0;
+            
+            document.addEventListener('mousemove', (e) => {
+                mouseX = e.clientX;
+                mouseY = e.clientY;
+                
+                // 只在桌面端显示自定义鼠标
+                if (window.innerWidth > 768) {
+                    bunnyCursor.style.display = 'block';
                 }
             });
             
-            modal.querySelector('#decline-gift').addEventListener('click', () => {
-                document.body.removeChild(overlay);
-                document.body.removeChild(modal);
-            });
+            function animate() {
+                // 平滑移动
+                bunnyX += (mouseX - bunnyX) * 0.2;
+                bunnyY += (mouseY - bunnyY) * 0.2;
+                
+                bunnyCursor.style.left = bunnyX + 'px';
+                bunnyCursor.style.top = bunnyY + 'px';
+                
+                requestAnimationFrame(animate);
+            }
             
-            overlay.addEventListener('click', (e) => {
-                if (e.target === overlay) {
-                    document.body.removeChild(overlay);
-                    document.body.removeChild(modal);
+            animate();
+            
+            // 移动端隐藏自定义鼠标
+            function checkScreenSize() {
+                if (window.innerWidth <= 768) {
+                    bunnyCursor.style.display = 'none';
+                } else {
+                    bunnyCursor.style.display = 'block';
                 }
-            });
+            }
+            
+            window.addEventListener('resize', checkScreenSize);
+            checkScreenSize();
         }
 
         // =================== 页面加载初始化 ===================
         document.addEventListener('DOMContentLoaded', () => {
             initialize();
+            initMouseFollow();
             
             // 每秒更新倒计时
             setInterval(updateCountdown, 1000);
+            
+            // 预加载视频（可选）
+            setTimeout(() => {
+                RESOURCES.VIDEOS.slice(0, 3).forEach(video => {
+                    const videoEl = document.createElement('video');
+                    videoEl.src = getResourceUrl(video);
+                    videoEl.preload = 'metadata';
+                });
+            }, 2000);
         });
 
-        // =================== 测试函数 ===================
-        window.testAPI = async function() {
-            console.log('测试API连接...');
-            try {
-                const result = await callAPI('test');
-                console.log('API测试结果:', result);
-                return result;
-            } catch (error) {
-                console.error('API测试失败:', error);
-                return null;
+        // =================== 调试工具 ===================
+        window.debug = {
+            resetAll: function() {
+                if (confirm('确定要重置所有数据吗？这将清除所有本地存储的数据。')) {
+                    localStorage.clear();
+                    location.reload();
+                }
+            },
+            
+            showUserInfo: function() {
+                console.log('当前用户:', currentUser);
+                console.log('设备ID:', getDeviceId());
+                console.log('背包物品:', backpackItems);
+                console.log('盲盒设置:', blindboxItems);
+            },
+            
+            addTestItems: function() {
+                if (!currentUser) return;
+                
+                const testItems = [
+                    { id: 'test_1', item_name: '测试礼盒1', video_name: '1.mp4' },
+                    { id: 'test_2', item_name: '测试礼盒2', video_name: '2.mp4' },
+                    { id: 'test_3', item_name: '测试礼盒3', video_name: '3.mp4' }
+                ];
+                
+                testItems.forEach(item => addToBackpack(item));
+                showBunnyModal('调试', '已添加3个测试物品到背包');
             }
-        };
-
-        window.resetLocalData = function() {
-            localStorage.clear();
-            location.reload();
         };
 
     </script>
