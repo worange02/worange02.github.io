@@ -5,8 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>圣诞小店</title>
     <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap" rel="stylesheet">
-    <!-- 添加 QRCode.js 用于生成二维码 -->
-    <script src="https://cdn.bootcdn.net/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <style>
         /* 样式保持不变，与之前相同 */
         * {
@@ -36,7 +34,7 @@
             display: none;
         }
         
-        /* 隐藏所有元素的默认鼠标 */
+        /* 隐藏所有元素的默认光标 */
         * {
             cursor: none !important;
         }
@@ -454,7 +452,7 @@
         }
         
         .bunny-modal::before {
-            content: '🐰';
+            content: '🐇';
             font-size: 40px;
             display: block;
             margin-bottom: 15px;
@@ -784,7 +782,7 @@
             border-color: #8a2be2 transparent transparent;
         }
         
-        /* 右上角9.gif样式 */
+        /* 右上角.gif样式 */
         #top-right-bunny {
             position: fixed;
             top: 80px;
@@ -1043,6 +1041,57 @@
             font-weight: bold;
         }
         
+        /* 功能按钮组样式 */
+        .feature-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+            margin: 20px 0;
+        }
+        
+        .feature-btn {
+            padding: 10px 15px;
+            border-radius: 10px;
+            background: linear-gradient(45deg, #4CAF50, #66BB6A);
+            color: white;
+            font-weight: bold;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .feature-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        
+        .feature-btn.secondary {
+            background: linear-gradient(45deg, #2196F3, #64B5F6);
+        }
+        
+        .feature-btn.tertiary {
+            background: linear-gradient(45deg, #FF9800, #FFB74D);
+        }
+        
+        /* 分享区域样式 */
+        .share-section {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        
+        .share-link {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            padding: 10px;
+            margin: 10px 0;
+            word-break: break-all;
+            font-family: monospace;
+            color: #fff;
+        }
+        
         /* 移动端优化 - 重要修改：修复背包点击问题 */
         @media (max-width: 768px) {
             h1 {
@@ -1120,7 +1169,7 @@
                 margin-bottom: 10px;
             }
             
-            /* 移动端显示默认鼠标 */
+            /* 移动端显示默认鼠標 */
             #bunny-cursor {
                 display: none;
             }
@@ -1162,7 +1211,7 @@
             
             #final-gift {
                 width: 60px;
-            height: 60px;
+                height: 60px;
                 top: 10px;
                 right: 10px;
             }
@@ -1348,144 +1397,49 @@
             transform: translate(-50%, -50%);
         }
         
-        /* API调用加载状态 */
-        .loading {
-            position: relative;
-        }
-        
-        .loading::after {
-            content: "🔄";
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            animation: spin 1s linear infinite;
-        }
-        
-        @keyframes spin {
-            from { transform: translate(-50%, -50%) rotate(0deg); }
-            to { transform: translate(-50%, -50%) rotate(360deg); }
-        }
-        
-        /* 盲盒概率设置区域 */
-        .blindbox-settings {
-            background: rgba(255, 255, 255, 0.15);
-            border-radius: 12px;
-            padding: 15px;
-            margin: 15px 0;
-        }
-        
+        /* 概率列表样式 */
         .probability-list {
             display: flex;
             flex-direction: column;
-            gap: 8px;
-            margin-top: 10px;
+            gap: 10px;
+            margin: 15px 0;
         }
         
         .probability-item {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 8px;
-            background: rgba(255, 255, 255, 0.2);
-            border-radius: 6px;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
         }
         
-        .item-name {
+        .item-name-display {
             font-weight: bold;
             color: #fff;
+            min-width: 100px;
         }
         
-        .item-probability {
+        .item-probability-display {
             color: #ffeb3b;
             font-weight: bold;
+            min-width: 50px;
         }
         
-        /* 店铺分享样式 */
-        .shop-share-section {
-            background: rgba(255, 255, 255, 0.1);
+        /* 店铺信息区域 */
+        .shop-info {
+            background: rgba(255, 255, 255, 0.15);
             border-radius: 16px;
             padding: 20px;
             margin: 20px 0;
         }
         
-        .share-link {
-            background: rgba(255, 255, 255, 0.2);
-            border-radius: 8px;
-            padding: 10px;
-            margin: 10px 0;
-            word-break: break-all;
-            font-family: monospace;
-            color: #fff;
-        }
-        
-        .share-qrcode {
-            max-width: 200px;
-            margin: 10px auto;
-            padding: 10px;
-            background: white;
-            border-radius: 8px;
-        }
-        
-        /* 好友店铺访问样式 */
-        .friend-shop {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 12px;
-            background: rgba(255, 255, 255, 0.15);
-            border-radius: 10px;
-            margin: 8px 0;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-        
-        .friend-shop:hover {
-            background: rgba(255, 255, 255, 0.25);
-            transform: translateY(-2px);
-        }
-        
-        .friend-shop-name {
-            font-weight: bold;
-            color: #fff;
-        }
-        
-        .friend-shop-owner {
-            color: #ffeb3b;
-            font-size: 0.9em;
-        }
-        
-        /* 新增功能按钮组 */
-        .new-features {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            justify-content: center;
-            margin: 15px 0;
-        }
-        
-        .feature-btn {
-            padding: 10px 15px;
-            border-radius: 10px;
-            background: linear-gradient(45deg, #4CAF50, #66BB6A);
-            color: white;
-            font-weight: bold;
-            border: none;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-        
-        .feature-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-        }
-        
-        .feature-btn.secondary {
-            background: linear-gradient(45deg, #2196F3, #64B5F6);
-        }
-        
-        .feature-btn.tertiary {
-            background: linear-gradient(45deg, #FF9800, #FFB74D);
+        /* 盲盒设置区域 */
+        .blindbox-settings {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 20px;
+            margin: 20px 0;
         }
     </style>
 </head>
@@ -1493,17 +1447,17 @@
     <canvas id="snow" class="snow"></canvas>
     
     <!-- 鼠标跟随小兔子 -->
-    <img id="bunny-cursor" src="https://cdn.example.com/1.gif" alt="bunny cursor" onerror="handleResourceError(this)" />
+    <img id="bunny-cursor" src="assets/bunny-cursor.gif" alt="bunny cursor" onerror="handleResourceError(this)" />
     
     <!-- 左上角圣诞元素 - 新增 -->
-    <img id="top-left-gift" src="https://cdn.example.com/10.gif" alt="Christmas Gift" onerror="handleResourceError(this)" />
+    <img id="top-left-gift" src="assets/10.gif" alt="Christmas Gift" onerror="handleResourceError(this)" />
     
     <!-- 右上角小兔子 - 新增 -->
-    <img id="top-right-bunny" src="https://cdn.example.com/9.gif" alt="Top Right Bunny" onerror="handleResourceError(this)" />
+    <img id="top-right-bunny" src="assets/9.gif" alt="Top Right Bunny" onerror="handleResourceError(this)" />
     
     <div id="main-container">
         <div class="header-area">
-            <h1>🎄 欢迎来到圣诞小店 🎄</h1>
+            <h1>🎅 欢迎来到圣诞小商店 🎅</h1>
             <div class="name-input-container">
                 <button class="vip-btn" id="vip-btn">VIP通道</button>
                 <p>请输入你的名字开启圣诞礼物体验：<button id="edit-shop-name">✏️</button></p>
@@ -1513,187 +1467,191 @@
             <a id="start-btn" class="btn">开启圣诞</a>
         </div>
         
-        <!-- 店铺管理区域 -->
-        <div id="store" style="display: none;">
-            <!-- 店铺基本信息 -->
-            <div class="shop-info" style="background: rgba(255,255,255,0.1); padding: 15px; border-radius: 12px; margin: 15px 0;">
+        <!-- 店铺区域 -->
+        <div id="store">
+            <!-- 店铺信息区域 -->
+            <div class="shop-info">
                 <h3 id="shop-name-display"></h3>
                 <p>店长：<span id="shop-owner"></span></p>
-                <div class="new-features">
+                
+                <!-- 功能按钮组 -->
+                <div class="feature-buttons">
                     <button class="feature-btn" id="manage-blindbox-btn">管理盲盒</button>
                     <button class="feature-btn secondary" id="share-shop-btn">分享店铺</button>
                     <button class="feature-btn tertiary" id="visit-friends-btn">访问好友</button>
                 </div>
             </div>
             
-            <!-- 盲盒设置区域（默认隐藏） -->
-            <div id="blindbox-settings" style="display: none; margin: 20px 0;">
+            <!-- 盲盒设置区域 -->
+            <div id="blindbox-settings" style="display: none;">
                 <div class="blindbox-settings">
                     <h4>🎁 盲盒概率设置</h4>
-                    <p>设置6个盲盒物品及其抽取概率（总概率需为100%）</p>
+                    <p>设置盲盒物品及其抽取概率（总概率需为100%）</p>
                     <div id="probability-items-container">
-                        <!-- 动态加载概率设置 -->
+                        <!-- 概率设置将动态加载到这里 -->
                     </div>
-                    <button class="share-btn" id="save-probability-btn" style="margin-top: 10px;">保存设置</button>
-                    <button class="share-btn" id="reset-probability-btn" style="background: #ff4444; margin-top: 10px;">重置为默认</button>
+                    <div class="feature-buttons">
+                        <button class="feature-btn" id="save-probability-btn">保存设置</button>
+                        <button class="feature-btn secondary" id="reset-probability-btn">重置为默认</button>
+                    </div>
                 </div>
             </div>
             
-            <!-- 店铺分享区域（默认隐藏） -->
+            <!-- 分享店铺区域 -->
             <div id="shop-share-section" style="display: none;">
-                <div class="shop-share-section">
+                <div class="share-section">
                     <h4>🔗 分享你的店铺</h4>
                     <p>分享链接给朋友，让他们来你的小店抽盲盒！</p>
                     <div class="share-link" id="share-link-display">生成中...</div>
-                    <button class="share-btn" id="copy-share-btn">复制链接</button>
-                    <button class="share-btn" id="generate-qrcode-btn">生成二维码</button>
-                    <div id="qrcode-container" style="display: none;"></div>
-                </div>
-            </div>
-            
-            <!-- 好友店铺区域（默认隐藏） -->
-            <div id="friends-shop-section" style="display: none;">
-                <div class="shop-share-section">
-                    <h4>👥 访问好友店铺</h4>
-                    <p>输入好友的分享码访问他们的小店：</p>
-                    <input type="text" id="friend-share-code" placeholder="输入好友分享码" style="width: 200px; margin: 10px;">
-                    <button class="share-btn" id="visit-friend-btn">访问</button>
-                    <div id="friends-list" style="margin-top: 15px;">
-                        <!-- 动态加载好友店铺 -->
+                    <div class="feature-buttons">
+                        <button class="feature-btn" id="copy-share-btn">复制链接</button>
+                        <button class="feature-btn secondary" id="close-share-btn">关闭分享</button>
                     </div>
                 </div>
             </div>
             
-            <!-- 原礼盒网格 -->
+            <!-- 访问好友区域 -->
+            <div id="friends-shop-section" style="display: none;">
+                <div class="share-section">
+                    <h4>👥 访问好友店铺</h4>
+                    <p>输入好友的分享码访问他们的小店：</p>
+                    <input type="text" id="friend-share-code" placeholder="输入好友分享码" style="width: 200px; margin: 10px;">
+                    <button class="feature-btn" id="visit-friend-btn">访问</button>
+                    <div id="friends-list" style="margin-top: 15px;">
+                        <!-- 好友列表将动态加载到这里 -->
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 礼盒网格 -->
             <div class="gift-grid">
-                <!-- 15个礼盒，使用新的商品卡片布局 -->
                 <div class="gift-item" data-video="1.mp4">
                     <div class="gift-image">🎁</div>
                     <div class="gift-info">
-                        <div class="gift-title">圣诞惊喜礼盒1</div>
+                        <div class="gift-title">圣诞惊喜盒1</div>
                         <div class="gift-price">圣诞限定<span class="gift-original-price">¥99</span></div>
-                        <div class="gift-sales">已售10万+</div>
+                        <div class="gift-sales">已售10个</div>
                     </div>
                 </div>
                 <div class="gift-item" data-video="2.mp4">
                     <div class="gift-image">🎁</div>
                     <div class="gift-info">
-                        <div class="gift-title">圣诞惊喜礼盒2</div>
+                        <div class="gift-title">圣诞惊喜盒2</div>
                         <div class="gift-price">圣诞限定<span class="gift-original-price">¥99</span></div>
-                        <div class="gift-sales">已售8万+</div>
+                        <div class="gift-sales">已售8个</div>
                     </div>
                 </div>
                 <div class="gift-item" data-video="3.mp4">
                     <div class="gift-image">🎁</div>
                     <div class="gift-info">
-                        <div class="gift-title">圣诞惊喜礼盒3</div>
+                        <div class="gift-title">圣诞惊喜盒3</div>
                         <div class="gift-price">圣诞限定<span class="gift-original-price">¥99</span></div>
-                        <div class="gift-sales">已售12万+</div>
+                        <div class="gift-sales">已售12个</div>
                     </div>
                 </div>
                 <div class="gift-item" data-video="4.mp4">
                     <div class="gift-image">🎁</div>
                     <div class="gift-info">
-                        <div class="gift-title">圣诞惊喜礼盒4</div>
+                        <div class="gift-title">圣诞惊喜盒4</div>
                         <div class="gift-price">圣诞限定<span class="gift-original-price">¥99</span></div>
-                        <div class="gift-sales">已售6万+</div>
+                        <div class="gift-sales">已售6个</div>
                     </div>
                 </div>
                 <div class="gift-item" data-video="5.mp4">
                     <div class="gift-image">🎁</div>
                     <div class="gift-info">
-                        <div class="gift-title">圣诞惊喜礼盒5</div>
+                        <div class="gift-title">圣诞惊喜盒5</div>
                         <div class="gift-price">圣诞限定<span class="gift-original-price">¥99</span></div>
-                        <div class="gift-sales">已售15万+</div>
+                        <div class="gift-sales">已售15个</div>
                     </div>
                 </div>
                 <div class="gift-item" data-video="6.mp4">
                     <div class="gift-image">🎁</div>
                     <div class="gift-info">
-                        <div class="gift-title">圣诞惊喜礼盒6</div>
+                        <div class="gift-title">圣诞惊喜盒6</div>
                         <div class="gift-price">圣诞限定<span class="gift-original-price">¥99</span></div>
-                        <div class="gift-sales">已售9万+</div>
+                        <div class="gift-sales">已售9个</div>
                     </div>
                 </div>
                 <div class="gift-item" data-video="7.mp4">
                     <div class="gift-image">🎁</div>
                     <div class="gift-info">
-                        <div class="gift-title">圣诞惊喜礼盒7</div>
+                        <div class="gift-title">圣诞惊喜盒7</div>
                         <div class="gift-price">圣诞限定<span class="gift-original-price">¥99</span></div>
-                        <div class="gift-sales">已售11万+</div>
+                        <div class="gift-sales">已售11个</div>
                     </div>
                 </div>
                 <div class="gift-item" data-video="8.mp4">
                     <div class="gift-image">🎁</div>
                     <div class="gift-info">
-                        <div class="gift-title">圣诞惊喜礼盒8</div>
+                        <div class="gift-title">圣诞惊喜盒8</div>
                         <div class="gift-price">圣诞限定<span class="gift-original-price">¥99</span></div>
-                        <div class="gift-sales">已售7万+</div>
+                        <div class="gift-sales">已售7个</div>
                     </div>
                 </div>
                 <div class="gift-item" data-video="9.mp4">
                     <div class="gift-image">🎁</div>
                     <div class="gift-info">
-                        <div class="gift-title">圣诞惊喜礼盒9</div>
+                        <div class="gift-title">圣诞惊喜盒9</div>
                         <div class="gift-price">圣诞限定<span class="gift-original-price">¥99</span></div>
-                        <div class="gift-sales">已售13万+</div>
+                        <div class="gift-sales">已售13个</div>
                     </div>
                 </div>
                 <div class="gift-item" data-video="10.mp4">
                     <div class="gift-image">🎁</div>
                     <div class="gift-info">
-                        <div class="gift-title">圣诞惊喜礼盒10</div>
+                        <div class="gift-title">圣诞惊喜盒10</div>
                         <div class="gift-price">圣诞限定<span class="gift-original-price">¥99</span></div>
-                        <div class="gift-sales">已售5万+</div>
+                        <div class="gift-sales">已售5个</div>
                     </div>
                 </div>
                 <div class="gift-item" data-video="11.mp4">
                     <div class="gift-image">🎁</div>
                     <div class="gift-info">
-                        <div class="gift-title">圣诞惊喜礼盒11</div>
+                        <div class="gift-title">圣诞惊喜盒11</div>
                         <div class="gift-price">圣诞限定<span class="gift-original-price">¥99</span></div>
-                        <div class="gift-sales">已售14万+</div>
+                        <div class="gift-sales">已售14个</div>
                     </div>
                 </div>
                 <div class="gift-item" data-video="12.mp4">
                     <div class="gift-image">🎁</div>
                     <div class="gift-info">
-                        <div class="gift-title">圣诞惊喜礼盒12</div>
+                        <div class="gift-title">圣诞惊喜盒12</div>
                         <div class="gift-price">圣诞限定<span class="gift-original-price">¥99</span></div>
-                        <div class="gift-sales">已售8万+</div>
+                        <div class="gift-sales">已售8个</div>
                     </div>
                 </div>
                 <div class="gift-item" data-video="13.mp4">
                     <div class="gift-image">🎁</div>
                     <div class="gift-info">
-                        <div class="gift-title">圣诞惊喜礼盒13</div>
+                        <div class="gift-title">圣诞惊喜盒13</div>
                         <div class="gift-price">圣诞限定<span class="gift-original-price">¥99</span></div>
-                        <div class="gift-sales">已售10万+</div>
+                        <div class="gift-sales">已售10个</div>
                     </div>
                 </div>
                 <div class="gift-item" data-video="14.mp4">
                     <div class="gift-image">🎁</div>
                     <div class="gift-info">
-                        <div class="gift-title">圣诞惊喜礼盒14</div>
+                        <div class="gift-title">圣诞惊喜盒14</div>
                         <div class="gift-price">圣诞限定<span class="gift-original-price">¥99</span></div>
-                        <div class="gift-sales">已售12万+</div>
+                        <div class="gift-sales">已售12个</div>
                     </div>
                 </div>
                 <div class="gift-item" data-video="15.mp4">
                     <div class="gift-image">🎁</div>
                     <div class="gift-info">
-                        <div class="gift-title">圣诞惊喜礼盒15</div>
+                        <div class="gift-title">圣诞惊喜盒15</div>
                         <div class="gift-price">圣诞限定<span class="gift-original-price">¥99</span></div>
-                        <div class="gift-sales">已售16万+</div>
+                        <div class="gift-sales">已售16个</div>
                     </div>
                 </div>
             </div>
             
-            <!-- 功能按钮组 -->
+            <!-- 功能按钮 -->
             <div style="margin: 20px 0;">
                 <button id="backpack-btn">🎒 我的背包</button>
                 <button class="share-btn" id="share-shop-link">🔗 分享小店链接</button>
-                <button class="share-btn" id="share-btn">🎁 盲盒抽取</button>
+                <button class="share-btn" id="share-btn" style="display: none;">🎁 盲盒抽取</button>
             </div>
         </div>
         
@@ -1715,124 +1673,352 @@
     </div>
     
     <!-- 右下角小兔子 -->
-    <img id="bunny" src="https://cdn.example.com/1.gif" alt="bunny" onerror="handleResourceError(this)" />
+    <img id="bunny" src="assets/1.gif" alt="bunny" onerror="handleResourceError(this)" />
     
     <!-- 左下角圣诞老人 -->
-    <img id="santa" src="https://cdn.example.com/5.gif" alt="santa" onerror="handleResourceError(this)" />
+    <img id="santa" src="assets/5.gif" alt="santa" onerror="handleResourceError(this)" />
 
     <script>
         // =================== 配置信息 ===================
-        // 重要：请将以下域名替换为你的七牛云自定义域名
         const CONFIG = {
-            // API后端地址（如果你有后端）
-            API_BASE_URL: 'https://your-vercel-app.vercel.app/api',
-            
-            // 七牛云域名 - 请替换为你的自定义域名
-            QINIU_DOMAIN: 'https://cdn.example.com', // 替换为你的七牛云自定义域名
-            
-            // 视频文件基础路径
-            VIDEO_BASE_URL: 'https://cdn.example.com/videos/', // 替换为你的视频存放路径
-            
-            // 应用配置
+            DEFAULT_BLINDBOX_COUNT: 6,
             MAX_DRAW_COUNT: 3,
-            DEFAULT_BLINDBOX_ITEMS: 6,
             SHARE_CODE_LENGTH: 8
         };
 
-        // 资源映射表 - 将所有资源集中管理
-        const RESOURCES = {
-            // GIF资源
-            BUNNY_CURSOR: '1.gif',
-            BUNNY_ICON: '1.gif',
-            SANTA: '5.gif',
-            TOP_RIGHT_BUNNY: '9.gif',
-            TOP_LEFT_GIFT: '10.gif',
-            FINAL_GIFT: 'final-gift.gif', // 如果有的话
-            
-            // 视频资源列表（1-15.mp4）
-            VIDEOS: Array.from({length: 15}, (_, i) => `${i + 1}.mp4`)
-        };
-
-        // =================== 资源加载工具 ===================
-        // 获取完整的资源URL
-        function getResourceUrl(filename) {
-            if (!filename) return '';
-            
-            // 如果是完整URL，直接返回
-            if (filename.startsWith('http')) return filename;
-            
-            // 如果是视频文件，使用视频路径
-            if (filename.endsWith('.mp4')) {
-                return `${CONFIG.VIDEO_BASE_URL}${filename}`;
-            }
-            
-            // 其他资源使用主域名
-            return `${CONFIG.QINIU_DOMAIN}/${filename}`;
-        }
-
-        // 预加载重要资源
-        function preloadImportantResources() {
-            const importantResources = [
-                RESOURCES.BUNNY_CURSOR,
-                RESOURCES.BUNNY_ICON,
-                RESOURCES.SANTA
-            ];
-            
-            importantResources.forEach(resource => {
-                const img = new Image();
-                img.src = getResourceUrl(resource);
-                img.onerror = () => {
-                    console.warn(`资源加载失败: ${resource}`);
-                };
-            });
-        }
-
-        // 资源加载错误处理
+        // =================== 资源加载错误处理 ===================
         function handleResourceError(element) {
-            console.warn('资源加载失败:', element.src);
+            console.error('资源加载失败:', element.src);
             element.classList.add('resource-error');
             
-            // 设置备用显示
-            if (element.tagName === 'IMG') {
-                element.alt = element.alt || '图片加载失败';
+            if (element.src.includes('.gif')) {
+                element.alt = '图片加载失败';
+                element.style.border = '2px solid #ff4444';
+                element.style.padding = '5px';
+            }
+        }
+
+        // =================== VIP状态管理 ===================
+        let isVIP = false;
+        
+        function checkVIPStatus() {
+            const machineId = generateMachineId();
+            const vipStatus = localStorage.getItem(`vip_status_${machineId}`);
+            console.log('检查VIP状态', vipStatus, '机器ID:', machineId);
+            return vipStatus === 'true';
+        }
+        
+        function setVIPStatus(status) {
+            const machineId = generateMachineId();
+            localStorage.setItem(`vip_status_${machineId}`, status.toString());
+            isVIP = status;
+            console.log('设置VIP状态', status, '机器ID:', machineId);
+        }
+        
+        function initializeVIPStatus() {
+            isVIP = checkVIPStatus();
+            console.log('VIP状态初始化:', isVIP);
+            if (isVIP) {
+                document.getElementById('vip-btn').textContent = 'VIP已激活';
+                document.getElementById('vip-btn').style.background = 'linear-gradient(90deg, #ff6b6b, #ff8e8e)';
+            }
+        }
+
+        // =================== 移动端检测 ===================
+        function isMobileDevice() {
+            return (typeof window.orientation !== "undefined") || 
+                   (navigator.userAgent.indexOf('IEMobile') !== -1) ||
+                   /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+        }
+        
+        function isIOS() {
+            return /iPhone|iPad|iPod/i.test(navigator.userAgent) || 
+                   (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+        }
+
+        // =================== 音乐管理系统 ===================
+        const bgMusic = new Audio("assets/1.mp3");
+        bgMusic.loop = true;
+        bgMusic.volume = 0.5;
+
+        let isBgMusicPlaying = false;
+        let wasBgMusicPlaying = false;
+
+        const videoMusic = new Audio();
+        videoMusic.loop = true;
+        videoMusic.volume = 0.5;
+
+        const musicMap = {
+            '1.mp4': 'assets/christmas-music.mp3',
+            '2.mp4': 'assets/christmas-music.mp3',
+            '3.mp4': 'assets/christmas-music.mp3',
+            '4.mp4': 'assets/christmas-music.mp3',
+            '5.mp4': 'assets/christmas-music.mp3',
+            '6.mp4': 'assets/christmas-music.mp3',
+            '7.mp4': 'assets/christmas-music.mp3',
+            '8.mp4': 'assets/christmas-music.mp3',
+            '9.mp4': 'assets/christmas-music.mp3',
+            '10.mp4': 'assets/christmas-music.mp3',
+            '11.mp4': 'assets/christmas-music.mp3',
+            '12.mp4': 'assets/christmas-music.mp3',
+            '13.mp4': 'assets/christmas-music.mp3',
+            '14.mp4': 'assets/christmas-music.mp3',
+            '15.mp4': 'assets/christmas-music.mp3'
+        };
+
+        const videosThatStopBgMusic = [
+            '1.mp4', '2.mp4', '3.mp4', '4.mp4', '5.mp4', '6.mp4', '7.mp4', '8.mp4', 
+            '9.mp4', '10.mp4', '11.mp4', '12.mp4', '13.mp4', '14.mp4', '15.mp4',
+            'cd.mp4', 'xs.mp4'
+        ];
+
+        const videosWithOriginalSound = ['cd.mp4', 'xs.mp4'];
+
+        function createIOSAudioOverlay(callback) {
+            const overlay = document.createElement('div');
+            overlay.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0, 0, 0, 0.7);
+                z-index: 10000;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                flex-direction: column;
+            `;
+            
+            const message = document.createElement('div');
+            message.innerHTML = '🎵 <strong>点击播放音乐</strong><br><small>iOS需要用户交互才能播放音频</small>';
+            message.style.cssText = `
+                background: white;
+                padding: 20px;
+                border-radius: 15px;
+                font-size: 16px;
+                text-align: center;
+                cursor: pointer;
+                box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+                margin-bottom: 20px;
+                max-width: 300px;
+            `;
+            
+            const instruction = document.createElement('div');
+            instruction.innerHTML = '📱 <small>播放后，可以正常使用所有功能</small>';
+            instruction.style.cssText = `
+                color: white;
+                text-align: center;
+                font-size: 14px;
+                max-width: 300px;
+            `;
+            
+            overlay.appendChild(message);
+            overlay.appendChild(instruction);
+            document.body.appendChild(overlay);
+            
+            message.addEventListener('click', function() {
+                document.body.removeChild(overlay);
+                callback();
+            });
+            
+            setTimeout(() => {
+                if (document.body.contains(overlay)) {
+                    document.body.removeChild(overlay);
+                }
+            }, 5000);
+        }
+
+        function playVideoMusicInternal(musicPath) {
+            videoMusic.src = musicPath;
+            videoMusic.currentTime = 0;
+            
+            if (isIOS()) {
+                videoMusic.muted = true;
+                const playPromise = videoMusic.play();
+                if (playPromise !== undefined) {
+                    playPromise.then(() => {
+                        videoMusic.muted = false;
+                        videoMusic.volume = 0.5;
+                        console.log(`🎵 iOS视频音乐播放成功: ${musicPath}`);
+                    }).catch(e => {
+                        console.log('🎵 iOS视频音乐播放失败:', e);
+                    });
+                }
+            } else {
+                const playPromise = videoMusic.play();
+                if (playPromise !== undefined) {
+                    playPromise.then(() => {
+                        console.log(`🎵 视频音乐播放成功: ${musicPath}`);
+                    }).catch(e => {
+                        console.log('🎵 视频音乐播放失败:', e);
+                    });
+                }
+            }
+        }
+
+        function playVideoMusic(videoSrc) {
+            console.log(`🎵 处理视频音乐: ${videoSrc}`);
+            
+            wasBgMusicPlaying = isBgMusicPlaying;
+            pauseBackgroundMusic();
+            
+            const videoNumber = parseInt(videoSrc.split('.')[0]);
+            if (!isNaN(videoNumber) && videoNumber >= 1 && videoNumber <= 15) {
+                console.log(`🎵 检测到1-15.mp4视频: ${videoSrc}，将背景音乐音量设为0`);
+                bgMusic.volume = 0;
+            }
+            
+            if (videoSrc === 'xs.mp4') {
+                console.log(`🎵 检测到xs.mp4视频，将背景音乐音量设为0`);
+                bgMusic.volume = 0;
+            }
+            
+            if (musicMap[videoSrc]) {
+                if (isIOS()) {
+                    console.log('🎵 iOS设备，等待用户交互播放音乐');
+                    try {
+                        playVideoMusicInternal(musicMap[videoSrc]);
+                    } catch (e) {
+                        console.log('🎵 iOS音乐播放需要用户交互', e);
+                        createIOSAudioOverlay(() => {
+                            playVideoMusicInternal(musicMap[videoSrc]);
+                        });
+                    }
+                } else if (isMobileDevice()) {
+                    console.log('🎵 移动端设备，等待用户交互播放音乐');
+                    const playPromise = videoMusic.play();
+                    if (playPromise !== undefined) {
+                        playPromise.catch(e => {
+                            console.log('🎵 移动端音乐播放被阻止:', e);
+                        });
+                    }
+                } else {
+                    playVideoMusicInternal(musicMap[videoSrc]);
+                }
+            } else if (videosWithOriginalSound.includes(videoSrc)) {
+                console.log(`🎵 使用视频原声: ${videoSrc}`);
+            } else {
+                console.log(`🎵 视频无背景音乐: ${videoSrc}`);
+            }
+        }
+
+        function stopVideoMusic() {
+            if (videoMusic.volume > 0) {
+                const fadeOut = setInterval(() => {
+                    if (videoMusic.volume > 0.1) {
+                        videoMusic.volume -= 0.05;
+                    } else {
+                        videoMusic.volume = 0;
+                        clearInterval(fadeOut);
+                        videoMusic.pause();
+                        videoMusic.currentTime = 0;
+                        videoMusic.volume = 0.5;
+                        console.log('🎵 视频音乐已停止');
+                    }
+                }, 50);
+            } else {
+                videoMusic.pause();
+                videoMusic.currentTime = 0;
+                console.log('🎵 视频音乐已停止');
+            }
+            
+            bgMusic.volume = 0.5;
+            
+            if (wasBgMusicPlaying) {
+                playBackgroundMusic();
+            }
+        }
+
+        function checkAndPlayChristmasMusic() {
+            if (checkIfChristmasDay()) {
+                if (isIOS() && !isBgMusicPlaying) {
+                    console.log('🎵 iOS设备，等待用户交互播放圣诞音乐');
+                    setTimeout(() => {
+                        createIOSAudioOverlay(() => {
+                            playBackgroundMusic();
+                        });
+                    }, 2000);
+                } else {
+                    playBackgroundMusic();
+                }
+            }
+        }
+
+        function playBackgroundMusic() {
+            if (!isBgMusicPlaying) {
+                if (checkIfChristmasDay()) {
+                    bgMusic.src = "assets/1.mp3";
+                }
                 
-                // 如果是GIF，尝试显示备用内容
-                if (element.src.includes('.gif')) {
-                    const filename = element.src.split('/').pop();
-                    switch(filename) {
-                        case '1.gif':
-                            element.alt = '🐰';
-                            element.style.fontSize = '20px';
-                            element.style.textAlign = 'center';
-                            element.style.lineHeight = '30px';
-                            break;
-                        case '5.gif':
-                            element.alt = '🎅';
-                            element.style.fontSize = '20px';
-                            element.style.textAlign = 'center';
-                            element.style.lineHeight = '30px';
-                            break;
+                if (isIOS()) {
+                    bgMusic.muted = true;
+                    const playPromise = bgMusic.play();
+                    if (playPromise !== undefined) {
+                        playPromise.then(() => {
+                            bgMusic.muted = false;
+                            isBgMusicPlaying = true;
+                            console.log('🎵 iOS背景音乐播放成功');
+                        }).catch(error => {
+                            console.log('🎵 iOS背景音乐自动播放被阻止');
+                            bgMusic.muted = false;
+                            document.addEventListener('click', function startAudioOnInteraction() {
+                                bgMusic.play().then(() => {
+                                    console.log('🎵 iOS用户交互后背景音乐播放成功');
+                                    isBgMusicPlaying = true;
+                                }).catch(e => {
+                                    console.log('🎵 iOS背景音乐播放失败:', e);
+                                });
+                                document.removeEventListener('click', startAudioOnInteraction);
+                            }, { once: true });
+                        });
+                    }
+                } else {
+                    const playPromise = bgMusic.play();
+                    if (playPromise !== undefined) {
+                        playPromise.then(() => {
+                            console.log('🎵 背景音乐播放成功');
+                            isBgMusicPlaying = true;
+                        }).catch(error => {
+                            console.log('🎵 背景音乐自动播放被阻止，需要用户交互');
+                            document.addEventListener('click', function startAudioOnInteraction() {
+                                bgMusic.play().then(() => {
+                                    console.log('🎵 用户交互后背景音乐播放成功');
+                                    isBgMusicPlaying = true;
+                                }).catch(e => {
+                                    console.log('🎵 背景音乐播放失败:', e);
+                                });
+                                document.removeEventListener('click', startAudioOnInteraction);
+                            }, { once: true });
+                        });
                     }
                 }
             }
-            
-            // 移除错误监听，避免重复处理
-            element.onerror = null;
         }
 
-        // 检查资源是否存在
-        async function checkResourceExists(url) {
-            try {
-                const response = await fetch(url, { method: 'HEAD' });
-                return response.ok;
-            } catch (error) {
-                return false;
+        function pauseBackgroundMusic() {
+            if (isBgMusicPlaying) {
+                if (bgMusic.volume > 0) {
+                    const fadeOut = setInterval(() => {
+                        if (bgMusic.volume > 0.1) {
+                            bgMusic.volume -= 0.05;
+                        } else {
+                            bgMusic.volume = 0;
+                            clearInterval(fadeOut);
+                            bgMusic.pause();
+                            isBgMusicPlaying = false;
+                            console.log('🎵 背景音乐已暂停');
+                        }
+                    }, 50);
+                } else {
+                    bgMusic.pause();
+                    isBgMusicPlaying = false;
+                    console.log('🎵 背景音乐已暂停');
+                }
             }
         }
 
         // =================== 时间系统 ===================
-        let targetTime = null;
-        
         function getBeijingTime() {
             const now = new Date();
             const utc = now.getTime() + now.getTimezoneOffset() * 60000;
@@ -1845,29 +2031,1314 @@
             return new Date(currentYear, 11, 25, 0, 0, 0, 0);
         }
 
-        function initializeTime() {
-            targetTime = getTargetTime();
-            updateCountdown();
-        }
+        let targetTime = getTargetTime();
 
         function updateCountdown() {
             const now = getBeijingTime();
             let diff = targetTime - now;
+            const isChristmas = checkIfChristmasDay();
             
             if (diff > 0) {
                 const days = Math.floor(diff / (1000 * 60 * 60 * 24));
                 const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / 3600000);
                 const minutes = Math.floor((diff % 3600000) / 60000);
                 const seconds = Math.floor((diff % 60000) / 1000);
-                document.getElementById('time').textContent = `${days}天 ${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+                document.getElementById('time').textContent = `${days}天${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
                 document.getElementById('start-btn').classList.remove('active');
-            } else {
-                document.getElementById('time').textContent = '0天 00:00:00';
+            } else if (isChristmas) {
+                document.getElementById('time').textContent = '0天00:00:00';
                 document.getElementById('start-btn').classList.add('active');
+                
+                if (!isBgMusicPlaying) {
+                    playBackgroundMusic();
+                }
+            } else if (diff <= 0 && !isChristmas) {
+                document.getElementById('time').textContent = '圣诞节已过';
+                document.getElementById('start-btn').classList.remove('active');
             }
         }
 
-        // =================== 雪花效果 ===================
+        // =================== 机器码生成 ===================
+        function generateMachineId() {
+            let machineId = localStorage.getItem('christmas_machine_id');
+            if (!machineId) {
+                machineId = 'xmas_' + Math.random().toString(36).substr(2, 9) + '_' + Date.now().toString(36);
+                localStorage.setItem('christmas_machine_id', machineId);
+            }
+            return machineId;
+        }
+
+        // =================== 礼盒管理 ===================
+        function getOpenedGifts() {
+            const machineId = generateMachineId();
+            const openedGifts = localStorage.getItem(`opened_gifts_${machineId}`);
+            return openedGifts ? JSON.parse(openedGifts) : [];
+        }
+        
+        function saveOpenedGift(giftIndex) {
+            const machineId = generateMachineId();
+            const openedGifts = getOpenedGifts();
+            if (!openedGifts.includes(giftIndex)) {
+                openedGifts.push(giftIndex);
+                localStorage.setItem(`opened_gifts_${machineId}`, JSON.stringify(openedGifts));
+            }
+        }
+        
+        function hasOpenedGift() {
+            return getOpenedGifts().length > 0;
+        }
+        
+        function updateGiftDisplay() {
+            const openedGifts = getOpenedGifts();
+            const gifts = document.querySelectorAll('.gift-item');
+            
+            console.log('更新礼盒显示状态- 已开启', openedGifts, 'VIP状态', isVIP);
+            
+            gifts.forEach((gift, index) => {
+                if (openedGifts.includes(index)) {
+                    gift.classList.remove('disabled');
+                } else if (openedGifts.length > 0 && !isVIP) {
+                    gift.classList.add('disabled');
+                } else {
+                    gift.classList.remove('disabled');
+                }
+            });
+        }
+        
+        function openGift(index) {
+            const openedGifts = getOpenedGifts();
+            
+            console.log('点击礼盒:', index, 'VIP状态', isVIP, '已开启礼盒', openedGifts);
+            
+            if (isVIP) {
+                playGiftVideo(index);
+                return;
+            }
+            
+            if (openedGifts.length > 0 && !openedGifts.includes(index)) {
+                showDogModal('只能开启一个礼盒', '每个用户只能开启一个圣诞小店礼盒哦！<br>其他礼盒可以在盲盒中抽取。<br>成为VIP可以解锁所有礼盒！', false);
+                return;
+            }
+            
+            if (openedGifts.includes(index)) {
+                playGiftVideo(index);
+                return;
+            }
+            
+            saveOpenedGift(index);
+            playGiftVideo(index);
+            updateGiftDisplay();
+            
+            setTimeout(() => {
+                showDogModal('恭喜！', '你已成功开启一个圣诞礼盒！<br>现在可以去抽盲盒了！', false);
+                document.getElementById('share-btn').textContent = '🎁 抽取盲盒';
+                document.getElementById('share-btn').style.display = 'inline-block';
+            }, 3000);
+        }
+
+        // =================== 背包系统 ===================
+        let backpackItems = [];
+
+        function initBackpack() {
+            const backpackBtn = document.getElementById('backpack-btn');
+            if (!backpackBtn) {
+                console.error('找不到背包按钮');
+                return;
+            }
+            
+            backpackBtn.style.display = 'inline-block';
+            
+            if (isIOS()) {
+                console.log('iOS设备，使用touch事件初始化背包按钮');
+                const newBtn = backpackBtn.cloneNode(true);
+                backpackBtn.parentNode.replaceChild(newBtn, backpackBtn);
+                
+                const updatedBackpackBtn = document.getElementById('backpack-btn');
+                updatedBackpackBtn.addEventListener('touchend', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    console.log('iOS背包按钮被触摸');
+                    showBackpack();
+                    return false;
+                });
+                
+                updatedBackpackBtn.addEventListener('touchstart', function() {
+                    this.style.opacity = '0.7';
+                });
+                
+                updatedBackpackBtn.addEventListener('touchend', function() {
+                    this.style.opacity = '1';
+                });
+                
+                updatedBackpackBtn.addEventListener('touchcancel', function() {
+                    this.style.opacity = '1';
+                });
+            } else {
+                backpackBtn.addEventListener('click', handleBackpackClick);
+                
+                if (isMobileDevice()) {
+                    backpackBtn.addEventListener('touchend', handleBackpackTouch);
+                    backpackBtn.addEventListener('touchstart', function() {
+                        this.style.opacity = '0.8';
+                    });
+                    backpackBtn.addEventListener('touchend', function() {
+                        this.style.opacity = '1';
+                    });
+                    backpackBtn.addEventListener('touchcancel', function() {
+                        this.style.opacity = '1';
+                    });
+                }
+            }
+            
+            const savedBackpack = localStorage.getItem('christmas_backpack');
+            if (savedBackpack) {
+                backpackItems = JSON.parse(savedBackpack);
+            }
+            
+            console.log('背包按钮初始化完成，iOS优化:', isIOS());
+        }
+        
+        function handleBackpackClick(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            console.log('背包按钮被点击');
+            showBackpack();
+        }
+        
+        function handleBackpackTouch(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            console.log('背包按钮被触摸');
+            showBackpack();
+        }
+        
+        function showBackpack() {
+            console.log('显示背包，iOS设备:', isIOS());
+            
+            const existingModal = document.querySelector('.backpack-modal');
+            if (existingModal) {
+                return;
+            }
+            
+            const overlay = document.createElement('div');
+            overlay.className = 'modal-overlay';
+            if (isIOS()) {
+                overlay.style.webkitOverflowScrolling = 'touch';
+                overlay.style.overflow = 'auto';
+            }
+            
+            const modal = document.createElement('div');
+            modal.className = 'backpack-modal';
+            
+            const openedGifts = getOpenedGifts();
+            const allGifts = document.querySelectorAll('.gift-item');
+            
+            let backpackItemsHTML = '';
+            
+            openedGifts.forEach(giftIndex => {
+                if (allGifts[giftIndex]) {
+                    const gift = allGifts[giftIndex];
+                    const giftTitle = gift.querySelector('.gift-title').textContent;
+                    const videoSrc = gift.dataset.video;
+                    
+                    backpackItemsHTML += `
+                        <div class="backpack-item available" data-video="${videoSrc}" data-index="${giftIndex}">
+                            <div class="item-icon">🎁</div>
+                            <div class="item-name">${giftTitle}</div>
+                        </div>
+                    `;
+                }
+            });
+            
+            backpackItems.forEach((item, itemIndex) => {
+                if (!item.includes('圣诞惊喜盒')) {
+                    backpackItemsHTML += `
+                        <div class="backpack-item available" data-item-index="${itemIndex}">
+                            <div class="item-icon">${getItemIcon(item)}</div>
+                            <div class="item-name">${item}</div>
+                        </div>
+                    `;
+                }
+            });
+            
+            if (!backpackItemsHTML) {
+                backpackItemsHTML = '<p style="grid-column: 1 / -1; padding: 20px; text-align: center;">背包空空如也，快去抽取礼盒和盲盒吧！</p>';
+            }
+            
+            modal.innerHTML = `
+                <h3>🎒 我的背包 🎒</h3>
+                <p>这里存放着你获得的礼盒和盲盒物品</p>
+                <div class="backpack-items">
+                    ${backpackItemsHTML}
+                </div>
+                <button id="close-backpack" style="margin-top: 15px; padding: 10px 20px;">关闭</button>
+            `;
+            
+            document.body.appendChild(overlay);
+            document.body.appendChild(modal);
+            
+            setTimeout(() => {
+                modal.querySelectorAll('.backpack-item.available').forEach(item => {
+                    if (isIOS()) {
+                        item.addEventListener('touchend', function(e) {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            handleBackpackItemClick.call(this, e);
+                            return false;
+                        });
+                        
+                        item.addEventListener('touchstart', function() {
+                            this.style.backgroundColor = '#8fd9b6';
+                        });
+                        
+                        item.addEventListener('touchend', function() {
+                            this.style.backgroundColor = '#a8e6cf';
+                        });
+                        
+                        item.addEventListener('touchcancel', function() {
+                            this.style.backgroundColor = '#a8e6cf';
+                        });
+                    } else {
+                        item.addEventListener('click', handleBackpackItemClick);
+                        
+                        if (isMobileDevice()) {
+                            item.addEventListener('touchend', handleBackpackItemTouch);
+                        }
+                    }
+                });
+            }, 100);
+            
+            const closeBtn = modal.querySelector('#close-backpack');
+            if (isIOS()) {
+                closeBtn.addEventListener('touchend', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    document.body.removeChild(overlay);
+                    document.body.removeChild(modal);
+                    return false;
+                });
+            } else {
+                closeBtn.addEventListener('click', () => {
+                    document.body.removeChild(overlay);
+                    document.body.removeChild(modal);
+                });
+            }
+            
+            overlay.addEventListener('click', (e) => {
+                if (e.target === overlay) {
+                    document.body.removeChild(overlay);
+                    document.body.removeChild(modal);
+                }
+            });
+            
+            if (isIOS()) {
+                overlay.addEventListener('touchend', (e) => {
+                    if (e.target === overlay) {
+                        e.preventDefault();
+                        document.body.removeChild(overlay);
+                        document.body.removeChild(modal);
+                        return false;
+                    }
+                });
+            }
+        }
+        
+        function handleBackpackItemClick(e) {
+            if (e) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
+            
+            const videoSrc = this.dataset.video;
+            if (videoSrc) {
+                playVideoFromBackpack(videoSrc);
+                
+                const overlay = document.querySelector('.modal-overlay');
+                const modal = document.querySelector('.backpack-modal');
+                if (overlay) document.body.removeChild(overlay);
+                if (modal) document.body.removeChild(modal);
+            }
+        }
+        
+        function handleBackpackItemTouch(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            handleBackpackItemClick.call(this, e);
+        }
+        
+        function playVideoFromBackpack(videoSrc) {
+            const name = document.querySelector('#main-container h1').textContent.replace('🎅', '').replace('的圣诞小店', '').replace('🎅', '').trim();
+            
+            const wrapper = document.createElement('div');
+            wrapper.className = 'video-wrapper';
+            if (isIOS()) {
+                wrapper.style.webkitOverflowScrolling = 'touch';
+            }
+            
+            const video = document.createElement('video');
+            video.src = videoSrc;
+            video.autoplay = true;
+            video.controls = false;
+            video.loop = false;
+            
+            video.setAttribute('playsinline', '');
+            video.setAttribute('webkit-playsinline', '');
+            video.playsInline = true;
+            video.webkitPlaysInline = true;
+            
+            const overlay = document.createElement('div');
+            overlay.className = 'video-overlay';
+            overlay.innerHTML = `<div class="name">${name}</div><div class="merry">Merry Christmas!</div>`;
+            
+            setOverlayPosition(overlay, 'top-left');
+            
+            wrapper.appendChild(video);
+            wrapper.appendChild(overlay);
+            document.body.appendChild(wrapper);
+            
+            playVideoMusic(videoSrc);
+            
+            video.addEventListener('ended', () => {
+                closeVideoWrapper(wrapper);
+            });
+            
+            video.addEventListener('error', () => {
+                closeVideoWrapper(wrapper);
+                showDogModal('播放错误', '视频播放失败，请稍后重试', false);
+            });
+            
+            wrapper.addEventListener('dblclick', () => {
+                closeVideoWrapper(wrapper);
+            });
+            
+            wrapper.addEventListener('click', (e) => {
+                if (e.target === wrapper || e.target === video) {
+                    setTimeout(() => {
+                        closeVideoWrapper(wrapper);
+                    }, isIOS() ? 100 : 0);
+                }
+            });
+            
+            if (isIOS()) {
+                wrapper.addEventListener('touchend', (e) => {
+                    if (e.target === wrapper || e.target === video) {
+                        e.preventDefault();
+                        setTimeout(() => {
+                            closeVideoWrapper(wrapper);
+                        }, 100);
+                        return false;
+                    }
+                });
+            }
+        }
+        
+        function getItemIcon(itemName) {
+            if (itemName.includes('礼盒')) return '🎁';
+            if (itemName.includes('被')) return '🧸';
+            if (itemName.includes('帽')) return '🎅';
+            if (itemName.includes('袜')) return '🎄';
+            if (itemName.includes('糖果')) return '🍬';
+            if (itemName.includes('饼干')) return '🍪';
+            if (itemName.includes('贺卡')) return '💌';
+            return '🎁';
+        }
+        
+        function addItemToBackpack(item) {
+            if (!backpackItems.includes(item)) {
+                backpackItems.push(item);
+                localStorage.setItem('christmas_backpack', JSON.stringify(backpackItems));
+            }
+        }
+
+        // =================== 盲盒系统 ===================
+        let blindBoxItems = [
+            { name: '圣诞被', probability: 20 },
+            { name: '圣诞帽', probability: 20 },
+            { name: '圣诞袜', probability: 15 },
+            { name: '圣诞糖果', probability: 15 },
+            { name: '圣诞饼干', probability: 15 },
+            { name: '圣诞贺卡', probability: 15 }
+        ];
+        
+        let blindBoxChances = 3;
+        let blindBoxPrizes = [];
+        let blindBoxOpened = [];
+        
+        function getBlindBoxState() {
+            const machineId = generateMachineId();
+            const state = localStorage.getItem(`blindbox_state_${machineId}`);
+            return state ? JSON.parse(state) : { chances: 3, opened: [] };
+        }
+        
+        function saveBlindBoxState() {
+            const machineId = generateMachineId();
+            const state = {
+                chances: blindBoxChances,
+                opened: blindBoxOpened
+            };
+            localStorage.setItem(`blindbox_state_${machineId}`, JSON.stringify(state));
+        }
+        
+        function initBlindBox() {
+            const savedState = getBlindBoxState();
+            blindBoxChances = savedState.chances;
+            blindBoxOpened = savedState.opened;
+            
+            document.getElementById('chances-left').textContent = blindBoxChances;
+            
+            const boxes = document.querySelectorAll('.blind-box');
+            boxes.forEach((box, index) => {
+                if (blindBoxOpened[index]) {
+                    box.classList.add('opened');
+                    box.textContent = blindBoxPrizes[index] === '感谢惠顾' ? '感谢惠顾' : '🎁';
+                    box.style.background = blindBoxPrizes[index] === '感谢惠顾' ? '#cccccc' : '#a8e6cf';
+                } else {
+                    box.classList.remove('opened');
+                    box.textContent = '?';
+                    box.style.background = '#ffcccc';
+                }
+            });
+            
+            if (blindBoxPrizes.length === 0) {
+                generateBlindBoxPrizes();
+            }
+            
+            console.log('盲盒初始化完成', { chances: blindBoxChances, opened: blindBoxOpened, prizes: blindBoxPrizes });
+        }
+        
+        function generateBlindBoxPrizes() {
+            const openedGifts = getOpenedGifts();
+            const giftItems = document.querySelectorAll('.gift-item');
+            
+            let availableItems = [];
+            
+            blindBoxItems.forEach(item => {
+                for (let i = 0; i < item.probability; i++) {
+                    availableItems.push(item.name);
+                }
+            });
+            
+            const availableGifts = Array.from(giftItems)
+                .map((gift, index) => ({index, title: gift.querySelector('.gift-title').textContent}))
+                .filter(gift => !openedGifts.includes(gift.index));
+            
+            const surpriseGifts = Array.from({length: 15}, (_, i) => `圣诞惊喜盒${i + 1}`);
+            
+            blindBoxPrizes = [];
+            const usedItems = new Set();
+            
+            for (let i = 0; i < 6; i++) {
+                let selectedPrize = null;
+                
+                if (availableItems.length > 0) {
+                    const randomIndex = Math.floor(Math.random() * availableItems.length);
+                    const candidate = availableItems[randomIndex];
+                    
+                    if (!usedItems.has(candidate)) {
+                        selectedPrize = candidate;
+                        usedItems.add(candidate);
+                        availableItems = availableItems.filter(item => item !== candidate);
+                    }
+                }
+                
+                if (!selectedPrize && availableGifts.length > 0) {
+                    const randomGiftIndex = Math.floor(Math.random() * availableGifts.length);
+                    const giftCandidate = availableGifts[randomGiftIndex].title;
+                    
+                    if (!usedItems.has(giftCandidate)) {
+                        selectedPrize = giftCandidate;
+                        usedItems.add(giftCandidate);
+                        availableGifts.splice(randomGiftIndex, 1);
+                    }
+                }
+                
+                if (!selectedPrize && surpriseGifts.length > 0) {
+                    const randomSurpriseIndex = Math.floor(Math.random() * surpriseGifts.length);
+                    selectedPrize = surpriseGifts[randomSurpriseIndex];
+                    usedItems.add(selectedPrize);
+                    surpriseGifts.splice(randomSurpriseIndex, 1);
+                }
+                
+                if (!selectedPrize) {
+                    selectedPrize = '感谢惠顾';
+                }
+                
+                blindBoxPrizes.push(selectedPrize);
+            }
+            
+            console.log('生成的盲盒奖品', blindBoxPrizes);
+        }
+        
+        function openBlindBox(index) {
+            if (blindBoxChances <= 0) {
+                showBunnyModal('抽奖次数已用尽', '你的盲盒抽奖次数已经用完啦！', false);
+                return;
+            }
+            
+            const box = document.querySelectorAll('.blind-box')[index];
+            if (box.classList.contains('opened')) {
+                showBunnyModal('提示', '这个盲盒已经开启过了！', false);
+                return;
+            }
+            
+            blindBoxChances--;
+            blindBoxOpened[index] = true;
+            
+            saveBlindBoxState();
+            
+            document.getElementById('chances-left').textContent = blindBoxChances;
+            
+            const prize = blindBoxPrizes[index];
+            box.classList.add('opened');
+            box.textContent = prize === '感谢惠顾' ? '感谢惠顾' : '🎁';
+            box.style.background = prize === '感谢惠顾' ? '#cccccc' : '#a8e6cf';
+            
+            if (prize !== '感谢惠顾') {
+                addItemToBackpack(prize);
+            }
+            
+            showBunnyModal(
+                prize === '感谢惠顾' ? '感谢惠顾' : '恭喜！', 
+                prize === '感谢惠顾' ? '很遗憾，这个盲盒是感谢惠顾！<br>还有机会，再试试吧！' : `你抽中了${prize}！🎉`, 
+                false
+            );
+            
+            if (blindBoxChances === 0) {
+                document.getElementById('santa').src = 'assets/8.gif';
+            }
+        }
+
+        // =================== 弹窗系统 ===================
+        let currentModal = null;
+        
+        function showBunnyModal(title, message, showInput = false, modalType = 'normal') {
+            if (currentModal) {
+                closeCurrentModal();
+            }
+            
+            const overlay = document.createElement('div');
+            overlay.className = 'modal-overlay';
+            
+            const modal = document.createElement('div');
+            modal.className = 'bunny-modal';
+            modal.innerHTML = `
+                <h3>${title}</h3>
+                <p>${message}</p>
+                ${showInput ? '<input type="text" id="password-input" placeholder="请输入密码" maxlength="4">' : ''}
+                <button id="modal-btn">${showInput ? '确定' : '好的'}</button>
+            `;
+            
+            document.body.appendChild(overlay);
+            document.body.appendChild(modal);
+            currentModal = { overlay, modal, type: modalType };
+            
+            const modalBtn = document.getElementById('modal-btn');
+            modalBtn.addEventListener('click', handleModalButtonClick);
+            
+            overlay.addEventListener('click', function(e) {
+                if (e.target === overlay) {
+                    if (modalType === 'lottery-step1' || modalType === 'lottery-step2') {
+                        return;
+                    }
+                    closeCurrentModal();
+                }
+            });
+            
+            if (showInput) {
+                const passwordInput = document.getElementById('password-input');
+                passwordInput.focus();
+                passwordInput.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') {
+                        handleModalButtonClick();
+                    }
+                });
+            }
+            
+            function handleModalButtonClick() {
+                if (showInput) {
+                    const passwordInput = document.getElementById('password-input');
+                    if (modalType === 'vip') {
+                        if (passwordInput.value === '2303') {
+                            closeCurrentModal();
+                            activateVIP();
+                        } else {
+                            closeCurrentModal();
+                            setTimeout(() => {
+                                showBunnyModal('密码错误', 'VIP密码不对哦～再想想吧？', true, 'vip');
+                            }, 300);
+                        }
+                    } else if (modalType === 'backdoor') {
+                        if (passwordInput.value === '2303') {
+                            closeCurrentModal();
+                            unlockAllGifts();
+                        } else {
+                            closeCurrentModal();
+                            setTimeout(() => {
+                                showBunnyModal('密码错误', '后门密码不对哦～再想想吧？', true, 'backdoor');
+                            }, 300);
+                        }
+                    } else if (modalType === 'bunny-blindbox') {
+                        if (passwordInput.value === '0214') {
+                            closeCurrentModal();
+                            drawBunnyBlindBox();
+                        } else {
+                            closeCurrentModal();
+                            setTimeout(() => {
+                                showBunnyModal('密码错误', '密码不对哦～再想想吧？', true, 'bunny-blindbox');
+                            }, 300);
+                        }
+                    } else if (modalType === 'edit-shop-name') {
+                        handleShopNameEdit(passwordInput.value);
+                    } else {
+                        if (passwordInput.value === '1225') {
+                            closeCurrentModal();
+                            setTimeout(() => {
+                                playCdVideo();
+                            }, 300);
+                        } else {
+                            closeCurrentModal();
+                            setTimeout(() => {
+                                showBunnyModal('密码错误', '密码不对哦～再想想吧？', true);
+                            }, 300);
+                        }
+                    }
+                } else {
+                    closeCurrentModal();
+                }
+            }
+        }
+        
+        function showDogModal(title, message, showInput = false, modalType = 'normal') {
+            if (currentModal) {
+                closeCurrentModal();
+            }
+            
+            const overlay = document.createElement('div');
+            overlay.className = 'modal-overlay';
+            
+            const modal = document.createElement('div');
+            modal.className = 'dog-modal';
+            modal.innerHTML = `
+                <h3>${title}</h3>
+                <p>${message}</p>
+                ${showInput ? '<input type="text" id="password-input" placeholder="请输入密码" maxlength="4">' : ''}
+                <button id="modal-btn">${showInput ? '确定' : '好的'}</button>
+            `;
+            
+            document.body.appendChild(overlay);
+            document.body.appendChild(modal);
+            currentModal = { overlay, modal, type: modalType };
+            
+            const modalBtn = document.getElementById('modal-btn');
+            modalBtn.addEventListener('click', handleModalButtonClick);
+            
+            overlay.addEventListener('click', function(e) {
+                if (e.target === overlay) {
+                    if (modalType === 'lottery-step1' || modalType === 'lottery-step2') {
+                        return;
+                    }
+                    closeCurrentModal();
+                }
+            });
+            
+            if (showInput) {
+                const passwordInput = document.getElementById('password-input');
+                passwordInput.focus();
+                passwordInput.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') {
+                        handleModalButtonClick();
+                    }
+                });
+            }
+            
+            function handleModalButtonClick() {
+                if (showInput) {
+                    const passwordInput = document.getElementById('password-input');
+                    if (modalType === 'backdoor') {
+                        if (passwordInput.value === '2303') {
+                            closeCurrentModal();
+                            unlockAllGifts();
+                        } else {
+                            closeCurrentModal();
+                            setTimeout(() => {
+                                showDogModal('密码错误', '后门密码不对哦～再想想吧？', true, 'backdoor');
+                            }, 300);
+                        }
+                    } else if (modalType === 'bunny-blindbox') {
+                        if (passwordInput.value === '0214') {
+                            closeCurrentModal();
+                            drawBunnyBlindBox();
+                        } else {
+                            closeCurrentModal();
+                            setTimeout(() => {
+                                showDogModal('密码错误', '密码不对哦～再想想吧？', true, 'bunny-blindbox');
+                            }, 300);
+                        }
+                    } else if (modalType === 'edit-shop-name') {
+                        handleShopNameEdit(passwordInput.value);
+                    } else {
+                        if (passwordInput.value === '1225') {
+                            closeCurrentModal();
+                            setTimeout(() => {
+                                playCdVideo();
+                            }, 300);
+                        } else {
+                            closeCurrentModal();
+                            setTimeout(() => {
+                                showDogModal('密码错误', '密码不对哦～再想想吧？', true);
+                            }, 300);
+                        }
+                    }
+                } else {
+                    closeCurrentModal();
+                }
+            }
+        }
+        
+        function closeCurrentModal() {
+            if (currentModal) {
+                if (document.body.contains(currentModal.overlay)) {
+                    document.body.removeChild(currentModal.overlay);
+                }
+                if (document.body.contains(currentModal.modal)) {
+                    document.body.removeChild(currentModal.modal);
+                }
+                currentModal = null;
+            }
+        }
+
+        // =================== 新增功能：店铺管理 ===================
+        // 显示盲盒概率设置
+        function displayProbabilitySettings() {
+            const container = document.getElementById('probability-items-container');
+            container.innerHTML = '';
+            
+            // 创建概率设置项
+            blindBoxItems.forEach((item, index) => {
+                const itemDiv = document.createElement('div');
+                itemDiv.className = 'probability-item';
+                itemDiv.innerHTML = `
+                    <input type="text" value="${item.name}" placeholder="物品名称" class="item-name-input" 
+                           style="flex: 1; padding: 8px; border: 1px solid #ddd; border-radius: 5px; margin-right: 10px;">
+                    <input type="range" min="0" max="100" value="${item.probability}" 
+                           class="probability-slider" style="flex: 2; margin-right: 10px;">
+                    <span class="probability-value" style="width: 50px; text-align: center;">${item.probability}%</span>
+                `;
+                
+                // 绑定滑块事件
+                const slider = itemDiv.querySelector('.probability-slider');
+                const valueDisplay = itemDiv.querySelector('.probability-value');
+                
+                slider.addEventListener('input', function() {
+                    const value = this.value;
+                    valueDisplay.textContent = value + '%';
+                    updateTotalProbability();
+                });
+                
+                container.appendChild(itemDiv);
+            });
+            
+            updateTotalProbability();
+        }
+        
+        function updateTotalProbability() {
+            let total = 0;
+            const sliders = document.querySelectorAll('.probability-slider');
+            sliders.forEach(slider => {
+                total += parseInt(slider.value);
+            });
+            
+            // 显示总概率
+            const totalDisplay = document.getElementById('total-probability') || (() => {
+                const div = document.createElement('div');
+                div.id = 'total-probability';
+                div.style.marginTop = '15px';
+                div.style.fontWeight = 'bold';
+                div.style.color = total === 100 ? '#4CAF50' : '#ff4444';
+                document.querySelector('#probability-items-container').appendChild(div);
+                return div;
+            })();
+            
+            totalDisplay.textContent = `总概率: ${total}%`;
+            totalDisplay.style.color = total === 100 ? '#4CAF50' : '#ff4444';
+        }
+        
+        // 保存概率设置
+        function saveProbabilitySettings() {
+            const items = [];
+            const itemInputs = document.querySelectorAll('.probability-item');
+            
+            itemInputs.forEach(item => {
+                const nameInput = item.querySelector('.item-name-input');
+                const probInput = item.querySelector('.probability-slider');
+                
+                if (nameInput && probInput) {
+                    items.push({
+                        name: nameInput.value.trim(),
+                        probability: parseInt(probInput.value)
+                    });
+                }
+            });
+            
+            // 验证总概率
+            const totalProbability = items.reduce((sum, item) => sum + item.probability, 0);
+            if (totalProbability !== 100) {
+                showBunnyModal('错误', `总概率必须为100%，当前为${totalProbability}%`, false);
+                return false;
+            }
+            
+            if (items.length === 0) {
+                showBunnyModal('错误', '至少需要设置一个物品！', false);
+                return false;
+            }
+            
+            // 保存设置
+            blindBoxItems = items;
+            localStorage.setItem('christmas_blindbox_items', JSON.stringify(blindBoxItems));
+            
+            // 重新生成盲盒奖品
+            generateBlindBoxPrizes();
+            
+            return true;
+        }
+        
+        // 生成分享链接
+        function generateShareLink() {
+            const shopName = document.querySelector('#main-container h1').textContent.replace('🎅', '').replace('的圣诞小店', '').replace('🎅', '').trim();
+            
+            // 创建分享数据
+            const shareData = {
+                shopName: shopName,
+                blindBoxItems: blindBoxItems,
+                timestamp: Date.now()
+            };
+            
+            // 编码分享数据
+            const encodedData = encodeURIComponent(JSON.stringify(shareData));
+            
+            // 生成分享链接
+            const currentUrl = new URL(window.location.href);
+            const baseUrl = currentUrl.origin + currentUrl.pathname;
+            const shareUrl = `${baseUrl}?name=${encodeURIComponent(shopName)}&shop=true&share=${encodedData}`;
+            
+            return shareUrl;
+        }
+        
+        // 复制到剪贴板
+        function copyToClipboard(text, callback) {
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(text).then(() => {
+                    if (callback) callback(true);
+                }).catch(() => {
+                    fallbackCopyText(text, callback);
+                });
+            } else {
+                fallbackCopyText(text, callback);
+            }
+        }
+        
+        function fallbackCopyText(text, callback) {
+            const textArea = document.createElement('textarea');
+            textArea.value = text;
+            textArea.style.position = 'fixed';
+            textArea.style.left = '-999999px';
+            textArea.style.top = '-999999px';
+            document.body.appendChild(textArea);
+            textArea.focus();
+            textArea.select();
+            
+            try {
+                const successful = document.execCommand('copy');
+                document.body.removeChild(textArea);
+                if (callback) callback(successful);
+            } catch (err) {
+                document.body.removeChild(textArea);
+                if (callback) callback(false);
+            }
+        }
+
+        // =================== 事件绑定 ===================
+        function bindEvents() {
+            // 开始按钮
+            document.getElementById('start-btn').addEventListener('click', handleStartShop);
+            
+            // 编辑店铺名称
+            document.getElementById('edit-shop-name').addEventListener('click', handleEditShopName);
+            
+            // VIP按钮
+            document.getElementById('vip-btn').addEventListener('click', handleVIP);
+            
+            // 管理盲盒按钮 - 修复：可以正确关闭
+            document.getElementById('manage-blindbox-btn').addEventListener('click', function() {
+                const settings = document.getElementById('blindbox-settings');
+                const shareSection = document.getElementById('shop-share-section');
+                const friendsSection = document.getElementById('friends-shop-section');
+                
+                // 关闭其他部分
+                shareSection.style.display = 'none';
+                friendsSection.style.display = 'none';
+                
+                // 切换盲盒设置显示
+                if (settings.style.display === 'none' || settings.style.display === '') {
+                    settings.style.display = 'block';
+                    displayProbabilitySettings();
+                } else {
+                    settings.style.display = 'none';
+                }
+            });
+            
+            // 分享店铺按钮 - 修复：可以正确关闭
+            document.getElementById('share-shop-btn').addEventListener('click', function() {
+                const settings = document.getElementById('blindbox-settings');
+                const shareSection = document.getElementById('shop-share-section');
+                const friendsSection = document.getElementById('friends-shop-section');
+                
+                // 关闭其他部分
+                settings.style.display = 'none';
+                friendsSection.style.display = 'none';
+                
+                // 切换分享区域显示
+                if (shareSection.style.display === 'none' || shareSection.style.display === '') {
+                    shareSection.style.display = 'block';
+                    
+                    // 生成分享链接
+                    const shareUrl = generateShareLink();
+                    document.getElementById('share-link-display').textContent = shareUrl;
+                    document.getElementById('share-link-display').style.color = '#fff';
+                } else {
+                    shareSection.style.display = 'none';
+                }
+            });
+            
+            // 访问好友按钮
+            document.getElementById('visit-friends-btn').addEventListener('click', function() {
+                const settings = document.getElementById('blindbox-settings');
+                const shareSection = document.getElementById('shop-share-section');
+                const friendsSection = document.getElementById('friends-shop-section');
+                
+                // 关闭其他部分
+                settings.style.display = 'none';
+                shareSection.style.display = 'none';
+                
+                // 切换好友区域显示
+                friendsSection.style.display = friendsSection.style.display === 'none' ? 'block' : 'none';
+            });
+            
+            // 保存概率设置
+            document.getElementById('save-probability-btn').addEventListener('click', function() {
+                if (saveProbabilitySettings()) {
+                    showBunnyModal('设置保存成功', '盲盒概率已更新！', false);
+                    
+                    // 隐藏设置区域
+                    document.getElementById('blindbox-settings').style.display = 'none';
+                }
+            });
+            
+            // 重置概率设置
+            document.getElementById('reset-probability-btn').addEventListener('click', function() {
+                blindBoxItems = [
+                    { name: '圣诞被', probability: 20 },
+                    { name: '圣诞帽', probability: 20 },
+                    { name: '圣诞袜', probability: 15 },
+                    { name: '圣诞糖果', probability: 15 },
+                    { name: '圣诞饼干', probability: 15 },
+                    { name: '圣诞贺卡', probability: 15 }
+                ];
+                
+                localStorage.removeItem('christmas_blindbox_items');
+                displayProbabilitySettings();
+                
+                showBunnyModal('重置成功', '已恢复为默认盲盒设置！', false);
+            });
+            
+            // 复制分享链接
+            document.getElementById('copy-share-btn').addEventListener('click', function() {
+                const shareLink = document.getElementById('share-link-display').textContent;
+                if (shareLink && shareLink !== '生成中...') {
+                    copyToClipboard(shareLink, function(success) {
+                        if (success) {
+                            showBunnyModal('复制成功', '链接已复制到剪贴板！', false);
+                        } else {
+                            showBunnyModal('复制失败', '请手动复制链接', false);
+                        }
+                    });
+                }
+            });
+            
+            // 关闭分享按钮
+            document.getElementById('close-share-btn').addEventListener('click', function() {
+                document.getElementById('shop-share-section').style.display = 'none';
+            });
+            
+            // 访问好友
+            document.getElementById('visit-friend-btn').addEventListener('click', function() {
+                const shareCode = document.getElementById('friend-share-code').value.trim();
+                if (!shareCode) {
+                    showBunnyModal('提示', '请输入好友的分享码', false);
+                    return;
+                }
+                
+                showBunnyModal('访问好友', `正在访问好友店铺: ${shareCode}`, false);
+                // 这里可以添加实际访问好友店铺的逻辑
+            });
+            
+            // 礼盒点击事件
+            document.querySelectorAll('.gift-item').forEach((gift, index) => {
+                if (isIOS()) {
+                    gift.addEventListener('touchend', function(e) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        console.log('iOS礼盒被点击', index);
+                        openGift(index);
+                        return false;
+                    });
+                } else {
+                    gift.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        console.log('礼盒被点击', index);
+                        openGift(index);
+                    });
+                }
+            });
+            
+            // 盲盒点击事件
+            document.querySelectorAll('.blind-box').forEach((box, index) => {
+                if (isIOS()) {
+                    box.addEventListener('touchend', function(e) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        console.log('iOS盲盒被触摸', index);
+                        openBlindBox(index);
+                        return false;
+                    });
+                } else {
+                    box.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        const index = parseInt(this.dataset.index);
+                        openBlindBox(index);
+                    });
+                }
+            });
+            
+            // 返回小店按钮
+            document.getElementById('back-to-store').addEventListener('click', function() {
+                document.getElementById('blind-box-container').style.display = 'none';
+                document.getElementById('store').style.display = 'block';
+                document.getElementById('share-btn').style.display = 'inline-block';
+            });
+            
+            // 盲盒抽取按钮
+            document.getElementById('share-btn').addEventListener('click', function() {
+                if (hasOpenedGift()) {
+                    document.getElementById('store').style.display = 'none';
+                    document.getElementById('blind-box-container').style.display = 'flex';
+                    document.getElementById('share-btn').style.display = 'none';
+                    
+                    initBlindBox();
+                } else {
+                    showBunnyModal('提示', '请先开启一个圣诞礼盒，然后才能抽取盲盒哦！', false);
+                }
+            });
+            
+            // 分享小店链接按钮
+            document.getElementById('share-shop-link').addEventListener('click', function() {
+                const shareUrl = generateShareLink();
+                copyToClipboard(shareUrl, function(success) {
+                    if (success) {
+                        showBunnyModal('分享成功', '链接已自动复制到剪贴板！<br>快去粘贴发给朋友吧！🎄');
+                    } else {
+                        showBunnyModal('分享链接', `请复制以下链接分享给朋友：<br><br><span style="background: #f0f0f0; padding: 5px; border-radius: 5px; font-size: 14px;">${shareUrl}</span>`);
+                    }
+                });
+            });
+        }
+
+        // =================== 事件处理函数 ===================
+        function handleStartShop() {
+            const now = getBeijingTime();
+            const isChristmas = checkIfChristmasDay();
+            
+            if (now < targetTime && !isChristmas) {
+                showBunnyModal('商店还没开启', '圣诞老爷爷还在准备中～<br>请等待倒计时结束哦！🎅');
+                return;
+            }
+            
+            const nameInput = document.getElementById('username').value.trim();
+            if (!nameInput) {
+                showBunnyModal('请输入名字', '小兔子想知道你的名字～<br>这样才好为你准备礼物呀！🎄');
+                return;
+            }
+            
+            document.querySelector('#main-container h1').textContent = `🎅 ${nameInput}的圣诞小店 🎅`;
+            document.getElementById('store').style.display = 'block';
+            document.getElementById('start-btn').style.display = 'none';
+            document.getElementById('username').style.display = 'none';
+            document.getElementById('countdown').style.display = 'none';
+            document.getElementById('edit-shop-name').style.display = 'inline-block';
+            document.getElementById('bunny').src = 'assets/3.gif';
+            
+            // 更新店铺信息显示
+            document.getElementById('shop-name-display').textContent = `${nameInput}的圣诞小店`;
+            document.getElementById('shop-owner').textContent = nameInput;
+            
+            // 初始化背包
+            initBackpack();
+            
+            // 初始化礼盒事件
+            updateGiftDisplay();
+            
+            if (checkIfChristmasDay()) {
+                setTimeout(() => {
+                    playBackgroundMusic();
+                }, 1000);
+            }
+            
+            // 保存用户名
+            localStorage.setItem('username', nameInput);
+        }
+        
+        function handleEditShopName() {
+            const currentTitle = document.querySelector('#main-container h1').textContent;
+            const currentName = currentTitle.replace('🎅', '').replace('的圣诞小店', '').replace('🎅', '').trim();
+            
+            showBunnyModal('编辑店铺名称', '请输入新的店铺名称：', true, 'edit-shop-name');
+            
+            setTimeout(() => {
+                const passwordInput = document.getElementById('password-input');
+                if (passwordInput) {
+                    passwordInput.value = currentName;
+                    passwordInput.select();
+                }
+            }, 100);
+        }
+        
+        function handleVIP() {
+            if (isVIP) {
+                showBunnyModal('VIP通道', '您已经是VIP用户，可以查看所有礼盒！', false);
+                return;
+            }
+            
+            showBunnyModal('VIP通道', '请输入VIP密码解锁所有礼盒：', true, 'vip');
+        }
+        
+        function handleShopNameEdit(newName) {
+            if (newName && newName.trim() !== '') {
+                const shopName = newName.trim();
+                document.querySelector('#main-container h1').textContent = `🎅 ${shopName}的圣诞小店 🎅`;
+                document.getElementById('shop-name-display').textContent = `${shopName}的圣诞小店`;
+                
+                localStorage.setItem('christmas_shop_name', shopName);
+                
+                showBunnyModal('修改成功', `店铺名称已修改为：${shopName}`, false);
+            }
+        }
+        
+        function activateVIP() {
+            setVIPStatus(true);
+            document.getElementById('vip-btn').textContent = 'VIP已激活';
+            document.getElementById('vip-btn').style.background = 'linear-gradient(90deg, #ff6b6b, #ff8e8e)';
+            
+            updateGiftDisplay();
+            
+            showBunnyModal('VIP激活成功', '恭喜您成为VIP用户！<br>现在可以查看所有圣诞惊喜礼盒了！', false);
+        }
+        
+        function unlockAllGifts() {
+            const gifts = document.querySelectorAll('.gift-item');
+            gifts.forEach((gift, index) => {
+                saveOpenedGift(index);
+            });
+            
+            showBunnyModal('后门开启成功', '所有礼盒已解锁！现在你可以开启任意礼盒了。', false);
+        }
+
+        // =================== 初始化函数 ===================
+        function initialize() {
+            console.log('页面初始化开始...');
+            
+            // 初始化雪花效果
+            initSnow();
+            
+            // 初始化时间
+            updateCountdown();
+            setInterval(updateCountdown, 1000);
+            
+            // 初始化VIP状态
+            initializeVIPStatus();
+            
+            // 加载保存的盲盒设置
+            const savedBlindBoxItems = localStorage.getItem('christmas_blindbox_items');
+            if (savedBlindBoxItems) {
+                blindBoxItems = JSON.parse(savedBlindBoxItems);
+            }
+            
+            // 检查小兔子盲盒状态
+            const bunnyBlindBoxDrawn = localStorage.getItem('bunny_blindbox_drawn');
+            if (bunnyBlindBoxDrawn === 'true') {
+                document.getElementById('bunny').src = 'assets/4.gif';
+                document.getElementById('top-right-bunny').style.display = 'block';
+                
+                const topRightBunny = document.getElementById('top-right-bunny');
+                if (topRightBunny) {
+                    topRightBunny.addEventListener('click', showTopRightBunnyDialog);
+                }
+            }
+            
+            // 检查并播放圣诞音乐
+            checkAndPlayChristmasMusic();
+            
+            // 绑定事件
+            bindEvents();
+            
+            // 检查URL参数
+            autoOpenShopWithName();
+            
+            // iOS特殊处理
+            if (isIOS()) {
+                console.log('🔧 iOS Safari 特殊初始化完成');
+                document.addEventListener('touchstart', function(event) {
+                    if (event.touches.length > 1) {
+                        event.preventDefault();
+                    }
+                }, { passive: false });
+                
+                document.addEventListener('contextmenu', function(e) {
+                    e.preventDefault();
+                });
+            }
+            
+            console.log('页面初始化完成');
+        }
+        
+        // =================== 辅助函数 ===================
+        function checkIfChristmasDay() {
+            const now = getBeijingTime();
+            const month = now.getMonth() + 1;
+            const date = now.getDate();
+            
+            console.log('检查圣诞节:', { month, date, result: month === 12 && date === 25 });
+            return month === 12 && date === 25;
+        }
+        
+        function autoOpenShopWithName() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const name = urlParams.get('name');
+            const shouldOpenShop = urlParams.get('shop') === 'true';
+            
+            if (name && shouldOpenShop) {
+                document.getElementById('username').value = name;
+                
+                const now = getBeijingTime();
+                const isChristmas = checkIfChristmasDay();
+                
+                if (isChristmas || now >= targetTime) {
+                    handleStartShop();
+                }
+            }
+        }
+        
         function initSnow() {
             const canvas = document.getElementById('snow');
             const ctx = canvas.getContext('2d');
@@ -1881,7 +3352,7 @@
             window.addEventListener('resize', resizeCanvas);
             
             const flakes = [];
-            const FLAKE_COUNT = Math.floor(Math.min(150, window.innerWidth / 8));
+            const FLAKE_COUNT = Math.floor(Math.min(180, window.innerWidth / 6));
             
             for (let i = 0; i < FLAKE_COUNT; i++) {
                 flakes.push({
@@ -1926,1439 +3397,20 @@
             loop();
         }
 
-        // =================== 用户系统 ===================
-        let currentUser = null;
-        let userDeviceId = null;
-
-        // 获取或创建设备ID
-        function getDeviceId() {
-            if (!userDeviceId) {
-                userDeviceId = localStorage.getItem('device_id');
-                if (!userDeviceId) {
-                    userDeviceId = 'device_' + Math.random().toString(36).substr(2, 9) + '_' + Date.now().toString(36);
-                    localStorage.setItem('device_id', userDeviceId);
-                }
-            }
-            return userDeviceId;
-        }
-
-        // 获取或创建用户
-        async function getOrCreateUser(username) {
-            try {
-                // 尝试使用API
-                if (CONFIG.API_BASE_URL.includes('your-vercel-app')) {
-                    throw new Error('API未配置');
-                }
-                
-                const response = await fetch(`${CONFIG.API_BASE_URL}/users`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        username: username,
-                        device_id: getDeviceId()
-                    })
-                });
-                
-                if (response.ok) {
-                    const result = await response.json();
-                    if (result.user) {
-                        currentUser = result.user;
-                        updateUserDisplay();
-                        return currentUser;
-                    }
-                }
-            } catch (error) {
-                console.log('使用本地用户系统:', error.message);
-            }
-            
-            // 使用本地存储作为后备
-            currentUser = {
-                user_id: getDeviceId(),
-                username: username,
-                shop_name: `${username}的圣诞小店`,
-                isNew: true,
-                created_at: new Date().toISOString()
-            };
-            
-            // 保存到localStorage
-            localStorage.setItem('user_' + currentUser.user_id, JSON.stringify(currentUser));
-            localStorage.setItem('last_username', username);
-            
-            updateUserDisplay();
-            return currentUser;
-        }
-
-        // 更新用户显示
-        function updateUserDisplay() {
-            if (currentUser) {
-                const shopNameDisplay = document.getElementById('shop-name-display');
-                const shopOwner = document.getElementById('shop-owner');
-                
-                if (shopNameDisplay) {
-                    shopNameDisplay.textContent = currentUser.shop_name;
-                }
-                if (shopOwner) {
-                    shopOwner.textContent = currentUser.username;
-                }
-            }
-        }
-
-        // 更新店铺名称
-        function updateShopName(newName) {
-            if (!currentUser) return;
-            
-            currentUser.shop_name = newName.endsWith('的圣诞小店') ? newName : `${newName}的圣诞小店`;
-            
-            // 更新显示
-            updateUserDisplay();
-            
-            // 更新标题
-            const mainTitle = document.querySelector('#main-container h1');
-            if (mainTitle) {
-                mainTitle.textContent = `🎄 ${currentUser.shop_name} 🎄`;
-            }
-            
-            // 保存到localStorage
-            localStorage.setItem('user_' + currentUser.user_id, JSON.stringify(currentUser));
-            
-            return currentUser.shop_name;
-        }
-
-        // =================== 盲盒系统 ===================
-        let blindboxItems = [];
-        let blindboxDrawCount = 0;
-
-        // 生成默认盲盒
-        async function generateDefaultBlindbox() {
-            const selectedVideos = [];
-            
-            // 随机选择5个不重复的1-15
-            while (selectedVideos.length < 5) {
-                const randomNum = Math.floor(Math.random() * 15) + 1;
-                if (!selectedVideos.includes(randomNum)) {
-                    selectedVideos.push(randomNum);
-                }
-            }
-            
-            // 生成5个礼盒（每个16%概率）
-            blindboxItems = [];
-            for (let i = 0; i < 5; i++) {
-                blindboxItems.push({
-                    id: `default_${i}`,
-                    item_name: `圣诞惊喜礼盒${selectedVideos[i]}`,
-                    video_name: `${selectedVideos[i]}.mp4`,
-                    probability: 16,
-                    is_custom: false,
-                    order_index: i
-                });
-            }
-            
-            // 添加谢谢惠顾（20%概率）
-            blindboxItems.push({
-                id: 'default_thanks',
-                item_name: '谢谢惠顾',
-                video_name: null,
-                probability: 20,
-                is_custom: false,
-                order_index: 5
+        // =================== 页面加载 ===================
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('页面加载完成，开始初始化...');
+            console.log('设备信息:', {
+                userAgent: navigator.userAgent,
+                isIOS: isIOS(),
+                isMobile: isMobileDevice(),
+                platform: navigator.platform
             });
-            
-            // 保存到localStorage
-            if (currentUser) {
-                localStorage.setItem(`blindbox_${currentUser.user_id}`, JSON.stringify(blindboxItems));
-            }
-            
-            return blindboxItems;
-        }
-
-        // 获取盲盒物品
-        async function getBlindboxItems(sharerId = null) {
-            try {
-                // 如果有sharerId，获取好友的盲盒设置
-                if (sharerId) {
-                    const friendBlindbox = localStorage.getItem(`blindbox_${sharerId}`);
-                    if (friendBlindbox) {
-                        blindboxItems = JSON.parse(friendBlindbox);
-                        // 移除概率信息（对访客隐藏）
-                        blindboxItems = blindboxItems.map(item => ({
-                            id: item.id,
-                            item_name: item.item_name,
-                            video_name: item.video_name,
-                            is_custom: item.is_custom
-                        }));
-                        return blindboxItems;
-                    }
-                }
-                
-                // 获取自己的盲盒设置
-                if (currentUser) {
-                    const savedBlindbox = localStorage.getItem(`blindbox_${currentUser.user_id}`);
-                    if (savedBlindbox) {
-                        blindboxItems = JSON.parse(savedBlindbox);
-                    } else {
-                        await generateDefaultBlindbox();
-                    }
-                } else {
-                    await generateDefaultBlindbox();
-                }
-                
-                return blindboxItems;
-            } catch (error) {
-                console.error('获取盲盒物品失败:', error);
-                await generateDefaultBlindbox();
-                return blindboxItems;
-            }
-        }
-
-        // 抽取盲盒
-        async function drawBlindbox(sharerId = null) {
-            try {
-                // 检查抽取限制
-                const canDraw = await checkDrawLimit(sharerId);
-                if (!canDraw.allowed) {
-                    throw new Error(canDraw.reason || '抽取次数已达上限');
-                }
-                
-                // 获取盲盒物品
-                const items = await getBlindboxItems(sharerId);
-                if (!items || items.length === 0) {
-                    await generateDefaultBlindbox();
-                }
-                
-                // 如果是好友的盲盒，使用默认概率
-                let itemsWithProbability = [...blindboxItems];
-                if (sharerId) {
-                    // 对于好友盲盒，使用简化概率（前5个各16%，谢谢惠顾20%）
-                    itemsWithProbability = items.map((item, index) => ({
-                        ...item,
-                        probability: index < 5 ? 16 : 20
-                    }));
-                }
-                
-                // 计算随机结果
-                const random = Math.random() * 100;
-                let cumulative = 0;
-                let selectedItem = null;
-                
-                for (const item of itemsWithProbability) {
-                    cumulative += item.probability || 0;
-                    if (random <= cumulative) {
-                        selectedItem = item;
-                        break;
-                    }
-                }
-                
-                if (!selectedItem) {
-                    selectedItem = itemsWithProbability[itemsWithProbability.length - 1];
-                }
-                
-                // 更新抽取次数
-                blindboxDrawCount++;
-                
-                // 记录抽取历史
-                const drawRecord = {
-                    timestamp: new Date().toISOString(),
-                    item: selectedItem,
-                    isThanks: selectedItem.item_name === '谢谢惠顾',
-                    sharer_id: sharerId
-                };
-                
-                let drawHistory = JSON.parse(localStorage.getItem(`draw_history_${currentUser.user_id}`) || '[]');
-                drawHistory.push(drawRecord);
-                localStorage.setItem(`draw_history_${currentUser.user_id}`, JSON.stringify(drawHistory));
-                
-                // 如果不是谢谢惠顾，添加到背包
-                if (selectedItem.item_name !== '谢谢惠顾') {
-                    await addToBackpack(selectedItem);
-                }
-                
-                return {
-                    success: true,
-                    item: selectedItem,
-                    isThanks: selectedItem.item_name === '谢谢惠顾',
-                    remaining: CONFIG.MAX_DRAW_COUNT - blindboxDrawCount,
-                    drawCount: blindboxDrawCount
-                };
-                
-            } catch (error) {
-                console.error('抽取盲盒失败:', error);
-                throw error;
-            }
-        }
-
-        // 检查抽取限制
-        async function checkDrawLimit(sharerId = null) {
-            try {
-                const key = sharerId ? `draw_count_${currentUser.user_id}_${sharerId}` : `draw_count_${currentUser.user_id}`;
-                const drawCount = parseInt(localStorage.getItem(key) || '0');
-                
-                if (drawCount >= CONFIG.MAX_DRAW_COUNT) {
-                    return {
-                        allowed: false,
-                        reason: '今天的抽取次数已用完',
-                        remaining: 0,
-                        drawCount: drawCount
-                    };
-                }
-                
-                return {
-                    allowed: true,
-                    remaining: CONFIG.MAX_DRAW_COUNT - drawCount,
-                    drawCount: drawCount
-                };
-            } catch (error) {
-                console.error('检查抽取限制失败:', error);
-                return {
-                    allowed: blindboxDrawCount < CONFIG.MAX_DRAW_COUNT,
-                    remaining: CONFIG.MAX_DRAW_COUNT - blindboxDrawCount,
-                    drawCount: blindboxDrawCount
-                };
-            }
-        }
-
-        // 更新盲盒设置
-        async function updateBlindboxItems(items) {
-            try {
-                // 验证概率总和为100
-                const totalProbability = items.reduce((sum, item) => sum + (item.probability || 0), 0);
-                if (totalProbability !== 100) {
-                    throw new Error(`概率总和必须为100%，当前为${totalProbability}%`);
-                }
-                
-                // 保存到localStorage
-                if (currentUser) {
-                    localStorage.setItem(`blindbox_${currentUser.user_id}`, JSON.stringify(items));
-                    blindboxItems = items;
-                }
-                
-                return true;
-            } catch (error) {
-                console.error('更新盲盒物品失败:', error);
-                throw error;
-            }
-        }
-
-        // =================== 背包系统 ===================
-        let backpackItems = [];
-
-        // 获取背包物品
-        async function getBackpackItems() {
-            try {
-                if (currentUser) {
-                    const savedBackpack = localStorage.getItem(`backpack_${currentUser.user_id}`);
-                    backpackItems = savedBackpack ? JSON.parse(savedBackpack) : [];
-                } else {
-                    backpackItems = [];
-                }
-                return backpackItems;
-            } catch (error) {
-                console.error('获取背包失败:', error);
-                return [];
-            }
-        }
-
-        // 添加到背包
-        async function addToBackpack(item) {
-            try {
-                if (!currentUser) return false;
-                
-                // 获取当前背包
-                let backpack = JSON.parse(localStorage.getItem(`backpack_${currentUser.user_id}`) || '[]');
-                
-                // 添加新物品
-                const backpackItem = {
-                    id: item.id || 'item_' + Date.now(),
-                    item_name: item.item_name,
-                    video_name: item.video_name,
-                    obtained_at: new Date().toISOString(),
-                    source: 'blindbox'
-                };
-                
-                backpack.push(backpackItem);
-                
-                // 保存到localStorage
-                localStorage.setItem(`backpack_${currentUser.user_id}`, JSON.stringify(backpack));
-                
-                // 更新本地数组
-                backpackItems = backpack;
-                
-                return true;
-            } catch (error) {
-                console.error('添加到背包失败:', error);
-                return false;
-            }
-        }
-
-        // =================== 分享系统 ===================
-        // 创建店铺分享
-        async function createShopShare() {
-            try {
-                if (!currentUser) {
-                    throw new Error('请先登录');
-                }
-                
-                // 生成分享码
-                const shareCode = generateShareCode();
-                
-                // 创建分享链接
-                const shareUrl = `${window.location.origin}${window.location.pathname}?code=${shareCode}&user=${currentUser.user_id}`;
-                
-                // 保存分享记录
-                const shareRecord = {
-                    share_code: shareCode,
-                    user_id: currentUser.user_id,
-                    username: currentUser.username,
-                    shop_name: currentUser.shop_name,
-                    created_at: new Date().toISOString(),
-                    share_type: 'shop'
-                };
-                
-                localStorage.setItem(`share_${shareCode}`, JSON.stringify(shareRecord));
-                
-                // 保存用户的分享记录
-                let userShares = JSON.parse(localStorage.getItem(`user_shares_${currentUser.user_id}`) || '[]');
-                userShares.push(shareRecord);
-                localStorage.setItem(`user_shares_${currentUser.user_id}`, JSON.stringify(userShares));
-                
-                return {
-                    success: true,
-                    shareUrl: shareUrl,
-                    shareCode: shareCode,
-                    shortUrl: shareUrl
-                };
-                
-            } catch (error) {
-                console.error('创建分享失败:', error);
-                throw error;
-            }
-        }
-
-        // 生成分享码
-        function generateShareCode() {
-            const chars = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';
-            let code = '';
-            for (let i = 0; i < CONFIG.SHARE_CODE_LENGTH; i++) {
-                code += chars.charAt(Math.floor(Math.random() * chars.length));
-            }
-            return code;
-        }
-
-        // 获取分享信息
-        async function getShareInfo(shareCode) {
-            try {
-                const shareRecord = localStorage.getItem(`share_${shareCode}`);
-                if (!shareRecord) {
-                    return null;
-                }
-                
-                return JSON.parse(shareRecord);
-            } catch (error) {
-                console.error('获取分享信息失败:', error);
-                return null;
-            }
-        }
-
-        // =================== 事件绑定 ===================
-        function bindEvents() {
-            // 开始按钮
-            const startBtn = document.getElementById('start-btn');
-            if (startBtn) {
-                startBtn.addEventListener('click', handleStartShop);
-            }
-            
-            // 编辑店铺名称
-            const editShopNameBtn = document.getElementById('edit-shop-name');
-            if (editShopNameBtn) {
-                editShopNameBtn.addEventListener('click', handleEditShopName);
-            }
-            
-            // VIP按钮
-            const vipBtn = document.getElementById('vip-btn');
-            if (vipBtn) {
-                vipBtn.addEventListener('click', handleVIP);
-            }
-            
-            // 管理盲盒按钮
-            const manageBlindboxBtn = document.getElementById('manage-blindbox-btn');
-            if (manageBlindboxBtn) {
-                manageBlindboxBtn.addEventListener('click', handleManageBlindbox);
-            }
-            
-            // 分享店铺按钮
-            const shareShopBtn = document.getElementById('share-shop-btn');
-            if (shareShopBtn) {
-                shareShopBtn.addEventListener('click', handleShareShop);
-            }
-            
-            // 访问好友按钮
-            const visitFriendsBtn = document.getElementById('visit-friends-btn');
-            if (visitFriendsBtn) {
-                visitFriendsBtn.addEventListener('click', handleVisitFriends);
-            }
-            
-            // 保存概率设置
-            const saveProbabilityBtn = document.getElementById('save-probability-btn');
-            if (saveProbabilityBtn) {
-                saveProbabilityBtn.addEventListener('click', handleSaveProbability);
-            }
-            
-            // 重置概率设置
-            const resetProbabilityBtn = document.getElementById('reset-probability-btn');
-            if (resetProbabilityBtn) {
-                resetProbabilityBtn.addEventListener('click', handleResetProbability);
-            }
-            
-            // 复制分享链接
-            const copyShareBtn = document.getElementById('copy-share-btn');
-            if (copyShareBtn) {
-                copyShareBtn.addEventListener('click', handleCopyShareLink);
-            }
-            
-            // 生成二维码
-            const generateQRCodeBtn = document.getElementById('generate-qrcode-btn');
-            if (generateQRCodeBtn) {
-                generateQRCodeBtn.addEventListener('click', handleGenerateQRCode);
-            }
-            
-            // 访问好友
-            const visitFriendBtn = document.getElementById('visit-friend-btn');
-            if (visitFriendBtn) {
-                visitFriendBtn.addEventListener('click', handleVisitFriend);
-            }
-            
-            // 背包按钮
-            const backpackBtn = document.getElementById('backpack-btn');
-            if (backpackBtn) {
-                backpackBtn.addEventListener('click', handleBackpack);
-            }
-            
-            // 盲盒抽取按钮
-            const shareBtn = document.getElementById('share-btn');
-            if (shareBtn) {
-                shareBtn.addEventListener('click', handleBlindboxDraw);
-            }
-            
-            // 返回小店按钮
-            const backToStoreBtn = document.getElementById('back-to-store');
-            if (backToStoreBtn) {
-                backToStoreBtn.addEventListener('click', handleBackToStore);
-            }
-            
-            // 分享小店链接按钮
-            const shareShopLinkBtn = document.getElementById('share-shop-link');
-            if (shareShopLinkBtn) {
-                shareShopLinkBtn.addEventListener('click', handleShareShopLink);
-            }
-            
-            // 绑定礼盒点击事件
-            document.querySelectorAll('.gift-item').forEach((gift, index) => {
-                gift.addEventListener('click', () => handleGiftClick(index));
-            });
-            
-            // 绑定盲盒点击事件
-            document.querySelectorAll('.blind-box').forEach((box, index) => {
-                box.addEventListener('click', () => handleBlindboxClick(index));
-            });
-            
-            // 用户名输入框回车事件
-            const usernameInput = document.getElementById('username');
-            if (usernameInput) {
-                usernameInput.addEventListener('keypress', (e) => {
-                    if (e.key === 'Enter') {
-                        handleStartShop();
-                    }
-                });
-            }
-        }
-
-        // =================== 事件处理函数 ===================
-        async function handleStartShop() {
-            const usernameInput = document.getElementById('username');
-            if (!usernameInput) return;
-            
-            const username = usernameInput.value.trim();
-            if (!username) {
-                showBunnyModal('提示', '请输入你的名字哦！');
-                return;
-            }
-
-            // 保存用户名
-            localStorage.setItem('username', username);
-            
-            // 获取或创建用户
-            await getOrCreateUser(username);
-            
-            // 显示店铺
-            const storeElement = document.getElementById('store');
-            const startBtn = document.getElementById('start-btn');
-            const usernameElement = document.getElementById('username');
-            const countdownElement = document.getElementById('countdown');
-            const editShopNameBtn = document.getElementById('edit-shop-name');
-            
-            if (storeElement) storeElement.style.display = 'block';
-            if (startBtn) startBtn.style.display = 'none';
-            if (usernameElement) usernameElement.style.display = 'none';
-            if (countdownElement) countdownElement.style.display = 'none';
-            if (editShopNameBtn) editShopNameBtn.style.display = 'inline-block';
-            
-            // 更新标题
-            const mainTitle = document.querySelector('#main-container h1');
-            if (mainTitle) {
-                mainTitle.textContent = `🎄 ${currentUser.shop_name} 🎄`;
-            }
-            
-            // 加载盲盒设置
-            await getBlindboxItems();
-            
-            // 显示右上角小兔子
-            const topRightBunny = document.getElementById('top-right-bunny');
-            if (topRightBunny) {
-                topRightBunny.style.display = 'block';
-            }
-        }
-
-        function handleEditShopName() {
-            const currentName = document.querySelector('#main-container h1').textContent
-                .replace('🎄', '')
-                .replace('🎄', '')
-                .trim();
-                
-            showBunnyModal('修改店铺名称', '请输入新的店铺名称：', true, 'edit-shop-name');
             
             setTimeout(() => {
-                const input = document.getElementById('password-input');
-                if (input) {
-                    input.value = currentName.replace('的圣诞小店', '');
-                    input.select();
-                }
-            }, 100);
-        }
-
-        function handleVIP() {
-            showBunnyModal('VIP通道', 'VIP功能开发中，敬请期待！');
-        }
-
-        async function handleManageBlindbox() {
-            const settings = document.getElementById('blindbox-settings');
-            if (!settings) return;
-            
-            // 切换显示盲盒设置区域
-            settings.style.display = settings.style.display === 'none' ? 'block' : 'none';
-            
-            if (settings.style.display === 'block') {
-                // 显示当前概率设置
-                displayProbabilitySettings();
-            }
-        }
-
-        async function handleShareShop() {
-            try {
-                // 创建分享
-                const shareResult = await createShopShare();
-                
-                if (shareResult && shareResult.success) {
-                    // 显示分享区域
-                    const shareSection = document.getElementById('shop-share-section');
-                    if (shareSection) {
-                        shareSection.style.display = 'block';
-                    }
-                    
-                    // 显示分享链接
-                    const shareLinkDisplay = document.getElementById('share-link-display');
-                    if (shareLinkDisplay) {
-                        shareLinkDisplay.textContent = shareResult.shareUrl;
-                    }
-                    
-                    showBunnyModal('分享创建成功', '分享链接已生成！');
-                }
-            } catch (error) {
-                console.error('分享店铺失败:', error);
-                showErrorModal(error.message || '分享失败，请重试');
-            }
-        }
-
-        function handleVisitFriends() {
-            const friendsSection = document.getElementById('friends-shop-section');
-            if (friendsSection) {
-                friendsSection.style.display = friendsSection.style.display === 'none' ? 'block' : 'none';
-            }
-        }
-
-        async function handleSaveProbability() {
-            try {
-                // 收集概率设置
-                const items = [];
-                const inputs = document.querySelectorAll('.probability-item');
-                
-                inputs.forEach((item, index) => {
-                    const nameInput = item.querySelector('.item-name-input');
-                    const probInput = item.querySelector('.probability-slider');
-                    
-                    if (nameInput && probInput) {
-                        items.push({
-                            id: `custom_${index}`,
-                            item_name: nameInput.value.trim() || `物品${index + 1}`,
-                            video_name: index < 5 ? `${index + 1}.mp4` : null,
-                            probability: parseInt(probInput.value) || 0,
-                            is_custom: true,
-                            order_index: index
-                        });
-                    }
-                });
-                
-                // 验证
-                if (items.length === 0) {
-                    throw new Error('请至少设置一个物品');
-                }
-                
-                // 更新到localStorage
-                const success = await updateBlindboxItems(items);
-                
-                if (success) {
-                    showBunnyModal('设置保存成功', '盲盒概率已更新！');
-                }
-            } catch (error) {
-                console.error('保存概率设置失败:', error);
-                showErrorModal(error.message || '保存失败');
-            }
-        }
-
-        async function handleResetProbability() {
-            try {
-                // 重置为默认设置
-                await generateDefaultBlindbox();
-                
-                // 更新显示
-                displayProbabilitySettings();
-                
-                showBunnyModal('重置成功', '已恢复为默认盲盒设置！');
-            } catch (error) {
-                console.error('重置概率设置失败:', error);
-                showErrorModal('重置失败');
-            }
-        }
-
-        function handleCopyShareLink() {
-            const shareLinkDisplay = document.getElementById('share-link-display');
-            if (!shareLinkDisplay) return;
-            
-            const shareLink = shareLinkDisplay.textContent;
-            if (shareLink && shareLink !== '生成中...') {
-                navigator.clipboard.writeText(shareLink).then(() => {
-                    showBunnyModal('复制成功', '链接已复制到剪贴板！');
-                }).catch(err => {
-                    console.error('复制失败:', err);
-                    // 使用备用方法
-                    const textArea = document.createElement('textarea');
-                    textArea.value = shareLink;
-                    document.body.appendChild(textArea);
-                    textArea.select();
-                    try {
-                        document.execCommand('copy');
-                        showBunnyModal('复制成功', '链接已复制到剪贴板！');
-                    } catch (copyErr) {
-                        showErrorModal('复制失败，请手动复制');
-                    }
-                    document.body.removeChild(textArea);
-                });
-            }
-        }
-
-        function handleGenerateQRCode() {
-            const shareLinkDisplay = document.getElementById('share-link-display');
-            if (!shareLinkDisplay) return;
-            
-            const shareLink = shareLinkDisplay.textContent;
-            if (shareLink && shareLink !== '生成中...') {
-                const qrcodeContainer = document.getElementById('qrcode-container');
-                if (!qrcodeContainer) return;
-                
-                qrcodeContainer.innerHTML = '';
-                qrcodeContainer.style.display = 'block';
-                
-                // 使用QRCode.js生成二维码
-                if (typeof QRCode !== 'undefined') {
-                    new QRCode(qrcodeContainer, {
-                        text: shareLink,
-                        width: 128,
-                        height: 128,
-                        colorDark: "#000000",
-                        colorLight: "#ffffff",
-                        correctLevel: QRCode.CorrectLevel.H
-                    });
-                } else {
-                    // 如果QRCode.js未加载，显示提示
-                    qrcodeContainer.innerHTML = '<p>二维码生成失败，请刷新页面后重试</p>';
-                }
-            }
-        }
-
-        async function handleVisitFriend() {
-            const friendShareCodeInput = document.getElementById('friend-share-code');
-            if (!friendShareCodeInput) return;
-            
-            const shareCode = friendShareCodeInput.value.trim();
-            if (!shareCode) {
-                showErrorModal('请输入好友的分享码');
-                return;
-            }
-            
-            try {
-                const shareInfo = await getShareInfo(shareCode);
-                if (shareInfo) {
-                    // 访问好友店铺
-                    window.open(`?sharer=${shareInfo.user_id}`, '_blank');
-                } else {
-                    showErrorModal('分享码无效或已过期');
-                }
-            } catch (error) {
-                console.error('访问好友失败:', error);
-                showErrorModal('分享码无效或已过期');
-            }
-        }
-
-        async function handleBackpack() {
-            try {
-                // 获取背包物品
-                const items = await getBackpackItems();
-                
-                // 显示背包弹窗
-                showBackpackModal(items);
-            } catch (error) {
-                console.error('打开背包失败:', error);
-                showErrorModal('无法加载背包');
-            }
-        }
-
-        async function handleBlindboxDraw() {
-            try {
-                // 切换到盲盒页面
-                const storeElement = document.getElementById('store');
-                const blindBoxContainer = document.getElementById('blind-box-container');
-                
-                if (storeElement) storeElement.style.display = 'none';
-                if (blindBoxContainer) blindBoxContainer.style.display = 'flex';
-                
-                // 重置盲盒显示
-                document.querySelectorAll('.blind-box').forEach(box => {
-                    box.classList.remove('opened');
-                    box.textContent = '?';
-                    box.style.background = '#ffcccc';
-                });
-                
-                // 加载盲盒物品
-                await getBlindboxItems();
-                
-                // 检查抽取次数
-                const canDraw = await checkDrawLimit();
-                const chancesLeft = document.getElementById('chances-left');
-                if (chancesLeft) {
-                    chancesLeft.textContent = canDraw.remaining;
-                }
-            } catch (error) {
-                console.error('切换盲盒页面失败:', error);
-                showErrorModal('无法加载盲盒');
-            }
-        }
-
-        function handleBackToStore() {
-            const storeElement = document.getElementById('store');
-            const blindBoxContainer = document.getElementById('blind-box-container');
-            
-            if (storeElement) storeElement.style.display = 'block';
-            if (blindBoxContainer) blindBoxContainer.style.display = 'none';
-        }
-
-        async function handleShareShopLink() {
-            try {
-                const shareResult = await createShopShare();
-                
-                if (shareResult && shareResult.success) {
-                    const shareText = `🎄 欢迎参观${currentUser.shop_name}！ 🎄\n${shareResult.shareUrl}\n快来我的小店抽盲盒吧！`;
-                    
-                    // 尝试使用Web Share API
-                    if (navigator.share) {
-                        try {
-                            await navigator.share({
-                                title: `${currentUser.shop_name}的圣诞小店`,
-                                text: shareText,
-                                url: shareResult.shareUrl
-                            });
-                            return;
-                        } catch (shareError) {
-                            console.log('Web Share API失败:', shareError);
-                        }
-                    }
-                    
-                    // 复制到剪贴板
-                    navigator.clipboard.writeText(shareText).then(() => {
-                        showBunnyModal('分享成功', '分享内容已复制到剪贴板！');
-                    }).catch(err => {
-                        console.error('复制失败:', err);
-                        // 使用备用方法
-                        const textArea = document.createElement('textarea');
-                        textArea.value = shareText;
-                        document.body.appendChild(textArea);
-                        textArea.select();
-                        try {
-                            document.execCommand('copy');
-                            showBunnyModal('分享成功', '分享内容已复制到剪贴板！');
-                        } catch (copyErr) {
-                            showErrorModal('复制失败，请手动复制');
-                        }
-                        document.body.removeChild(textArea);
-                    });
-                }
-            } catch (error) {
-                console.error('分享失败:', error);
-                showErrorModal('分享失败，请重试');
-            }
-        }
-
-        async function handleGiftClick(index) {
-            try {
-                const gifts = document.querySelectorAll('.gift-item');
-                if (index >= gifts.length) return;
-                
-                const gift = gifts[index];
-                const videoSrc = gift.dataset.video;
-                
-                if (!videoSrc) {
-                    showErrorModal('未找到视频文件');
-                    return;
-                }
-                
-                // 播放视频
-                await playGiftVideo(videoSrc);
-                
-                // 添加到背包
-                await addToBackpack({
-                    id: `gift_${index}_${Date.now()}`,
-                    item_name: gift.querySelector('.gift-title')?.textContent || `礼盒${index + 1}`,
-                    video_name: videoSrc
-                });
-                
-                showBunnyModal('恭喜！', '礼盒已添加到你的背包！');
-                
-            } catch (error) {
-                console.error('打开礼盒失败:', error);
-                showErrorModal('无法播放视频');
-            }
-        }
-
-        async function handleBlindboxClick(index) {
-            try {
-                const boxes = document.querySelectorAll('.blind-box');
-                if (index >= boxes.length) return;
-                
-                const box = boxes[index];
-                
-                if (box.classList.contains('opened')) {
-                    showBunnyModal('提示', '这个盲盒已经开启过了！');
-                    return;
-                }
-                
-                // 检查抽取次数
-                const canDraw = await checkDrawLimit();
-                if (!canDraw.allowed) {
-                    showBunnyModal('抽奖次数已用完', '你的盲盒抽奖次数已经用完啦！');
-                    return;
-                }
-                
-                // 抽取盲盒
-                const result = await drawBlindbox();
-                
-                if (result && result.success) {
-                    // 更新盲盒显示
-                    box.classList.add('opened');
-                    box.textContent = result.isThanks ? '谢谢惠顾' : '🎁';
-                    box.style.background = result.isThanks ? '#cccccc' : '#a8e6cf';
-                    
-                    // 更新抽取次数显示
-                    const chancesLeft = document.getElementById('chances-left');
-                    if (chancesLeft) {
-                        chancesLeft.textContent = result.remaining;
-                    }
-                    
-                    // 记录抽取次数
-                    const key = `draw_count_${currentUser.user_id}`;
-                    localStorage.setItem(key, result.drawCount.toString());
-                    
-                    // 显示结果
-                    showBlindboxResult(result);
-                }
-            } catch (error) {
-                console.error('抽取盲盒失败:', error);
-                showErrorModal(error.message || '抽取失败');
-            }
-        }
-
-        // =================== 辅助函数 ===================
-        function displayProbabilitySettings() {
-            const container = document.getElementById('probability-items-container');
-            if (!container) return;
-            
-            // 创建概率设置界面
-            let html = '<div class="probability-list">';
-            
-            blindboxItems.forEach((item, index) => {
-                html += `
-                    <div class="probability-item">
-                        <input type="text" class="item-name-input" value="${item.item_name}" placeholder="物品名称">
-                        <div style="flex: 1; display: flex; align-items: center; gap: 10px;">
-                            <input type="range" min="0" max="100" value="${item.probability}" 
-                                   class="probability-slider" data-index="${index}">
-                            <span class="item-probability">${item.probability}%</span>
-                        </div>
-                    </div>
-                `;
-            });
-            
-            html += '</div>';
-            container.innerHTML = html;
-            
-            // 绑定滑块事件
-            container.querySelectorAll('.probability-slider').forEach(slider => {
-                slider.addEventListener('input', function() {
-                    const value = this.value;
-                    const valueDisplay = this.parentElement.querySelector('.item-probability');
-                    if (valueDisplay) {
-                        valueDisplay.textContent = value + '%';
-                    }
-                });
-            });
-        }
-
-        function showBlindboxResult(result) {
-            const title = result.isThanks ? '谢谢惠顾' : '恭喜！';
-            const message = result.isThanks 
-                ? '很遗憾，这个盲盒是谢谢惠顾！<br>还有机会，再试试吧！' 
-                : `你抽中了${result.item.item_name}！`;
-            
-            showBunnyModal(title, message);
-        }
-
-        async function playGiftVideo(videoSrc) {
-            return new Promise((resolve, reject) => {
-                const wrapper = document.createElement('div');
-                wrapper.className = 'video-wrapper';
-                
-                const video = document.createElement('video');
-                video.src = getResourceUrl(videoSrc);
-                video.autoplay = true;
-                video.controls = false;
-                video.loop = false;
-                video.muted = false; // 取消静音
-                
-                video.addEventListener('ended', () => {
-                    wrapper.remove();
-                    resolve();
-                });
-                
-                video.addEventListener('error', (e) => {
-                    console.error('视频播放错误:', e);
-                    wrapper.remove();
-                    
-                    // 尝试使用备用视频源
-                    const fallbackVideo = document.createElement('video');
-                    fallbackVideo.src = 'https://cdn.example.com/fallback.mp4'; // 备用视频
-                    fallbackVideo.autoplay = true;
-                    fallbackVideo.controls = false;
-                    fallbackVideo.loop = false;
-                    
-                    fallbackVideo.addEventListener('ended', () => {
-                        wrapper.remove();
-                        resolve();
-                    });
-                    
-                    fallbackVideo.addEventListener('error', () => {
-                        wrapper.remove();
-                        showBunnyModal('视频播放失败', '但礼物已添加到背包！');
-                        resolve();
-                    });
-                    
-                    wrapper.innerHTML = '';
-                    wrapper.appendChild(fallbackVideo);
-                });
-                
-                wrapper.appendChild(video);
-                document.body.appendChild(wrapper);
-                
-                // 点击关闭
-                wrapper.addEventListener('click', () => {
-                    video.pause();
-                    wrapper.remove();
-                    resolve();
-                });
-                
-                // ESC键关闭
-                const handleKeyDown = (e) => {
-                    if (e.key === 'Escape') {
-                        video.pause();
-                        wrapper.remove();
-                        document.removeEventListener('keydown', handleKeyDown);
-                        resolve();
-                    }
-                };
-                document.addEventListener('keydown', handleKeyDown);
-            });
-        }
-
-        function showBackpackModal(items) {
-            const overlay = document.createElement('div');
-            overlay.className = 'modal-overlay';
-            
-            const modal = document.createElement('div');
-            modal.className = 'backpack-modal';
-            
-            let itemsHTML = '';
-            if (items && items.length > 0) {
-                items.forEach(item => {
-                    itemsHTML += `
-                        <div class="backpack-item available">
-                            <div class="item-icon">🎁</div>
-                            <div class="item-name">${item.item_name}</div>
-                            <small style="font-size: 10px; color: #666;">
-                                ${new Date(item.obtained_at).toLocaleDateString()}
-                            </small>
-                        </div>
-                    `;
-                });
-            } else {
-                itemsHTML = '<p style="grid-column: 1 / -1; padding: 20px; text-align: center;">背包空空如也</p>';
-            }
-            
-            modal.innerHTML = `
-                <h3>🎒 我的背包 🎒</h3>
-                <p>共 ${items.length} 个物品</p>
-                <div class="backpack-items">
-                    ${itemsHTML}
-                </div>
-                <button id="close-backpack" style="margin-top: 15px; padding: 10px 20px;">关闭</button>
-            `;
-            
-            document.body.appendChild(overlay);
-            document.body.appendChild(modal);
-            
-            // 关闭按钮
-            modal.querySelector('#close-backpack').addEventListener('click', () => {
-                document.body.removeChild(overlay);
-                document.body.removeChild(modal);
-            });
-            
-            // 遮罩层点击关闭
-            overlay.addEventListener('click', (e) => {
-                if (e.target === overlay) {
-                    document.body.removeChild(overlay);
-                    document.body.removeChild(modal);
-                }
-            });
-            
-            // ESC键关闭
-            const handleKeyDown = (e) => {
-                if (e.key === 'Escape') {
-                    document.body.removeChild(overlay);
-                    document.body.removeChild(modal);
-                    document.removeEventListener('keydown', handleKeyDown);
-                }
-            };
-            document.addEventListener('keydown', handleKeyDown);
-        }
-
-        function showBunnyModal(title, message, showInput = false, modalType = 'normal') {
-            const overlay = document.createElement('div');
-            overlay.className = 'modal-overlay';
-            
-            const modal = document.createElement('div');
-            modal.className = 'bunny-modal';
-            
-            modal.innerHTML = `
-                <h3>${title}</h3>
-                <p>${message}</p>
-                ${showInput ? '<input type="text" id="password-input" placeholder="请输入" style="margin: 10px 0;">' : ''}
-                <button id="modal-btn">${showInput ? '确定' : '好的'}</button>
-                ${showInput ? '<button id="modal-cancel" style="background: #ccc; margin-left: 10px;">取消</button>' : ''}
-            `;
-            
-            document.body.appendChild(overlay);
-            document.body.appendChild(modal);
-            
-            const modalBtn = modal.querySelector('#modal-btn');
-            modalBtn.addEventListener('click', () => {
-                if (showInput && modalType === 'edit-shop-name') {
-                    const newName = modal.querySelector('#password-input').value.trim();
-                    if (newName) {
-                        updateShopName(newName);
-                    }
-                }
-                document.body.removeChild(overlay);
-                document.body.removeChild(modal);
-            });
-            
-            const modalCancel = modal.querySelector('#modal-cancel');
-            if (modalCancel) {
-                modalCancel.addEventListener('click', () => {
-                    document.body.removeChild(overlay);
-                    document.body.removeChild(modal);
-                });
-            }
-            
-            overlay.addEventListener('click', (e) => {
-                if (e.target === overlay) {
-                    document.body.removeChild(overlay);
-                    document.body.removeChild(modal);
-                }
-            });
-            
-            // 回车键确认
-            const handleKeyDown = (e) => {
-                if (e.key === 'Enter' && showInput) {
-                    modalBtn.click();
-                } else if (e.key === 'Escape') {
-                    document.body.removeChild(overlay);
-                    document.body.removeChild(modal);
-                    document.removeEventListener('keydown', handleKeyDown);
-                }
-            };
-            
-            if (showInput) {
-                const input = modal.querySelector('#password-input');
-                if (input) {
-                    setTimeout(() => input.focus(), 100);
-                }
-                document.addEventListener('keydown', handleKeyDown);
-            }
-        }
-
-        function showErrorModal(message) {
-            showBunnyModal('错误', message);
-        }
-
-        // =================== 初始化函数 ===================
-        async function initialize() {
-            console.log('正在初始化圣诞小店...');
-            
-            // 预加载重要资源
-            preloadImportantResources();
-            
-            // 初始化雪花效果
-            initSnow();
-            
-            // 初始化时间系统
-            initializeTime();
-            
-            // 检查URL参数
-            const urlParams = new URLSearchParams(window.location.search);
-            const shareCode = urlParams.get('code');
-            const sharerId = urlParams.get('sharer');
-            
-            if (shareCode) {
-                // 处理分享链接
-                await handleShareLink(shareCode);
-            } else if (sharerId) {
-                // 访问好友店铺
-                await visitFriendShop(sharerId);
-            } else {
-                // 正常初始化
-                await initNormalFlow();
-            }
-            
-            // 绑定事件
-            bindEvents();
-        }
-
-        async function handleShareLink(shareCode) {
-            try {
-                const shareInfo = await getShareInfo(shareCode);
-                if (shareInfo) {
-                    if (shareInfo.share_type === 'shop') {
-                        // 显示好友店铺信息
-                        showBunnyModal('欢迎访问', `你正在访问${shareInfo.username}的店铺：${shareInfo.shop_name}`);
-                        
-                        // 可以在这里加载好友的盲盒设置
-                        await getBlindboxItems(shareInfo.user_id);
-                    }
-                }
-            } catch (error) {
-                console.error('处理分享链接失败:', error);
-                showErrorModal('分享链接无效或已过期');
-            }
-        }
-
-        async function visitFriendShop(sharerId) {
-            try {
-                // 获取好友的盲盒设置
-                const friendBlindboxItems = await getBlindboxItems(sharerId);
-                
-                // 更新界面显示好友店铺
-                const mainTitle = document.querySelector('#main-container h1');
-                const storeElement = document.getElementById('store');
-                const startBtn = document.getElementById('start-btn');
-                
-                if (mainTitle) {
-                    const shareInfo = await getShareInfoFromUserId(sharerId);
-                    mainTitle.textContent = `🎄 ${shareInfo?.shop_name || '好友'}的小店 🎄`;
-                }
-                
-                if (storeElement) storeElement.style.display = 'block';
-                if (startBtn) startBtn.style.display = 'none';
-                
-                // 隐藏编辑功能
-                const editShopNameBtn = document.getElementById('edit-shop-name');
-                if (editShopNameBtn) editShopNameBtn.style.display = 'none';
-                
-                // 显示盲盒页面
-                await handleBlindboxDraw();
-                
-                // 更新提示信息
-                const blindboxCount = document.getElementById('blind-box-count');
-                if (blindboxCount) {
-                    blindboxCount.innerHTML = '在好友店铺抽奖<span style="color: #ffeb3b; margin: 0 5px;">（限3次）</span>';
-                }
-                
-            } catch (error) {
-                console.error('访问好友店铺失败:', error);
-                showErrorModal('无法访问好友店铺');
-            }
-        }
-
-        async function getShareInfoFromUserId(userId) {
-            // 从localStorage查找用户的分享信息
-            const keys = Object.keys(localStorage);
-            for (const key of keys) {
-                if (key.startsWith('share_')) {
-                    try {
-                        const shareInfo = JSON.parse(localStorage.getItem(key));
-                        if (shareInfo.user_id === userId) {
-                            return shareInfo;
-                        }
-                    } catch (e) {
-                        continue;
-                    }
-                }
-            }
-            return null;
-        }
-
-        async function initNormalFlow() {
-            // 检查设备ID
-            getDeviceId();
-            
-            // 加载保存的用户名
-            const savedUsername = localStorage.getItem('username');
-            if (savedUsername) {
-                const usernameInput = document.getElementById('username');
-                if (usernameInput) {
-                    usernameInput.value = savedUsername;
-                }
-            }
-            
-            // 检查是否已经是VIP用户（示例）
-            const isVIP = localStorage.getItem('is_vip') === 'true';
-            if (isVIP) {
-                const vipBtn = document.getElementById('vip-btn');
-                if (vipBtn) {
-                    vipBtn.textContent = 'VIP用户';
-                    vipBtn.style.background = 'linear-gradient(90deg, #ff6b6b, #ff8e8e)';
-                }
-            }
-        }
-
-        // =================== 鼠标跟随效果 ===================
-        function initMouseFollow() {
-            const bunnyCursor = document.getElementById('bunny-cursor');
-            if (!bunnyCursor) return;
-            
-            let mouseX = 0;
-            let mouseY = 0;
-            let bunnyX = 0;
-            let bunnyY = 0;
-            
-            document.addEventListener('mousemove', (e) => {
-                mouseX = e.clientX;
-                mouseY = e.clientY;
-                
-                // 只在桌面端显示自定义鼠标
-                if (window.innerWidth > 768) {
-                    bunnyCursor.style.display = 'block';
-                }
-            });
-            
-            function animate() {
-                // 平滑移动
-                bunnyX += (mouseX - bunnyX) * 0.2;
-                bunnyY += (mouseY - bunnyY) * 0.2;
-                
-                bunnyCursor.style.left = bunnyX + 'px';
-                bunnyCursor.style.top = bunnyY + 'px';
-                
-                requestAnimationFrame(animate);
-            }
-            
-            animate();
-            
-            // 移动端隐藏自定义鼠标
-            function checkScreenSize() {
-                if (window.innerWidth <= 768) {
-                    bunnyCursor.style.display = 'none';
-                } else {
-                    bunnyCursor.style.display = 'block';
-                }
-            }
-            
-            window.addEventListener('resize', checkScreenSize);
-            checkScreenSize();
-        }
-
-        // =================== 页面加载初始化 ===================
-        document.addEventListener('DOMContentLoaded', () => {
-            initialize();
-            initMouseFollow();
-            
-            // 每秒更新倒计时
-            setInterval(updateCountdown, 1000);
-            
-            // 预加载视频（可选）
-            setTimeout(() => {
-                RESOURCES.VIDEOS.slice(0, 3).forEach(video => {
-                    const videoEl = document.createElement('video');
-                    videoEl.src = getResourceUrl(video);
-                    videoEl.preload = 'metadata';
-                });
-            }, 2000);
+                initialize();
+            }, 500);
         });
-
-        // =================== 调试工具 ===================
-        window.debug = {
-            resetAll: function() {
-                if (confirm('确定要重置所有数据吗？这将清除所有本地存储的数据。')) {
-                    localStorage.clear();
-                    location.reload();
-                }
-            },
-            
-            showUserInfo: function() {
-                console.log('当前用户:', currentUser);
-                console.log('设备ID:', getDeviceId());
-                console.log('背包物品:', backpackItems);
-                console.log('盲盒设置:', blindboxItems);
-            },
-            
-            addTestItems: function() {
-                if (!currentUser) return;
-                
-                const testItems = [
-                    { id: 'test_1', item_name: '测试礼盒1', video_name: '1.mp4' },
-                    { id: 'test_2', item_name: '测试礼盒2', video_name: '2.mp4' },
-                    { id: 'test_3', item_name: '测试礼盒3', video_name: '3.mp4' }
-                ];
-                
-                testItems.forEach(item => addToBackpack(item));
-                showBunnyModal('调试', '已添加3个测试物品到背包');
-            }
-        };
 
     </script>
 </body>
