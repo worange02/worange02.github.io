@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>圣诞礼物交换</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        html, body {
+            height: 100%;
+            font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+            overflow: auto;
+            background: linear-gradient(180deg, #2b2b63 0%, #5a7ad1 50%, #cfe8ff 100%);
+            text-align: center;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 20px 0;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+        
+        html::-webkit-scrollbar,
+        body::-webkit-scrollbar {
+            display: none;
+        }
+        
+        #main-container {
+            width: 95%;
+            max-width: 600px;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            min-height: auto;
+        }
+        
+        h1 {
+            font-size: 36px;
+            margin-bottom: 20px;
+            letter-spacing: 1px;
+            color: #fff;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+            white-space: nowrap;
+        }
+        
+        .exchange-container {
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 20px;
+            padding: 30px;
+            margin: 20px auto;
+            max-width: 500px;
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .gift-info {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .gift-icon {
+            font-size: 60px;
+            margin-bottom: 15px;
+        }
+        
+        .gift-name {
+            font-size: 24px;
+            color: #ffeb3b;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+        
+        .gift-details {
+            font-size: 16px;
+            color: #fff;
+            margin-bottom: 15px;
+            line-height: 1.5;
+        }
+        
+        .from-user {
+            font-size: 18px;
+            color: #a8e6cf;
+            margin-bottom: 10px;
+        }
+        
+        input[type="text"] {
+            padding: 12px 16px;
+            border-radius: 10px;
+            border: none;
+            margin: 15px 0;
+            width: 100%;
+            max-width: 300px;
+            text-align: center;
+            font-size: 16px;
+            background: rgba(255, 255, 255, 0.9);
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 12px 30px;
+            border-radius: 25px;
+            background: linear-gradient(90deg, #ff6b6b, #ff8e8e);
+            color: white;
+            font-weight: 700;
+            margin: 10px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.18);
+            text-decoration: none;
+            border: none;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 25px rgba(0, 0, 0, 0.25);
+        }
+        
+        .btn-secondary {
+            background: linear-gradient(90deg, #4CAF50, #66BB6A);
+        }
+        
+        .btn-tertiary {
+            background: linear-gradient(90deg, #2196F3, #64B5F6);
+        }
+        
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        
+        .btn:disabled:hover {
+            transform: none;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.18);
+        }
+        
+        .message {
+            padding: 15px;
+            border-radius: 10px;
+            margin: 15px 0;
+            text-align: center;
+        }
+        
+        .message.success {
+            background: rgba(76, 175, 80, 0.2);
+            border: 1px solid #4CAF50;
+            color: #a8e6cf;
+        }
+        
+        .message.error {
+            background: rgba(244, 67, 54, 0.2);
+            border: 1px solid #f44336;
+            color: #ffcccb;
+        }
+        
+        .message.info {
+            background: rgba(33, 150, 243, 0.2);
+            border: 1px solid #2196F3;
+            color: #bbdefb;
+        }
+        
+        .loading {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 40px;
+        }
+        
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 1s ease-in-out infinite;
+            margin-bottom: 20px;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        /* 移动端优化 */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 28px;
+            }
+            
+            .exchange-container {
+                padding: 20px;
+                margin: 15px 10px;
+            }
+            
+            .gift-icon {
+                font-size: 48px;
+            }
+            
+            .gift-name {
+                font-size: 20px;
+            }
+            
+            .btn {
+                padding: 10px 25px;
+                font-size: 14px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            h1 {
+                font-size: 24px;
+            }
+            
+            .exchange-container {
+                padding: 15px;
+            }
+            
+            input[type="text"] {
+                max-width: 250px;
+                font-size: 14px;
+            }
+        }
+        
+        canvas.snow {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="snow" class="snow"></canvas>
+    
+    <div id="main-container">
+        <h1>🎁 圣诞礼物交换 🎁</h1>
+        
+        <div id="exchange-content" class="exchange-container">
+            <div class="loading">
+                <div class="spinner"></div>
+                <p style="color: white;">正在加载分享信息...</p>
+            </div>
+        </div>
+        
+        <div id="user-section" style="display: none;">
+            <input type="text" id="username" placeholder="输入你的名字领取礼物">
+            <button id="accept-btn" class="btn">领取礼物</button>
+            <button id="back-btn" class="btn btn-tertiary">返回首页</button>
+        </div>
+    </div>
+
+    <script>
+        // 配置信息
+        const CONFIG = {
+            API_BASE_URL: 'https://christmas-shop-api.vercel.app/api',
+            SHARE_CODE_LENGTH: 8
+        };
+        
+        // 全局变量
+        let currentUser = null;
+        let shareInfo = null;
+        let shareCode = null;
+        
+        // 页面加载初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            // 初始化雪花效果
+            initSnow();
+            
+            // 获取分享码
+            const params = new URLSearchParams(window.location.search);
+            shareCode = params.get('code');
+            
+            if (shareCode) {
+                // 加载分享信息
+                loadShareInfo(shareCode);
+            } else {
+                showError('链接无效', '缺少分享码，请检查分享链接是否正确。');
+            }
+            
+            // 绑定按钮事件
+            document.getElementById('accept-btn').addEventListener('click', acceptGift);
+            document.getElementById('back-btn').addEventListener('click', () => {
+                window.location.href = '/index.html';
+            });
+        });
+        
+        // 初始化雪花效果
+        function initSnow() {
+            const canvas = document.getElementById('snow');
+            const ctx = canvas.getContext('2d');
+            
+            function resizeCanvas() {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+            }
+            
+            resizeCanvas();
+            window.addEventListener('resize', resizeCanvas);
+            
+            const flakes = [];
+            const FLAKE_COUNT = Math.floor(Math.min(120, window.innerWidth / 8));
+            
+            for (let i = 0; i < FLAKE_COUNT; i++) {
+                flakes.push({
+                    x: Math.random() * canvas.width,
+                    y: Math.random() * canvas.height,
+                    r: Math.random() * 3 + 1,
+                    d: Math.random() * FLAKE_COUNT
+                });
+            }
+            
+            let angle = 0;
+            
+            function drawSnow() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
+                ctx.beginPath();
+                for (const f of flakes) {
+                    ctx.moveTo(f.x, f.y);
+                    ctx.arc(f.x, f.y, f.r, 0, Math.PI * 2, true);
+                }
+                ctx.fill();
+                updateSnow();
+            }
+            
+            function updateSnow() {
+                angle += 0.002;
+                for (const f of flakes) {
+                    f.y += Math.cos(angle + f.d) * 0.6 + 0.5 + f.r / 2;
+                    f.x += Math.sin(angle) * 1.2;
+                    if (f.y > canvas.height + 10) {
+                        f.y = -10;
+                        f.x = Math.random() * canvas.width;
+                    }
+                }
+            }
+            
+            function loop() {
+                drawSnow();
+                requestAnimationFrame(loop);
+            }
+            
+            loop();
+        }
+        
+        // 加载分享信息
+        async function loadShareInfo(code) {
+            try {
+                const response = await fetch(`${CONFIG.API_BASE_URL}/share`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        action: 'get_share_info',
+                        data: { share_code: code }
+                    })
+                });
+                
+                const result = await response.json();
+                
+                if (result.error) {
+                    showError('加载失败', result.error);
+                    return;
+                }
+                
+                shareInfo = result.share;
+                displayShareInfo();
+                
+            } catch (error) {
+                console.error('加载分享信息失败:', error);
+                showError('网络错误', '无法连接到服务器，请检查网络连接。');
+            }
+        }
+        
+        // 显示分享信息
+        function displayShareInfo() {
+            const content = document.getElementById('exchange-content');
+            
+            if (!shareInfo) {
+                content.innerHTML = `
+                    <div class="message error">
+                        分享信息加载失败
+                    </div>
+                `;
+                return;
+            }
+            
+            // 检查是否已过期
+            const now = new Date();
+            const expiresAt = new Date(shareInfo.expires_at);
+            
+            if (expiresAt < now) {
+                content.innerHTML = `
+                    <div class="message error">
+                        此分享链接已过期
+                    </div>
+                `;
+                return;
+            }
+            
+            // 检查是否已使用
+            if (shareInfo.used) {
+                content.innerHTML = `
+                    <div class="message error">
+                        此礼物已被领取
+                    </div>
+                `;
+                return;
+            }
+            
+            let contentHTML = '';
+            
+            if (shareInfo.share_type === 'give') {
+                // 赠送类型
+                contentHTML = `
+                    <div class="gift-info">
+                        <div class="gift-icon">🎁</div>
+                        <div class="gift-name">${shareInfo.item_name}</div>
+                        <div class="gift-details">
+                            数量：${shareInfo.quantity}个<br>
+                            来自：${shareInfo.from_user.username}的小店
+                        </div>
+                        <div class="from-user">
+                            ${shareInfo.data?.message || '祝你圣诞快乐！'}
+                        </div>
+                    </div>
+                `;
+            } else if (shareInfo.share_type === 'exchange') {
+                // 交换类型
+                contentHTML = `
+                    <div class="gift-info">
+                        <div class="gift-icon">🔄</div>
+                        <div class="gift-name">物品交换</div>
+                        <div class="gift-details">
+                            交换：${shareInfo.item_name} × ${shareInfo.quantity}<br>
+                            换取：${shareInfo.target_item_name} × ${shareInfo.target_quantity}
+                        </div>
+                        <div class="from-user">
+                            来自：${shareInfo.from_user.username}
+                        </div>
+                        <div class="message info" style="margin-top: 20px;">
+                            这是一个交换请求，你需要有对方想要的物品才能完成交换。
+                        </div>
+                    </div>
+                `;
+            } else if (shareInfo.share_type === 'shop') {
+                // 店铺分享类型
+                contentHTML = `
+                    <div class="gift-info">
+                        <div class="gift-icon">🏪</div>
+                        <div class="gift-name">${shareInfo.data.shop_name}</div>
+                        <div class="gift-details">
+                            店长：${shareInfo.data.username}<br>
+                            店铺创建：${new Date(shareInfo.data.timestamp).toLocaleDateString('zh-CN')}
+                        </div>
+                        <div class="from-user">
+                            ${shareInfo.data.custom_message || '欢迎来我的小店参观！'}
+                        </div>
+                        <button id="visit-shop-btn" class="btn btn-secondary" style="margin-top: 20px;">
+                            前往店铺
+                        </button>
+                    </div>
+                `;
+            }
+            
+            content.innerHTML = contentHTML;
+            
+            // 如果是店铺分享，绑定访问按钮
+            if (shareInfo.share_type === 'shop') {
+                document.getElementById('visit-shop-btn').addEventListener('click', () => {
+                    window.location.href = `/shop.html?sharer=${shareInfo.from_user_id}`;
+                });
+            } else {
+                // 显示用户输入区域
+                document.getElementById('user-section').style.display = 'block';
+            }
+        }
+        
+        // 领取礼物
+        async function acceptGift() {
+            const username = document.getElementById('username').value.trim();
+            
+            if (!username) {
+                showMessage('请输入你的名字', 'error');
+                return;
+            }
+            
+            if (!shareInfo) {
+                showMessage('分享信息无效', 'error');
+                return;
+            }
+            
+            // 禁用按钮，防止重复点击
+            const acceptBtn = document.getElementById('accept-btn');
+            acceptBtn.disabled = true;
+            acceptBtn.textContent = '领取中...';
+            
+            try {
+                // 获取或创建用户
+                let userId = localStorage.getItem('device_id');
+                if (!userId) {
+                    userId = 'device_' + Math.random().toString(36).substr(2, 9) + '_' + Date.now().toString(36);
+                    localStorage.setItem('device_id', userId);
+                }
+                
+                // 创建用户
+                const userResponse = await fetch(`${CONFIG.API_BASE_URL}/user`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        action: 'get_or_create',
+                        data: {
+                            device_id: userId,
+                            username: username
+                        }
+                    })
+                });
+                
+                const userResult = await userResponse.json();
+                
+                if (!userResult.success) {
+                    throw new Error('用户创建失败');
+                }
+                
+                currentUser = userResult.user;
+                
+                // 处理分享
+                const response = await fetch(`${CONFIG.API_BASE_URL}/share`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        action: 'process_share',
+                        data: {
+                            share_code: shareCode,
+                            user_id: currentUser.user_id,
+                            action: 'accept'
+                        }
+                    })
+                });
+                
+                const result = await response.json();
+                
+                if (result.error) {
+                    throw new Error(result.error);
+                }
+                
+                if (result.success) {
+                    // 显示成功消息
+                    showMessage('领取成功！礼物已放入你的背包。', 'success');
+                    
+                    // 更新显示
+                    document.getElementById('exchange-content').innerHTML = `
+                        <div class="gift-info">
+                            <div class="gift-icon">🎉</div>
+                            <div class="gift-name">领取成功！</div>
+                            <div class="gift-details">
+                                你获得了：${shareInfo.item_name} × ${shareInfo.quantity}<br>
+                                来自：${shareInfo.from_user.username}
+                            </div>
+                            <button id="go-backpack-btn" class="btn btn-secondary" style="margin-top: 20px;">
+                                查看背包
+                            </button>
+                            <button id="go-home-btn" class="btn" style="margin-top: 10px;">
+                                返回首页
+                            </button>
+                        </div>
+                    `;
+                    
+                    // 绑定按钮事件
+                    document.getElementById('go-backpack-btn').addEventListener('click', () => {
+                        window.open('/index.html#backpack', '_blank');
+                    });
+                    
+                    document.getElementById('go-home-btn').addEventListener('click', () => {
+                        window.location.href = '/index.html';
+                    });
+                    
+                    // 隐藏用户输入区域
+                    document.getElementById('user-section').style.display = 'none';
+                    
+                } else {
+                    throw new Error('领取失败');
+                }
+                
+            } catch (error) {
+                console.error('领取失败:', error);
+                showMessage(error.message || '领取失败，请重试', 'error');
+                
+                // 恢复按钮
+                acceptBtn.disabled = false;
+                acceptBtn.textContent = '领取礼物';
+            }
+        }
+        
+        // 显示消息
+        function showMessage(text, type = 'info') {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${type}`;
+            messageDiv.textContent = text;
+            messageDiv.style.margin = '15px 0';
+            
+            // 插入到用户区域前面
+            const userSection = document.getElementById('user-section');
+            userSection.parentNode.insertBefore(messageDiv, userSection);
+            
+            // 3秒后自动移除
+            setTimeout(() => {
+                if (messageDiv.parentNode) {
+                    messageDiv.parentNode.removeChild(messageDiv);
+                }
+            }, 3000);
+        }
+        
+        // 显示错误
+        function showError(title, message) {
+            const content = document.getElementById('exchange-content');
+            content.innerHTML = `
+                <div style="text-align: center;">
+                    <div style="font-size: 48px; margin-bottom: 20px;">❌</div>
+                    <h3 style="color: #ff6b6b; margin-bottom: 15px;">${title}</h3>
+                    <p style="color: white; margin-bottom: 25px;">${message}</p>
+                    <button onclick="window.location.href='/index.html'" class="btn">
+                        返回首页
+                    </button>
+                </div>
+            `;
+        }
+        
+        // 控制台测试函数
+        window.testShareCode = function(code) {
+            if (code) {
+                shareCode = code;
+                loadShareInfo(code);
+            } else {
+                console.log('请输入分享码：testShareCode("ABC123DE")');
+            }
+        };
+    </script>
+</body>
+</html>
