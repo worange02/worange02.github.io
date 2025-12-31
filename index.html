@@ -2074,32 +2074,24 @@ function playGiftVideo(videoName, isFromBackpack = false) {
         }
 
         // 初始化小兔子状态函数
-        function initializeBunnyState() {
-            const bunny = document.getElementById('bunny');
-            const now = getBeijingTime();
-            
-            // 检查小兔子盲盒是否已经抽取过
-            const bunnyBlindBoxDrawn = localStorage.getItem('bunny_blindbox_drawn');
-            
-            if (bunnyBlindBoxDrawn === 'true') {
-                // 如果已经抽取过，始终显示4.gif
-                bunny.src = 'assets/4.gif';
-                // 同时显示右上角的9.gif
-                document.getElementById('top-right-bunny').style.display = 'block';
-                // 重新绑定事件
-                document.getElementById('top-right-bunny').addEventListener('click', showTopRightBunnyDialog);
-            } else if (now < targetTime) {
-                bunny.src = 'assets/1.gif';
-            } else {
-                bunny.src = 'assets/3.gif';
-                if (checkIfChristmasDay()) {
-                    setTimeout(() => {
-                        playBackgroundMusic();
-                    }, 1000);
-                }
-            }
-        }
-
+function initializeBunnyState() {
+    const bunny = document.getElementById('bunny');
+    
+    // 检查小兔子盲盒是否已经抽取过
+    const bunnyBlindBoxDrawn = localStorage.getItem('bunny_blindbox_drawn');
+    
+    if (bunnyBlindBoxDrawn === 'true') {
+        // 如果已经抽取过，始终显示4.gif
+        bunny.src = 'assets/4.gif';
+        // 同时显示右上角的9.gif
+        document.getElementById('top-right-bunny').style.display = 'block';
+        // 重新绑定事件
+        document.getElementById('top-right-bunny').addEventListener('click', showTopRightBunnyDialog);
+    } else {
+        // 始终显示可用状态
+        bunny.src = 'assets/3.gif';
+    }
+}
         // =================== URL参数处理 ===================
         function getUrlParams() {
             const params = new URLSearchParams(window.location.search);
@@ -2117,61 +2109,53 @@ function playGiftVideo(videoName, isFromBackpack = false) {
             window.history.replaceState({}, '', url);
         }
 
-        function autoOpenShopWithName() {
-            const params = getUrlParams();
-            const name = params.name;
-            const shouldOpenShop = params.shop === 'true';
-            const shareData = params.share;
+function autoOpenShopWithName() {
+    const params = getUrlParams();
+    const name = params.name;
+    const shouldOpenShop = params.shop === 'true';
+    const shareData = params.share;
+    
+    if (name && shouldOpenShop) {
+        const usernameInput = document.getElementById('username');
+        const mainTitle = document.querySelector('#main-container h1');
+        const store = document.getElementById('store');
+        const startBtn = document.getElementById('start-btn');
+        const countdown = document.getElementById('countdown');
+        const shareBtn = document.getElementById('share-btn');
+        const bunny = document.getElementById('bunny');
+        
+        if (usernameInput && mainTitle && store && startBtn && countdown && shareBtn && bunny) {
+            usernameInput.value = name;
             
-            if (name && shouldOpenShop) {
-                const usernameInput = document.getElementById('username');
-                const mainTitle = document.querySelector('#main-container h1');
-                const store = document.getElementById('store');
-                const startBtn = document.getElementById('start-btn');
-                const countdown = document.getElementById('countdown');
-                const shareBtn = document.getElementById('share-btn');
-                const bunny = document.getElementById('bunny');
-                
-                if (usernameInput && mainTitle && store && startBtn && countdown && shareBtn && bunny) {
-                    usernameInput.value = name;
-                    
-                    const now = getBeijingTime();
-                    const isChristmas = checkIfChristmasDay();
-                    
-                    // 如果是圣诞节当天或已经过了目标时间，可以自动打开
-                    if (isChristmas || now >= targetTime) {
-                        mainTitle.textContent = `🎅 ${name}的圣诞小店 🎅`;
-                        store.style.display = 'block';
-                        startBtn.style.display = 'none';
-                        usernameInput.style.display = 'none';
-                        countdown.style.display = 'none';
-                        shareBtn.style.display = 'inline-block';
-                        bunny.src = 'assets/3.gif';
-                        
-                        document.getElementById('edit-shop-name').style.display = 'inline-block';
-                        
-                        initGiftEvents();
-                        initBackpack(); // 初始化背包按钮
-                        
-                        // 如果有分享数据，加载分享设置
-                        if (shareData) {
-                            try {
-                                const decodedData = decodeURIComponent(shareData);
-                                const shareSettings = JSON.parse(decodedData);
-                                loadShareSettings(shareSettings);
-                            } catch (e) {
-                                console.log('分享数据解析失败:', e);
-                            }
-                        }
-                        
-                        console.log(`🎅 自动开启 ${name} 的圣诞小店`);
-                    } else {
-                        usernameInput.value = name;
-                        bunny.src = 'assets/1.gif';
-                    }
+            // 移除时间检查，始终可以自动打开
+            mainTitle.textContent = `🎁 ${name}的礼物小店 🎁`;
+            store.style.display = 'block';
+            startBtn.style.display = 'none';
+            usernameInput.style.display = 'none';
+            countdown.style.display = 'none';
+            shareBtn.style.display = 'inline-block';
+            bunny.src = 'assets/3.gif';
+            
+            document.getElementById('edit-shop-name').style.display = 'inline-block';
+            
+            initGiftEvents();
+            initBackpack(); // 初始化背包按钮
+            
+            // 如果有分享数据，加载分享设置
+            if (shareData) {
+                try {
+                    const decodedData = decodeURIComponent(shareData);
+                    const shareSettings = JSON.parse(decodedData);
+                    loadShareSettings(shareSettings);
+                } catch (e) {
+                    console.log('分享数据解析失败:', e);
                 }
             }
+            
+            console.log(`🎁 自动开启 ${name} 的圣诞小店`);
         }
+    }
+}
         
         // =================== 鼠标跟随小兔子 ===================
         const bunnyCursor = document.getElementById('bunny-cursor');
@@ -2340,43 +2324,16 @@ function playGiftVideo(videoName, isFromBackpack = false) {
         const store = document.getElementById('store');
         const shareBtn = document.getElementById('share-btn');
         
-        function updateCountdown() {
-            const now = getBeijingTime();
-            let diff = targetTime - now;
-            const isChristmas = checkIfChristmasDay();
-            
-            console.log('时间检查', { 
-                now, 
-                targetTime, 
-                diff, 
-                isChristmas,
-                month: now.getMonth() + 1,
-                date: now.getDate()
-            });
-            
-            if (diff > 0) {
-                // 还没有到圣诞季
-                const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-                const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / 3600000);
-                const minutes = Math.floor((diff % 3600000) / 60000);
-                const seconds = Math.floor((diff % 60000) / 1000);
-                timeEl.textContent = `${days}天${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
-                startBtn.classList.remove('active');
-            } else if (isChristmas) {
-                // 今天是圣诞节（12月25日），无论什么时间都应该可以进入
-                timeEl.textContent = '0天00:00:00';
-                startBtn.classList.add('active');
-                
-                // 圣诞当天自动播放音乐
-                if (!isBgMusicPlaying) {
-                    playBackgroundMusic();
-                }
-            } else if (diff <= 0 && !isChristmas) {
-                // 已经过了圣诞节，但不是12月25日
-                timeEl.textContent = '圣诞节已过';
-                startBtn.classList.remove('active');
-            }
-        }
+function updateCountdown() {
+    // 直接激活按钮，移除时间限制
+    timeEl.textContent = '随时开放';
+    startBtn.classList.add('active');
+    
+    // 自动播放音乐
+    if (!isBgMusicPlaying) {
+        playBackgroundMusic();
+    }
+}
         
         setInterval(updateCountdown, 1000);
         updateCountdown();
@@ -3352,74 +3309,35 @@ function playGiftVideo(videoName, isFromBackpack = false) {
             bunny.addEventListener('click', handleBunnyTap);
         }
         
-        function handleBunnyTap(e) {
-            if (e) {
-                e.preventDefault();
-                e.stopPropagation();
-            }
-            
-            const now = getBeijingTime();
-            const currentTime = Date.now();
-            
-            if (currentTime - lastBunnyClickTime < 500) {
-                return;
-            }
-            lastBunnyClickTime = currentTime;
-            
-            if (bunnyBubble) {
-                document.body.removeChild(bunnyBubble);
-                bunnyBubble = null;
-            }
-            
-            // 检查小兔子盲盒是否已经抽取过
-            const bunnyBlindBoxDrawn = localStorage.getItem('bunny_blindbox_drawn');
-            
-            if (bunnyBlindBoxDrawn === 'true') {
-                // 如果已经抽取过，显示小兔子风格气泡和对话
-                showBunnyBubble("已经抽过小兔子盲盒啦～每个小兔子只能抽一次哦！🎁");
-                return;
-            }
-            
-            if (now < targetTime) {
-                bunnyClickCount++;
-                
-                let message = "";
-                if (bunnyClickCount === 1) {
-                    bunny.src = 'assets/2.gif';
-                    message = "还没到时间哦～圣诞老爷爷还在准备礼物呢！🎄";
-                } else if (bunnyClickCount === 2) {
-                    bunny.src = 'assets/1.gif';
-                    message = "别着急嘛～小兔子说礼物还在路上呢！🎁";
-                } else {
-                    if (bunny.src.includes('1.gif')) {
-                        bunny.src = 'assets/2.gif';
-                        message = "快了快了～圣诞老人已经在路上了！🎅";
-                    } else {
-                        bunny.src = 'assets/1.gif';
-                        message = "稍安勿躁～美好的事物值得等待！💝";
-                    }
-                }
-                
-                showBunnyBubble(message);
-            } else {
-                if (checkIfChristmasDay()) {
-                    showBunnyModal('小兔子盲盒', '请输入密码抽取小兔子盲盒：', true, 'bunny-blindbox');
-                } else {
-                    if (prizeDrawn) {
-                        showBunnyBubble("已经抽过奖啦～每个小兔子只能抽一次哦！🎁");
-                        return;
-                    }
-                    
-                    // 显示小兔子弹窗队列
-                    if (bunnyModalIndex < bunnyModals.length) {
-                        showBunnyModal(bunnyModals[bunnyModalIndex].title, bunnyModals[bunnyModalIndex].message, false);
-                        bunnyModalIndex++;
-                    } else {
-                        showBunnyModal('抽奖密码', '小兔子说需要密码才能抽奖哦～<br>请输入4位数字密码：', true);
-                    }
-                }
-            }
-        }
+function handleBunnyTap(e) {
+    if (e) {
+        e.preventDefault();
+        e.stopPropagation();
+    }
+    
+    const currentTime = Date.now();
+    
+    if (currentTime - lastBunnyClickTime < 500) {
+        return;
+    }
+    lastBunnyClickTime = currentTime;
+    
+    if (bunnyBubble) {
+        document.body.removeChild(bunnyBubble);
+        bunnyBubble = null;
+    }
+    
+    // 检查小兔子盲盒是否已经抽取过
+    const bunnyBlindBoxDrawn = localStorage.getItem('bunny_blindbox_drawn');
+    
+    if (bunnyBlindBoxDrawn === 'true') {
+        showBunnyBubble("已经抽过小兔子盲盒啦～每个小兔子只能抽一次哦！🎁");
+        return;
+    }
+    
+    // 移除时间限制，始终可以抽取
+    showBunnyModal('小兔子盲盒', '请输入密码抽取小兔子盲盒：', true, 'bunny-blindbox');
+}
         
         function showBunnyBubble(message) {
             if (bunnyBubble) {
@@ -3723,21 +3641,17 @@ function playGiftVideo(videoName, isFromBackpack = false) {
         }
         
         function handleSantaTap(e) {
-            if (e) {
-                e.preventDefault();
-                e.stopPropagation();
-            }
-            
-            const now = getBeijingTime();
-            const currentTime = Date.now();
-            
-            // 检查是否是圣诞当天
-            if (!checkIfChristmasDay()) {
-                showSantaBubble("今天不是圣诞节哦，圣诞老人在休息！");
-                return;
-            }
-            
-            if (currentTime - lastSantaClickTime < 500) {
+    if (e) {
+        e.preventDefault();
+        e.stopPropagation();
+    }
+    
+    const currentTime = Date.now();
+    
+    if (currentTime - lastSantaClickTime < 500) {
+        return;
+    }
+    lastSantaClickTime = currentTime;
                 return;
             }
             lastSantaClickTime = currentTime;
@@ -3958,11 +3872,10 @@ function playGiftVideo(videoName, isFromBackpack = false) {
         // =================== 左上角礼物逻辑 ===================
         const topLeftGift = document.getElementById('top-left-gift');
         
-        function checkAndShowTopLeftGift() {
-            if (checkIfChristmasDay()) {
-                topLeftGift.style.display = 'block';
-            }
-        }
+function checkAndShowTopLeftGift() {
+    // 移除圣诞节检查，始终显示
+    topLeftGift.style.display = 'block';
+}}
         
         // 左上角礼物点击事件 - iOS优化
         if (isIOS()) {
@@ -4506,46 +4419,36 @@ function playGiftVideo(videoName, isFromBackpack = false) {
             startBtn.addEventListener('click', handleStartShop);
         }
         
-        function handleStartShop() {
-            const now = getBeijingTime();
-            const isChristmas = checkIfChristmasDay();
-            
-            // 如果还没到圣诞节且不是圣诞节当天，则不允许进入
-            if (now < targetTime && !isChristmas) {
-                showBunnyModal('商店还没开启', '圣诞老爷爷还在准备中～<br>请等待倒计时结束哦！🎅');
-                return;
-            }
-            
-            const nameInput = document.getElementById('username').value.trim();
-            if (!nameInput) {
-                showBunnyModal('请输入名字', '小兔子想知道你的名字～<br>这样才好为你准备礼物呀！🎄');
-                return;
-            }
-            
-            document.querySelector('#main-container h1').textContent = `🎅 ${nameInput}的圣诞小店 🎅`;
-            store.style.display = 'block';
-            startBtn.style.display = 'none';
-            document.getElementById('username').style.display = 'none';
-            document.getElementById('countdown').style.display = 'none';
-            shareBtn.style.display = 'inline-block';
-            bunny.src = 'assets/3.gif';
-            
-            document.getElementById('edit-shop-name').style.display = 'inline-block';
-            
-            // 初始化背包按钮
-            initBackpack();
-            
-            updateUrlWithName(nameInput);
-            bunnyClickCount = 0;
-            
-            initGiftEvents();
-            
-            if (checkIfChristmasDay()) {
-                setTimeout(() => {
-                    playBackgroundMusic();
-                }, 1000);
-            }
-        }
+function handleStartShop() {
+    const nameInput = document.getElementById('username').value.trim();
+    if (!nameInput) {
+        showBunnyModal('请输入名字', '小兔子想知道你的名字～<br>这样才好为你准备礼物呀！🎄');
+        return;
+    }
+    
+    document.querySelector('#main-container h1').textContent = `🎁 ${nameInput}的礼物小店 🎁`;
+    store.style.display = 'block';
+    startBtn.style.display = 'none';
+    document.getElementById('username').style.display = 'none';
+    document.getElementById('countdown').style.display = 'none';
+    shareBtn.style.display = 'inline-block';
+    bunny.src = 'assets/3.gif';
+    
+    document.getElementById('edit-shop-name').style.display = 'inline-block';
+    
+    // 初始化背包按钮
+    initBackpack();
+    
+    updateUrlWithName(nameInput);
+    bunnyClickCount = 0;
+    
+    initGiftEvents();
+    
+    // 随时播放音乐
+    setTimeout(() => {
+        playBackgroundMusic();
+    }, 1000);
+}
 
         // 圣诞小店标题点击计数
         window.shopClickCount = 0;
@@ -4633,14 +4536,10 @@ function playGiftVideo(videoName, isFromBackpack = false) {
         });
 
         // 检查是否是圣诞节
-        function checkIfChristmasDay() {
-            const now = getBeijingTime();
-            const month = now.getMonth() + 1; // 0-11 转 1-12
-            const date = now.getDate();
-            
-            console.log('检查圣诞节:', { month, date, result: month === 12 && date === 25 });
-            return month === 12 && date === 25;
-        }
+function checkIfChristmasDay() {
+    // 改为始终返回true，移除圣诞节限制
+    return true;
+}
         
         // =================== 控制台测试代码 ===================
         console.log(`
